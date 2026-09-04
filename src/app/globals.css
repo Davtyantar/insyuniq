@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 200 12% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 12% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 12% 10%;
+
+    --primary: 200 12% 10%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 12% 95%;
+    --secondary-foreground: 200 12% 10%;
+
+    --muted: 40 12% 95%;
+    --muted-foreground: 215 10% 45%;
+
+    --accent: 220 94% 49%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 350 78% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 8% 89%;
+    --input: 40 8% 87%;
+    --ring: 220 94% 49%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  ::selection {
+    @apply bg-brand-200 text-brand-900;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* thin, unobtrusive scrollbars for inner panes */
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+  }
+}
