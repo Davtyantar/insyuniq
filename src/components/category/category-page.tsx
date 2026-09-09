@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { CityAccent } from "@/components/city-accent";
 import { FilterDrawer } from "@/components/filters/filter-drawer";
 import { FilterPanel } from "@/components/filters/filter-panel";
 import { EmptyState } from "@/components/listings/empty-state";
@@ -16,7 +17,9 @@ import {
   countActiveFilters,
   defaultFilters,
   filterCars,
+  filterHotels,
   filterRealEstate,
+  filterRentals,
   filtersToQuery,
   parseFilters,
   sortListings,
@@ -26,18 +29,23 @@ import type {
   CarFilters,
   CarListing,
   CategorySlug,
+  HotelFilters,
+  HotelListing,
   Listing,
   RealEstateFilters,
   RealEstateListing,
+  RentalFilters,
+  RentalListing,
   SortKey,
   ViewMode,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function runFilters(category: CategorySlug, listings: Listing[], filters: AnyFilters): Listing[] {
-  return category === "cars"
-    ? filterCars(listings as CarListing[], filters as CarFilters)
-    : filterRealEstate(listings as RealEstateListing[], filters as RealEstateFilters);
+  if (category === "cars") return filterCars(listings as CarListing[], filters as CarFilters);
+  if (category === "rentals") return filterRentals(listings as RentalListing[], filters as RentalFilters);
+  if (category === "hotels") return filterHotels(listings as HotelListing[], filters as HotelFilters);
+  return filterRealEstate(listings as RealEstateListing[], filters as RealEstateFilters);
 }
 
 export function CategoryPage({ category }: { category: CategorySlug }) {
@@ -143,7 +151,8 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
       <h1 className="mt-3 text-2xl font-semibold tracking-tight lg:text-[28px]">
         {subcategory
           ? config.subcategories.find((s) => s.value === subcategory)?.label
-          : config.label}{" "}
+          : config.label}
+        <CityAccent />{" "}
         {applied.city && <span className="text-muted-foreground">· {applied.city}</span>}
       </h1>
 

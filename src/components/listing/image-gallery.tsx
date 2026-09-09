@@ -80,9 +80,26 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
         </span>
       </div>
 
-      {/* Desktop: main image + thumbnails */}
-      <div className="hidden md:block">
-        <div className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-secondary">
+      {/* Desktop: thumbnails on the left, main image on the right */}
+      <div className="hidden md:flex md:gap-3">
+        <div className="flex max-h-[520px] w-20 shrink-0 flex-col gap-2 overflow-y-auto thin-scrollbar">
+          {images.map((src, i) => (
+            <button
+              key={src + i}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={`Фото ${i + 1}`}
+              className={cn(
+                "relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-md border-2 transition-colors",
+                i === index ? "border-accent" : "border-transparent hover:border-border",
+              )}
+            >
+              <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+            </button>
+          ))}
+        </div>
+
+        <div className="group relative aspect-[4/3] min-w-0 flex-1 overflow-hidden rounded-lg border border-border bg-secondary">
           <Image
             src={images[index]}
             alt={`${alt} — фото ${index + 1}`}
@@ -123,23 +140,6 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <span className="absolute bottom-3 left-3 rounded-md bg-slate-950/65 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur">
             {index + 1} / {images.length}
           </span>
-        </div>
-
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 thin-scrollbar">
-          {images.map((src, i) => (
-            <button
-              key={src + i}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Фото ${i + 1}`}
-              className={cn(
-                "relative h-[72px] w-[104px] shrink-0 overflow-hidden rounded-md border-2 transition-colors",
-                i === index ? "border-accent" : "border-transparent hover:border-border",
-              )}
-            >
-              <Image src={src} alt="" fill sizes="104px" className="object-cover" />
-            </button>
-          ))}
         </div>
       </div>
 

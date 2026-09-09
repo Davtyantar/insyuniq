@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { BadgeCheck, MessagesSquare, ShieldCheck, Zap } from "lucide-react";
+import { BadgeCheck, Phone, ShieldCheck, Zap } from "lucide-react";
 import { Hero } from "@/components/home/hero";
 import { HitsSection } from "@/components/home/hits-section";
 import { Button } from "@/components/ui/button";
-import { TOP_CARS, TOP_REAL_ESTATE } from "@/mock/listings";
+import { TOP_CARS, TOP_HOTELS, TOP_REAL_ESTATE, TOP_RENTALS } from "@/mock/listings";
 
 const BENEFITS = [
   {
@@ -17,9 +17,9 @@ const BENEFITS = [
     text: "Объявление публикуется за пару минут в семь шагов.",
   },
   {
-    icon: MessagesSquare,
-    title: "Чат с продавцом",
-    text: "Договаривайтесь о просмотре прямо на площадке.",
+    icon: Phone,
+    title: "Прямой звонок продавцу",
+    text: "Телефон открывается в одно нажатие, без посредников.",
   },
   {
     icon: ShieldCheck,
@@ -45,6 +45,20 @@ export default function HomePage() {
         subtitle="Что чаще всего смотрят среди легковых и электромобилей"
         href="/cars"
         listings={TOP_CARS}
+      />
+
+      <HitsSection
+        title="Хиты аренды"
+        subtitle="Квартиры, дома, гаражи и коммерческая недвижимость в аренду"
+        href="/rentals"
+        listings={TOP_RENTALS}
+      />
+
+      <HitsSection
+        title="Хиты отелей и отдыха"
+        subtitle="Отели, гостевые дома и жильё для отдыха посуточно и на срок"
+        href="/hotels"
+        listings={TOP_HOTELS}
       />
 
       <section className="border-y border-border bg-card">

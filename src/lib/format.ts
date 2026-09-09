@@ -8,8 +8,9 @@ const usd = new Intl.NumberFormat("en-US", {
 
 const num = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
 
-export function formatPrice(value: number, opts?: { perMonth?: boolean }) {
-  return usd.format(value) + (opts?.perMonth ? "/мес" : "");
+export function formatPrice(value: number, opts?: { perMonth?: boolean; perDay?: boolean }) {
+  const suffix = opts?.perDay ? "/сутки" : opts?.perMonth ? "/мес" : "";
+  return usd.format(value) + suffix;
 }
 
 export function formatNumber(value: number) {
@@ -77,4 +78,22 @@ export function roomsLabel(rooms: number) {
 
 export function maskPhone(phone: string) {
   return phone.slice(0, phone.length - 6) + "•• ••";
+}
+
+const CITY_PREPOSITIONAL: Record<string, string> = {
+  "Капан": "Капане",
+  "Горис": "Горисе",
+  "Сисиан": "Сисиане",
+  "Каджаран": "Каджаране",
+  "Мегри": "Мегри",
+  "Агарак": "Агараке",
+  "Дастакерт": "Дастакерте",
+  "Татев": "Татеве",
+  "Хндзореск": "Хндзореске",
+  "Шинуайр": "Шинуайре",
+};
+
+/** "Капан" -> "Капане", for phrases like "квартиры в Капане". */
+export function cityInPrepositional(city: string): string {
+  return CITY_PREPOSITIONAL[city] ?? city;
 }

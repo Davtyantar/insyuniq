@@ -7,13 +7,22 @@ import type {
   DealType,
   DriveType,
   FuelType,
+  HotelListing,
   Listing,
   RealEstateCondition,
   RealEstateListing,
+  RentalListing,
+  RentalTerm,
   Steering,
   Transmission,
 } from "./types";
-import { APARTMENT_PHOTOS, CAR_PHOTOS } from "@/mock/images";
+import {
+  APARTMENT_PHOTOS,
+  CAR_PHOTOS,
+  COMMERCIAL_PHOTOS,
+  HOTEL_PHOTOS,
+  HOUSE_PHOTOS,
+} from "@/mock/images";
 
 export interface DraftPhoto {
   id: string;
@@ -26,6 +35,9 @@ export interface ListingDraft {
   category: CategorySlug | null;
   subcategory: string;
   deal: DealType;
+
+  // Rentals
+  term: RentalTerm;
 
   // Real estate
   rooms: string;
@@ -75,6 +87,7 @@ export const EMPTY_DRAFT: ListingDraft = {
   category: null,
   subcategory: "",
   deal: "sale",
+  term: "daily",
   rooms: "",
   area: "",
   landArea: "",
@@ -141,7 +154,11 @@ export function stepErrors(step: number, draft: ListingDraft): string[] {
       break;
     case 3:
       if (!draft.city) errors.push("Укажите город");
-      if (draft.category === "real-estate") {
+      if (
+        draft.category === "real-estate" ||
+        draft.category === "rentals" ||
+        draft.category === "hotels"
+      ) {
         if (!draft.area) errors.push("Укажите площадь");
       } else {
         if (!draft.brand) errors.push("Выберите марку");
@@ -167,9 +184,29 @@ export function stepErrors(step: number, draft: ListingDraft): string[] {
 /** Photos are optional, but a listing must still render, so fall back to stock imagery. */
 function draftImages(draft: ListingDraft): string[] {
   if (draft.photos.length) return draft.photos.map((photo) => photo.url);
-  return draft.category === "cars"
-    ? [CAR_PHOTOS.toyotaSedan, CAR_PHOTOS.darkSedan]
-    : [APARTMENT_PHOTOS[0], APARTMENT_PHOTOS[1]];
+  if (draft.category === "cars") return [CAR_PHOTOS.toyotaSedan, CAR_PHOTOS.darkSedan];
+  if (draft.category === "rentals") {
+    if (draft.subcategory === "houses") return [HOUSE_PHOTOS[0], HOUSE_PHOTOS[1]];
+    if (draft.subcategory === "garages" || draft.subcategory === "commercial") {
+      return [COMMERCIAL_PHOTOS[0], COMMERCIAL_PHOTOS[1]];
+    }
+    return [APARTMENT_PHOTOS[0], APARTMENT_PHOTOS[1]];
+  }
+  if (draft.category === "hotels") {
+    if (draft.subcategory === "hotels") return [HOTEL_PHOTOS[0], HOTEL_PHOTOS[1]];
+    if (
+      draft.subcategory === "houses" ||
+      draft.subcategory === "guesthouses" ||
+      draft.subcategory === "cottages"
+    ) {
+      return [HOUSE_PHOTOS[0], HOUSE_PHOTOS[1]];
+    }
+    return [APARTMENT_PHOTOS[0], APARTMENT_PHOTOS[1]];
+  }
+  if (draft.subcategory === "garages" || draft.subcategory === "commercial") {
+    return [COMMERCIAL_PHOTOS[0], COMMERCIAL_PHOTOS[1]];
+  }
+  return [APARTMENT_PHOTOS[0], APARTMENT_PHOTOS[1]];
 }
 
 /** Converts the wizard draft into a listing the rest of the app can render. */
@@ -215,6 +252,42 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
       customsCleared: true,
     };
     return car;
+  }
+
+  if (draft.category === "rentals") {
+    const rental: RentalListing = {
+      ...base,
+      category: "rentals",
+      subcategory: (draft.subcategory || "apartments") as RentalListing["subcategory"],
+      term: draft.term,
+      rooms: numberOr(draft.rooms),
+      area: numberOr(draft.area),
+      floor: draft.floor ? numberOr(draft.floor) : undefined,
+      totalFloors: draft.totalFloors ? numberOr(draft.totalFloors) : undefined,
+      bathrooms: numberOr(draft.bathrooms, 1),
+      furniture: draft.furniture,
+      balcony: draft.balcony,
+      parking: draft.parking,
+    };
+    return rental;
+  }
+
+  if (draft.category === "hotels") {
+    const stay: HotelListing = {
+      ...base,
+      category: "hotels",
+      subcategory: (draft.subcategory || "hotels") as HotelListing["subcategory"],
+      term: draft.term,
+      rooms: numberOr(draft.rooms),
+      area: numberOr(draft.area),
+      floor: draft.floor ? numberOr(draft.floor) : undefined,
+      totalFloors: draft.totalFloors ? numberOr(draft.totalFloors) : undefined,
+      bathrooms: numberOr(draft.bathrooms, 1),
+      furniture: draft.furniture,
+      balcony: draft.balcony,
+      parking: draft.parking,
+    };
+    return stay;
   }
 
   const realEstate: RealEstateListing = {

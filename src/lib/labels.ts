@@ -6,8 +6,11 @@ import {
   DEAL_TYPES,
   DRIVE_TYPES,
   FUEL_TYPES,
+  HOTEL_SUBCATEGORIES,
   REAL_ESTATE_SUBCATEGORIES,
   RE_CONDITIONS,
+  RENTAL_SUBCATEGORIES,
+  RENTAL_TERMS,
   STEERING_TYPES,
   TRANSMISSIONS,
   type Option,
@@ -20,6 +23,9 @@ function toMap(options: Option[]): Record<string, string> {
 const MAPS: Record<string, Record<string, string>> = {
   reSubcategory: toMap(REAL_ESTATE_SUBCATEGORIES),
   carSubcategory: toMap(CAR_SUBCATEGORIES),
+  rentalSubcategory: toMap(RENTAL_SUBCATEGORIES),
+  hotelSubcategory: toMap(HOTEL_SUBCATEGORIES),
+  rentalTerm: toMap(RENTAL_TERMS),
   deal: toMap(DEAL_TYPES),
   reCondition: toMap(RE_CONDITIONS),
   buildingType: toMap(BUILDING_TYPES),
@@ -38,5 +44,8 @@ export function label(map: keyof typeof MAPS, value?: string | null): string {
 }
 
 export function subcategoryLabel(category: string, value: string): string {
-  return label(category === "cars" ? "carSubcategory" : "reSubcategory", value);
+  if (category === "cars") return label("carSubcategory", value);
+  if (category === "rentals") return label("rentalSubcategory", value);
+  if (category === "hotels") return label("hotelSubcategory", value);
+  return label("reSubcategory", value);
 }

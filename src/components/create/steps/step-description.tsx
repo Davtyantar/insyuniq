@@ -32,7 +32,11 @@ export function StepDescription({ draft, patch }: StepProps) {
           placeholder={
             draft.category === "cars"
               ? "Например: Toyota Camry 2021, один владелец"
-              : "Например: 2-комнатная квартира в новостройке на Арабкире"
+              : draft.category === "rentals"
+                ? "Например: Аренда 2-комнатной квартиры в Капане"
+                : draft.category === "hotels"
+                  ? "Например: Отель «Сюник», номер посуточно"
+                  : "Например: 2-комнатная квартира в новостройке на Арабкире"
           }
         />
       </Field>

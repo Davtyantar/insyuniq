@@ -30,7 +30,6 @@ function SettingsForm() {
   const [city, setCity] = React.useState("Капан");
   const [saved, setSaved] = React.useState(false);
   const [notifications, setNotifications] = React.useState({
-    messages: true,
     priceDrops: true,
     newsletter: false,
   });
@@ -76,7 +75,6 @@ function SettingsForm() {
       <div className="space-y-3 border-t border-border pt-5">
         <h3 className="text-sm font-semibold">Уведомления</h3>
         {[
-          { key: "messages" as const, label: "Новые сообщения от покупателей" },
           { key: "priceDrops" as const, label: "Снижение цены в избранном" },
           { key: "newsletter" as const, label: "Подборки объявлений раз в неделю" },
         ].map((item) => (

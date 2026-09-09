@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, Home, MessageSquare, Plus, Search, User } from "lucide-react";
+import { Heart, Home, Plus, Search, User } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import { cn } from "@/lib/utils";
 
@@ -11,27 +11,19 @@ const ITEMS = [
   { href: "/search", label: "Поиск", icon: Search },
   { href: "/create", label: "Подать", icon: Plus, primary: true },
   { href: "/favorites", label: "Избранное", icon: Heart, badge: "favorites" as const },
-  { href: "/messages", label: "Чаты", icon: MessageSquare, badge: "messages" as const },
   { href: "/profile", label: "Профиль", icon: User },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { favorites, unreadTotal, hydrated } = useApp();
+  const { favorites, hydrated } = useApp();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-      <ul className="grid grid-cols-6">
+      <ul className="grid grid-cols-5">
         {ITEMS.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          const count =
-            item.badge === "favorites"
-              ? hydrated
-                ? favorites.length
-                : 0
-              : item.badge === "messages"
-                ? unreadTotal
-                : 0;
+          const count = item.badge === "favorites" ? (hydrated ? favorites.length : 0) : 0;
           return (
             <li key={item.href}>
               <Link

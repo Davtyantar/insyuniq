@@ -14,9 +14,17 @@ export interface Spec {
   value: string;
 }
 
-/** Rent is priced per month — the card and detail page both need to say so. */
+/** Rent — real estate by the month, or a long-term rental/stay — is priced per month. */
 export function isMonthly(listing: Listing): boolean {
-  return listing.category === "real-estate" && listing.deal === "rent";
+  return (
+    (listing.category === "real-estate" && listing.deal === "rent") ||
+    ((listing.category === "rentals" || listing.category === "hotels") && listing.term === "long")
+  );
+}
+
+/** Daily rentals and hotel-style stays are priced per night. */
+export function isDaily(listing: Listing): boolean {
+  return (listing.category === "rentals" || listing.category === "hotels") && listing.term === "daily";
 }
 
 /** One-line summary shown right under the price on a card. */
@@ -24,14 +32,25 @@ export function listingSummary(listing: Listing): string {
   if (listing.category === "cars") {
     return `${listing.brand} ${listing.model}, ${listing.year}`;
   }
+  if (listing.category === "rentals") {
+    if (listing.subcategory === "garages") return `Гараж · ${formatArea(listing.area)}`;
+    if (listing.subcategory === "commercial") {
+      return `Коммерческое помещение · ${formatArea(listing.area)}`;
+    }
+    return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
+  }
+  if (listing.category === "hotels") {
+    if (listing.subcategory === "hotels") return `Отель · ${formatArea(listing.area)}`;
+    return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
+  }
   if (listing.subcategory === "land") {
     return `Участок ${listing.landArea} ${plural(listing.landArea ?? 0, "сотка", "сотки", "соток")}`;
   }
   if (listing.subcategory === "commercial") {
     return `Коммерческое помещение · ${formatArea(listing.area)}`;
   }
-  if (listing.subcategory === "rooms") {
-    return `Комната · ${formatArea(listing.area)}`;
+  if (listing.subcategory === "garages") {
+    return `Гараж · ${formatArea(listing.area)}`;
   }
   return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
 }
@@ -47,9 +66,36 @@ export function cardSpecs(listing: Listing): string[] {
       label("drive", listing.drive) + " привод",
     ];
   }
+
+  if (listing.category === "rentals") {
+    const noRoomCount = listing.subcategory === "garages" || listing.subcategory === "commercial";
+    const specs: string[] = [label("rentalTerm", listing.term)];
+    if (!noRoomCount) {
+      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
+    }
+    specs.push(formatArea(listing.area));
+    if (listing.floor && listing.totalFloors) {
+      specs.push(`${listing.floor}/${listing.totalFloors} этаж`);
+    }
+    return specs;
+  }
+
+  if (listing.category === "hotels") {
+    const noRoomCount = listing.subcategory === "hotels";
+    const specs: string[] = [label("rentalTerm", listing.term)];
+    if (!noRoomCount) {
+      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
+    }
+    specs.push(formatArea(listing.area));
+    if (listing.floor && listing.totalFloors) {
+      specs.push(`${listing.floor}/${listing.totalFloors} этаж`);
+    }
+    return specs;
+  }
+
   const specs: string[] = [];
   if (listing.subcategory !== "land") {
-    if (listing.subcategory !== "commercial" && listing.subcategory !== "rooms") {
+    if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
       specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
     }
     specs.push(formatArea(listing.area));
@@ -92,15 +138,59 @@ export function detailSpecs(listing: Listing): Spec[] {
     ];
   }
 
+  if (listing.category === "rentals") {
+    const noRoomCount = listing.subcategory === "garages" || listing.subcategory === "commercial";
+    const specs: Spec[] = [
+      { label: "Тип", value: label("rentalSubcategory", listing.subcategory) },
+      { label: "Срок аренды", value: label("rentalTerm", listing.term) },
+    ];
+    if (!noRoomCount) {
+      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+    }
+    specs.push({ label: "Площадь", value: formatArea(listing.area) });
+    if (listing.floor && listing.totalFloors) {
+      specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
+    }
+    specs.push(
+      { label: "Санузлов", value: String(listing.bathrooms) },
+      { label: "Мебель", value: listing.furniture ? "Есть" : "Нет" },
+      { label: "Балкон", value: listing.balcony ? "Есть" : "Нет" },
+      { label: "Парковка", value: listing.parking ? "Есть" : "Нет" },
+    );
+    return specs;
+  }
+
+  if (listing.category === "hotels") {
+    const noRoomCount = listing.subcategory === "hotels";
+    const specs: Spec[] = [
+      { label: "Тип", value: label("hotelSubcategory", listing.subcategory) },
+      { label: "Срок аренды", value: label("rentalTerm", listing.term) },
+    ];
+    if (!noRoomCount) {
+      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+    }
+    specs.push({ label: "Площадь", value: formatArea(listing.area) });
+    if (listing.floor && listing.totalFloors) {
+      specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
+    }
+    specs.push(
+      { label: "Санузлов", value: String(listing.bathrooms) },
+      { label: "Мебель", value: listing.furniture ? "Есть" : "Нет" },
+      { label: "Балкон", value: listing.balcony ? "Есть" : "Нет" },
+      { label: "Парковка", value: listing.parking ? "Есть" : "Нет" },
+    );
+    return specs;
+  }
+
   const specs: Spec[] = [
     { label: "Тип", value: label("reSubcategory", listing.subcategory) },
     { label: "Сделка", value: label("deal", listing.deal) },
   ];
   if (listing.subcategory !== "land") {
-    specs.push(
-      { label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" },
-      { label: "Общая площадь", value: formatArea(listing.area) },
-    );
+    if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
+      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+    }
+    specs.push({ label: "Общая площадь", value: formatArea(listing.area) });
     if (listing.floor && listing.totalFloors) {
       specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
     }

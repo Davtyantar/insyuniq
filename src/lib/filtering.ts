@@ -2,9 +2,13 @@ import type {
   CarFilters,
   CarListing,
   CategorySlug,
+  HotelFilters,
+  HotelListing,
   Listing,
   RealEstateFilters,
   RealEstateListing,
+  RentalFilters,
+  RentalListing,
   SortKey,
 } from "./types";
 
@@ -58,8 +62,39 @@ export const DEFAULT_CAR_FILTERS: CarFilters = {
   accidentFree: false,
 };
 
+export const DEFAULT_RENTAL_FILTERS: RentalFilters = {
+  q: "",
+  city: "",
+  priceMin: "",
+  priceMax: "",
+  withPhoto: false,
+  verifiedOnly: false,
+  subcategory: "",
+  term: "",
+  rooms: [],
+  areaMin: "",
+  areaMax: "",
+};
+
+export const DEFAULT_HOTEL_FILTERS: HotelFilters = {
+  q: "",
+  city: "",
+  priceMin: "",
+  priceMax: "",
+  withPhoto: false,
+  verifiedOnly: false,
+  subcategory: "",
+  term: "",
+  rooms: [],
+  areaMin: "",
+  areaMax: "",
+};
+
 export function defaultFilters(category: CategorySlug) {
-  return category === "cars" ? { ...DEFAULT_CAR_FILTERS } : { ...DEFAULT_RE_FILTERS };
+  if (category === "cars") return { ...DEFAULT_CAR_FILTERS };
+  if (category === "rentals") return { ...DEFAULT_RENTAL_FILTERS };
+  if (category === "hotels") return { ...DEFAULT_HOTEL_FILTERS };
+  return { ...DEFAULT_RE_FILTERS };
 }
 
 type FilterShape = Record<string, string | string[] | boolean>;
@@ -211,6 +246,34 @@ export function filterCars(listings: CarListing[], filters: CarFilters): CarList
   });
 }
 
+export function filterRentals(listings: RentalListing[], filters: RentalFilters): RentalListing[] {
+  return listings.filter((l) => {
+    if (!matchesCommon(l, filters)) return false;
+    if (filters.subcategory && l.subcategory !== filters.subcategory) return false;
+    if (filters.term && l.term !== filters.term) return false;
+    if (filters.rooms.length) {
+      const bucket = l.rooms >= 5 ? "5" : String(l.rooms);
+      if (!filters.rooms.includes(bucket)) return false;
+    }
+    if (!inRange(l.area, num(filters.areaMin), num(filters.areaMax))) return false;
+    return true;
+  });
+}
+
+export function filterHotels(listings: HotelListing[], filters: HotelFilters): HotelListing[] {
+  return listings.filter((l) => {
+    if (!matchesCommon(l, filters)) return false;
+    if (filters.subcategory && l.subcategory !== filters.subcategory) return false;
+    if (filters.term && l.term !== filters.term) return false;
+    if (filters.rooms.length) {
+      const bucket = l.rooms >= 5 ? "5" : String(l.rooms);
+      if (!filters.rooms.includes(bucket)) return false;
+    }
+    if (!inRange(l.area, num(filters.areaMin), num(filters.areaMax))) return false;
+    return true;
+  });
+}
+
 export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string }[]> = {
   "real-estate": [
     { value: "relevant", label: "По релевантности" },
@@ -226,6 +289,20 @@ export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string 
     { value: "price-desc", label: "Сначала дороже" },
     { value: "mileage-asc", label: "Меньше пробег" },
     { value: "year-desc", label: "Новее год выпуска" },
+  ],
+  rentals: [
+    { value: "relevant", label: "По релевантности" },
+    { value: "date-desc", label: "Сначала новые" },
+    { value: "price-asc", label: "Сначала дешевле" },
+    { value: "price-desc", label: "Сначала дороже" },
+    { value: "area-desc", label: "Больше площадь" },
+  ],
+  hotels: [
+    { value: "relevant", label: "По релевантности" },
+    { value: "date-desc", label: "Сначала новые" },
+    { value: "price-asc", label: "Сначала дешевле" },
+    { value: "price-desc", label: "Сначала дороже" },
+    { value: "area-desc", label: "Больше площадь" },
   ],
 };
 

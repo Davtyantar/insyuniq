@@ -13,6 +13,8 @@ const TABS = [
   { value: "all", label: "Все" },
   { value: "real-estate", label: "Недвижимость" },
   { value: "cars", label: "Автомобили" },
+  { value: "rentals", label: "Аренда" },
+  { value: "hotels", label: "Отели и отдых" },
 ];
 
 export default function FavoritesPage() {
@@ -25,6 +27,8 @@ export default function FavoritesPage() {
     all: listings.length,
     "real-estate": listings.filter((l) => l.category === "real-estate").length,
     cars: listings.filter((l) => l.category === "cars").length,
+    rentals: listings.filter((l) => l.category === "rentals").length,
+    hotels: listings.filter((l) => l.category === "hotels").length,
   } as Record<string, number>;
 
   return (

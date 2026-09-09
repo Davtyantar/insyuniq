@@ -1,7 +1,15 @@
-import { Building2, Car, type LucideIcon } from "lucide-react";
+import { BedDouble, Building2, Car, KeyRound, type LucideIcon } from "lucide-react";
 import { CAR_LISTINGS } from "@/mock/cars";
+import { HOTEL_LISTINGS } from "@/mock/hotels";
 import { REAL_ESTATE_LISTINGS } from "@/mock/real-estate";
-import { CAR_SUBCATEGORIES, REAL_ESTATE_SUBCATEGORIES, type Option } from "@/mock/taxonomy";
+import { RENTAL_LISTINGS } from "@/mock/rentals";
+import {
+  CAR_SUBCATEGORIES,
+  HOTEL_SUBCATEGORIES,
+  REAL_ESTATE_SUBCATEGORIES,
+  RENTAL_SUBCATEGORIES,
+  type Option,
+} from "@/mock/taxonomy";
 import type { CategorySlug, Listing } from "./types";
 
 export interface CategoryConfig {
@@ -44,12 +52,38 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     cover: CAR_LISTINGS[4].images[0],
     tagline: "Легковые, внедорожники и электромобили в Сюнике",
   },
+  rentals: {
+    slug: "rentals",
+    label: "Аренда",
+    labelPrepositional: "аренде",
+    href: "/rentals",
+    icon: KeyRound,
+    searchPlaceholder: "Квартира, дом, гараж в аренду…",
+    subcategories: RENTAL_SUBCATEGORIES,
+    listings: RENTAL_LISTINGS,
+    cover: RENTAL_LISTINGS[0].images[0],
+    tagline: "Квартиры, дома, коммерческая недвижимость и гаражи в аренду",
+  },
+  hotels: {
+    slug: "hotels",
+    label: "Отели и отдых",
+    labelPrepositional: "отелях и отдыхе",
+    href: "/hotels",
+    icon: BedDouble,
+    searchPlaceholder: "Отель, гостевой дом, квартира на сутки…",
+    subcategories: HOTEL_SUBCATEGORIES,
+    listings: HOTEL_LISTINGS,
+    cover: HOTEL_LISTINGS[0].images[0],
+    tagline: "Отели, гостевые дома и жильё для отдыха посуточно и на срок",
+  },
 };
 
 export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export function isCategorySlug(value: string): value is CategorySlug {
-  return value === "real-estate" || value === "cars";
+  return (
+    value === "real-estate" || value === "cars" || value === "rentals" || value === "hotels"
+  );
 }
 
 export function categoryOf(listing: Listing): CategoryConfig {

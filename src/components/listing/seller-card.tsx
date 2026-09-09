@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { MessageSquare, Phone, Star } from "lucide-react";
+import { Phone, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,7 +56,7 @@ export function SellerCard({ seller }: { seller: Seller }) {
         </div>
       </dl>
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-4">
         <Button
           variant="accent"
           size="lg"
@@ -66,12 +65,6 @@ export function SellerCard({ seller }: { seller: Seller }) {
         >
           <Phone className="h-4 w-4" />
           {revealed ? seller.phone : `${maskPhone(seller.phone)} · Показать телефон`}
-        </Button>
-        <Button variant="outline" size="lg" className="w-full justify-center gap-2" asChild>
-          <Link href="/messages">
-            <MessageSquare className="h-4 w-4" />
-            Написать сообщение
-          </Link>
         </Button>
       </div>
 

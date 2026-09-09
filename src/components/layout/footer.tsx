@@ -19,11 +19,24 @@ const COLUMNS = [
     })),
   },
   {
+    title: CATEGORIES.rentals.label,
+    links: CATEGORIES.rentals.subcategories.map((s) => ({
+      label: s.label,
+      href: `/rentals?subcategory=${s.value}`,
+    })),
+  },
+  {
+    title: CATEGORIES.hotels.label,
+    links: CATEGORIES.hotels.subcategories.map((s) => ({
+      label: s.label,
+      href: `/hotels?subcategory=${s.value}`,
+    })),
+  },
+  {
     title: "Сервис",
     links: [
       { label: "Подать объявление", href: "/create" },
       { label: "Избранное", href: "/favorites" },
-      { label: "Сообщения", href: "/messages" },
       { label: "Профиль", href: "/profile" },
     ],
   },
@@ -32,12 +45,12 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-card">
-      <div className="container grid gap-10 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div className="container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.1fr_repeat(5,1fr)]">
         <div className="space-y-3">
           <Logo />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Площадка объявлений Сюникской области: недвижимость и автомобили от Капана и Гориса
-            до Мегри. Проверенные продавцы и честные характеристики.
+            Площадка объявлений Сюникской области: недвижимость, автомобили и аренда жилья от
+            Капана и Гориса до Мегри. Проверенные продавцы и честные характеристики.
           </p>
         </div>
         {COLUMNS.map((column) => (

@@ -4,7 +4,7 @@ import { MapPin } from "lucide-react";
 import { StepHeader } from "@/components/create/field";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/format";
-import { cardSpecs, detailSpecs, isMonthly, listingSummary, locationLine } from "@/lib/specs";
+import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing } from "@/lib/types";
 
 export function StepPreview({ listing }: { listing: Listing }) {
@@ -36,7 +36,7 @@ export function StepPreview({ listing }: { listing: Listing }) {
 
         <div className="p-5">
           <p className="text-[28px] font-semibold leading-none tracking-tight">
-            {formatPrice(listing.price, { perMonth: isMonthly(listing) })}
+            {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
           </p>
           <h3 className="mt-2.5 text-[18px] font-medium leading-snug">{listing.title}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{listingSummary(listing)}</p>

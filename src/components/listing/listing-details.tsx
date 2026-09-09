@@ -9,7 +9,7 @@ import { ListingGrid } from "@/components/listings/listing-grid";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORIES } from "@/lib/categories";
 import { formatFullDate, formatNumber, formatPrice, formatRelativeDate } from "@/lib/format";
-import { cardSpecs, detailSpecs, isMonthly, listingSummary, locationLine } from "@/lib/specs";
+import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing } from "@/lib/types";
 import { getSeller } from "@/mock/sellers";
 
@@ -101,7 +101,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
               </div>
 
               <p className="mt-3 text-[32px] font-semibold leading-none tracking-tight">
-                {formatPrice(listing.price, { perMonth: isMonthly(listing) })}
+                {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
               </p>
 
               <h1 className="mt-3 text-[19px] font-medium leading-snug">{listing.title}</h1>

@@ -5,7 +5,7 @@ import { FavoriteButton } from "@/components/listings/favorite-button";
 import { Badge } from "@/components/ui/badge";
 import { listingHref } from "@/lib/categories";
 import { formatPrice, formatRelativeDate } from "@/lib/format";
-import { cardSpecs, isMonthly, listingSummary, locationLine } from "@/lib/specs";
+import { cardSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing, ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getSeller } from "@/mock/sellers";
@@ -23,6 +23,8 @@ function accentBadges(listing: Listing): string[] {
   if (listing.category === "real-estate") {
     if (listing.buildingType === "new") badges.push("Новостройка");
     if (listing.deal === "rent") badges.push("Аренда");
+  } else if (listing.category === "rentals" || listing.category === "hotels") {
+    badges.push(listing.term === "daily" ? "Посуточно" : "Длительный срок");
   } else {
     if (listing.fuel === "electric") badges.push("Электро");
     if (listing.condition === "new") badges.push("Новый");
@@ -91,7 +93,7 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
       <div className={cn("flex flex-1 flex-col p-4", isList && "sm:p-5")}>
         <div className="flex items-baseline gap-2">
           <span className="text-[22px] font-semibold tracking-tight">
-            {formatPrice(listing.price, { perMonth: isMonthly(listing) })}
+            {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
           </span>
         </div>
 

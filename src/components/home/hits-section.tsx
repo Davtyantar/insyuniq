@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CityAccent } from "@/components/city-accent";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import type { Listing } from "@/lib/types";
 
@@ -16,7 +17,10 @@ export function HitsSection({ title, subtitle, href, listings }: HitsSectionProp
     <section className="container py-8 md:py-10">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>
+          <h2 className="text-xl font-semibold tracking-tight md:text-2xl">
+            {title}
+            <CityAccent />
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
         <Link

@@ -60,6 +60,16 @@ export const COMMERCIAL_PHOTOS = [
 
 export const LAND_PHOTOS = ["1500382017468-9049fed747ef", "1470071459604-3b5ec3a7fe05"].map(u);
 
+export const HOTEL_PHOTOS = [
+  "1566073771259-6a8506099945",
+  "1551882547-ff40c63fe5fa",
+  "1520250497591-112f2f40a3f4",
+  "1445019980597-93fa8acb246c",
+  "1571003123894-1f0594d2b5d9",
+  "1590490360182-c33d57733427",
+  "1611892440504-42a792e24d32",
+].map(u);
+
 /** Wide landscape shot behind the home page hero. */
 export const HERO_PHOTO = u("1500382017468-9049fed747ef");
 

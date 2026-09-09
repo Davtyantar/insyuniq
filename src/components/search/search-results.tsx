@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { CityAccent } from "@/components/city-accent";
 import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { SortSelect, ViewToggle } from "@/components/listings/results-toolbar";
@@ -15,6 +16,8 @@ const TABS = [
   { value: "all", label: "Все" },
   { value: "real-estate", label: "Недвижимость" },
   { value: "cars", label: "Автомобили" },
+  { value: "rentals", label: "Аренда" },
+  { value: "hotels", label: "Отели и отдых" },
 ];
 
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
@@ -54,7 +57,14 @@ export function SearchResults() {
   return (
     <div className="container py-6 lg:py-8">
       <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">
-        {q ? `Результаты по запросу «${q}»` : "Все объявления"}
+        {q ? (
+          `Результаты по запросу «${q}»`
+        ) : (
+          <>
+            Все объявления
+            <CityAccent />
+          </>
+        )}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {visible.length} {plural(visible.length, "объявление", "объявления", "объявлений")}
@@ -73,7 +83,9 @@ export function SearchResults() {
         </Tabs>
         <div className="flex items-center gap-2">
           <SortSelect
-            category={tab === "cars" ? "cars" : "real-estate"}
+            category={
+              tab === "cars" || tab === "rentals" || tab === "hotels" ? tab : "real-estate"
+            }
             sort={sort}
             onSortChange={setSort}
           />

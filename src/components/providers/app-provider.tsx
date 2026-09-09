@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import type { ChatMessage, Conversation, Listing } from "@/lib/types";
-import { CONVERSATIONS } from "@/mock/conversations";
+import type { Locale } from "@/lib/i18n";
+import type { Listing } from "@/lib/types";
 
 const FAVORITES_KEY = "syuniq:favorites";
+const CITY_KEY = "syuniq:city";
+const LOCALE_KEY = "syuniq:locale";
 
 interface AppState {
   favorites: string[];
@@ -13,10 +15,12 @@ interface AppState {
   /** Listings published through the wizard in this session. */
   published: Listing[];
   publishListing: (listing: Listing) => void;
-  conversations: Conversation[];
-  sendMessage: (conversationId: string, text: string) => void;
-  markRead: (conversationId: string) => void;
-  unreadTotal: number;
+  /** Selected city, shown next to search; null until the user picks one. */
+  city: string | null;
+  setCity: (city: string) => void;
+  /** Interface language; defaults to Russian until the user picks one. */
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
   /** False until localStorage has been read, so SSR and first paint agree. */
   hydrated: boolean;
 }
@@ -26,7 +30,8 @@ const AppContext = React.createContext<AppState | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = React.useState<string[]>([]);
   const [published, setPublished] = React.useState<Listing[]>([]);
-  const [conversations, setConversations] = React.useState<Conversation[]>(CONVERSATIONS);
+  const [city, setCityState] = React.useState<string | null>(null);
+  const [locale, setLocaleState] = React.useState<Locale>("ru");
   const [hydrated, setHydrated] = React.useState(false);
 
   React.useEffect(() => {
@@ -35,6 +40,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (raw) setFavorites(JSON.parse(raw) as string[]);
     } catch {
       // Ignore unavailable or corrupted storage — favorites simply start empty.
+    }
+    try {
+      const savedCity = window.localStorage.getItem(CITY_KEY);
+      if (savedCity) setCityState(savedCity);
+    } catch {
+      // Ignore unavailable storage — city picker simply starts unset.
+    }
+    try {
+      const savedLocale = window.localStorage.getItem(LOCALE_KEY);
+      if (savedLocale === "ru" || savedLocale === "am" || savedLocale === "en") {
+        setLocaleState(savedLocale);
+      }
+    } catch {
+      // Ignore unavailable storage — locale simply starts at the default.
     }
     setHydrated(true);
   }, []);
@@ -58,30 +77,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPublished((prev) => [listing, ...prev]);
   }, []);
 
-  const sendMessage = React.useCallback((conversationId: string, text: string) => {
-    const message: ChatMessage = {
-      id: `${conversationId}-${Date.now()}`,
-      from: "me",
-      text,
-      sentAt: new Date().toISOString(),
-      read: true,
-    };
-    setConversations((prev) =>
-      prev.map((c) => (c.id === conversationId ? { ...c, messages: [...c.messages, message] } : c)),
-    );
+  const setCity = React.useCallback((next: string) => {
+    setCityState(next);
+    try {
+      window.localStorage.setItem(CITY_KEY, next);
+    } catch {
+      // Storage can be full or blocked; city stays in memory for this session.
+    }
   }, []);
 
-  const markRead = React.useCallback((conversationId: string) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === conversationId
-          ? { ...c, unread: 0, messages: c.messages.map((m) => ({ ...m, read: true })) }
-          : c,
-      ),
-    );
+  const setLocale = React.useCallback((next: Locale) => {
+    setLocaleState(next);
+    try {
+      window.localStorage.setItem(LOCALE_KEY, next);
+    } catch {
+      // Storage can be full or blocked; locale stays in memory for this session.
+    }
   }, []);
-
-  const unreadTotal = conversations.reduce((sum, c) => sum + c.unread, 0);
 
   const value = React.useMemo<AppState>(
     () => ({
@@ -90,10 +102,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       toggleFavorite,
       published,
       publishListing,
-      conversations,
-      sendMessage,
-      markRead,
-      unreadTotal,
+      city,
+      setCity,
+      locale,
+      setLocale,
       hydrated,
     }),
     [
@@ -102,10 +114,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       toggleFavorite,
       published,
       publishListing,
-      conversations,
-      sendMessage,
-      markRead,
-      unreadTotal,
+      city,
+      setCity,
+      locale,
+      setLocale,
       hydrated,
     ],
   );

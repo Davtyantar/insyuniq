@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, MessageSquare, Plus, User } from "lucide-react";
+import { Heart, Plus, User } from "lucide-react";
+import { LanguagePicker } from "@/components/layout/language-picker";
+import { LocationPicker } from "@/components/layout/location-picker";
 import { Logo } from "@/components/layout/logo";
 import { useApp } from "@/components/providers/app-provider";
 import { SearchBar } from "@/components/search/search-bar";
@@ -12,7 +14,6 @@ import { cn } from "@/lib/utils";
 
 const ACTIONS = [
   { href: "/favorites", label: "Избранное", icon: Heart, badge: "favorites" as const },
-  { href: "/messages", label: "Сообщения", icon: MessageSquare, badge: "messages" as const },
   { href: "/profile", label: "Войти", icon: User, badge: null },
 ];
 
@@ -27,19 +28,22 @@ function CountBadge({ count }: { count: number }) {
 
 export function Header() {
   const pathname = usePathname();
-  const { favorites, unreadTotal, hydrated } = useApp();
+  const { favorites, hydrated } = useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
   // The home page already lists every category as tiles, so the nav row would repeat it.
   const showCategoryNav = pathname !== "/";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
-      <div className="container flex h-16 items-center gap-3 lg:gap-6">
+      <div className="container flex h-16 items-center gap-2 lg:gap-4">
         <Logo />
 
         <div className="min-w-0 flex-1">
           <SearchBar />
         </div>
+
+        <LocationPicker />
+        <LanguagePicker />
 
         {/* Phones reach these from the bottom navigation, so the header keeps only search. */}
         <nav className="hidden items-center gap-0.5 md:flex">
@@ -47,9 +51,7 @@ export function Header() {
             <Button key={action.href} variant="ghost" size="icon" asChild className="relative">
               <Link href={action.href} title={action.label} aria-label={action.label}>
                 <action.icon className="h-5 w-5" />
-                <CountBadge
-                  count={action.badge === "favorites" ? favoritesCount : action.badge === "messages" ? unreadTotal : 0}
-                />
+                <CountBadge count={action.badge === "favorites" ? favoritesCount : 0} />
               </Link>
             </Button>
           ))}

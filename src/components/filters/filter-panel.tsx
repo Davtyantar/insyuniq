@@ -2,9 +2,18 @@
 
 import { RotateCcw } from "lucide-react";
 import { CarFilterFields } from "@/components/filters/car-filters";
+import { HotelFilterFields } from "@/components/filters/hotel-filters";
 import { RealEstateFilterFields } from "@/components/filters/real-estate-filters";
+import { RentalFilterFields } from "@/components/filters/rental-filters";
 import { Button } from "@/components/ui/button";
-import type { AnyFilters, CarFilters, CategorySlug, RealEstateFilters } from "@/lib/types";
+import type {
+  AnyFilters,
+  CarFilters,
+  CategorySlug,
+  HotelFilters,
+  RealEstateFilters,
+  RentalFilters,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export interface FilterPanelProps {
@@ -30,6 +39,22 @@ export function FilterFields({
       <CarFilterFields
         filters={filters as CarFilters}
         onChange={onChange as (patch: Partial<CarFilters>) => void}
+      />
+    );
+  }
+  if (category === "rentals") {
+    return (
+      <RentalFilterFields
+        filters={filters as RentalFilters}
+        onChange={onChange as (patch: Partial<RentalFilters>) => void}
+      />
+    );
+  }
+  if (category === "hotels") {
+    return (
+      <HotelFilterFields
+        filters={filters as HotelFilters}
+        onChange={onChange as (patch: Partial<HotelFilters>) => void}
       />
     );
   }

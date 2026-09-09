@@ -13,6 +13,12 @@ interface StepProps {
 export function StepPrice({ draft, patch }: StepProps) {
   const price = Number(draft.price) || 0;
   const isRent = draft.category === "real-estate" && draft.deal === "rent";
+  const isStay = draft.category === "rentals" || draft.category === "hotels";
+  const isDaily = isStay && draft.term === "daily";
+  const isLongRental = isStay && draft.term === "long";
+  const perMonth = isRent || isLongRental;
+
+  const priceLabel = isDaily ? "Цена за сутки, $" : perMonth ? "Цена за месяц, $" : "Цена, $";
 
   return (
     <div className="space-y-6">
@@ -22,9 +28,13 @@ export function StepPrice({ draft, patch }: StepProps) {
       />
 
       <Field
-        label={isRent ? "Цена за месяц, $" : "Цена, $"}
+        label={priceLabel}
         required
-        hint={price > 0 ? `Покупатель увидит ${formatPrice(price, { perMonth: isRent })}` : undefined}
+        hint={
+          price > 0
+            ? `Покупатель увидит ${formatPrice(price, { perMonth, perDay: isDaily })}`
+            : undefined
+        }
       >
         <Input
           value={draft.price}
@@ -53,8 +63,8 @@ export function StepPrice({ draft, patch }: StepProps) {
       </div>
 
       <p className="rounded-lg border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
-        Номер показывается только после нажатия «Показать телефон». Сообщения приходят в чат на
-        площадке — отвечать можно с телефона и компьютера.
+        Номер показывается покупателям только после нажатия «Показать телефон» — звонить будут
+        напрямую вам.
       </p>
     </div>
   );

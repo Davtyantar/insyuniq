@@ -4,8 +4,8 @@ import { Field, OptionCard, StepHeader } from "@/components/create/field";
 import { ChipGroup } from "@/components/filters/filter-fields";
 import { CATEGORIES } from "@/lib/categories";
 import type { ListingDraft } from "@/lib/draft";
-import type { DealType } from "@/lib/types";
-import { CAR_CONDITIONS, DEAL_TYPES } from "@/mock/taxonomy";
+import type { DealType, RentalTerm } from "@/lib/types";
+import { CAR_CONDITIONS, DEAL_TYPES, RENTAL_TERMS } from "@/mock/taxonomy";
 
 interface StepProps {
   draft: ListingDraft;
@@ -28,6 +28,7 @@ export function StepType({ draft, patch }: StepProps) {
           <OptionCard
             key={sub.value}
             title={sub.label}
+            icon={sub.icon}
             selected={draft.subcategory === sub.value}
             onSelect={() => patch({ subcategory: sub.value })}
           />
@@ -35,7 +36,7 @@ export function StepType({ draft, patch }: StepProps) {
       </div>
 
       <div className="mt-6">
-        {draft.category === "real-estate" ? (
+        {draft.category === "real-estate" && (
           <Field label="Тип сделки" required>
             <ChipGroup
               options={DEAL_TYPES}
@@ -43,7 +44,8 @@ export function StepType({ draft, patch }: StepProps) {
               onChange={(values) => patch({ deal: (values[0] ?? "sale") as DealType })}
             />
           </Field>
-        ) : (
+        )}
+        {draft.category === "cars" && (
           <Field label="Состояние" required>
             <ChipGroup
               options={CAR_CONDITIONS}
@@ -51,6 +53,15 @@ export function StepType({ draft, patch }: StepProps) {
               onChange={(values) =>
                 patch({ carCondition: (values[0] ?? "used") as ListingDraft["carCondition"] })
               }
+            />
+          </Field>
+        )}
+        {(draft.category === "rentals" || draft.category === "hotels") && (
+          <Field label="Срок аренды" required>
+            <ChipGroup
+              options={RENTAL_TERMS}
+              values={[draft.term]}
+              onChange={(values) => patch({ term: (values[0] ?? "daily") as RentalTerm })}
             />
           </Field>
         )}

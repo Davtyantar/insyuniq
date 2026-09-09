@@ -1,4 +1,4 @@
-export type CategorySlug = "real-estate" | "cars";
+export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels";
 
 export type SellerType = "owner" | "agency" | "dealer" | "private";
 
@@ -38,7 +38,7 @@ export interface BaseListing {
 export type RealEstateSubcategory =
   | "apartments"
   | "houses"
-  | "rooms"
+  | "garages"
   | "new-buildings"
   | "commercial"
   | "land";
@@ -111,7 +111,40 @@ export interface CarListing extends BaseListing {
   power: number;
 }
 
-export type Listing = RealEstateListing | CarListing;
+export type RentalSubcategory = "apartments" | "houses" | "commercial" | "garages";
+export type RentalTerm = "daily" | "long";
+
+export interface RentalListing extends BaseListing {
+  category: "rentals";
+  subcategory: RentalSubcategory;
+  term: RentalTerm;
+  rooms: number;
+  area: number;
+  floor?: number;
+  totalFloors?: number;
+  bathrooms: number;
+  furniture: boolean;
+  balcony: boolean;
+  parking: boolean;
+}
+
+export type HotelSubcategory = "hotels" | "guesthouses" | "houses" | "cottages";
+
+export interface HotelListing extends BaseListing {
+  category: "hotels";
+  subcategory: HotelSubcategory;
+  term: RentalTerm;
+  rooms: number;
+  area: number;
+  floor?: number;
+  totalFloors?: number;
+  bathrooms: number;
+  furniture: boolean;
+  balcony: boolean;
+  parking: boolean;
+}
+
+export type Listing = RealEstateListing | CarListing | RentalListing | HotelListing;
 
 export function isRealEstate(listing: Listing): listing is RealEstateListing {
   return listing.category === "real-estate";
@@ -119,6 +152,14 @@ export function isRealEstate(listing: Listing): listing is RealEstateListing {
 
 export function isCar(listing: Listing): listing is CarListing {
   return listing.category === "cars";
+}
+
+export function isRental(listing: Listing): listing is RentalListing {
+  return listing.category === "rentals";
+}
+
+export function isHotelStay(listing: Listing): listing is HotelListing {
+  return listing.category === "hotels";
 }
 
 export type SortKey =
@@ -177,22 +218,22 @@ export interface CarFilters extends CommonFilters {
   accidentFree: boolean;
 }
 
-export type AnyFilters = RealEstateFilters | CarFilters;
-
-export interface ChatMessage {
-  id: string;
-  from: "me" | "them";
-  text: string;
-  sentAt: string;
-  read: boolean;
+export interface RentalFilters extends CommonFilters {
+  subcategory: string;
+  term: RentalTerm | "";
+  rooms: string[];
+  areaMin: string;
+  areaMax: string;
 }
 
-export interface Conversation {
-  id: string;
-  sellerId: string;
-  listingId: string;
-  messages: ChatMessage[];
-  unread: number;
+export interface HotelFilters extends CommonFilters {
+  subcategory: string;
+  term: RentalTerm | "";
+  rooms: string[];
+  areaMin: string;
+  areaMax: string;
 }
+
+export type AnyFilters = RealEstateFilters | CarFilters | RentalFilters | HotelFilters;
 
 export type ViewMode = "grid" | "list";

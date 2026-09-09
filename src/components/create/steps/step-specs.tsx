@@ -207,6 +207,89 @@ export function StepSpecs({ draft, patch }: StepProps) {
     );
   }
 
+  if (draft.category === "rentals" || draft.category === "hotels") {
+    const isHotel = draft.subcategory === "hotels";
+    const noRoomCount =
+      draft.subcategory === "hotels" ||
+      draft.subcategory === "garages" ||
+      draft.subcategory === "commercial";
+    return (
+      <div className="space-y-6">
+        <StepHeader
+          title={isHotel ? "Характеристики номера" : "Характеристики жилья"}
+          description="Укажите параметры — они попадут в карточку и в фильтры поиска."
+        />
+
+        {!noRoomCount && (
+          <Field label="Количество комнат">
+            <ChipGroup
+              options={ROOMS_OPTIONS}
+              values={draft.rooms ? [draft.rooms] : []}
+              onChange={(values) => patch({ rooms: values[0] ?? "" })}
+            />
+          </Field>
+        )}
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Площадь, м²" required>
+            <Input
+              value={draft.area}
+              inputMode="numeric"
+              onChange={(event) => patch({ area: digits(event.target.value) })}
+              placeholder="45"
+            />
+          </Field>
+          <Field label="Этаж">
+            <Input
+              value={draft.floor}
+              inputMode="numeric"
+              onChange={(event) => patch({ floor: digits(event.target.value) })}
+              placeholder="2"
+            />
+          </Field>
+          <Field label="Этажность дома">
+            <Input
+              value={draft.totalFloors}
+              inputMode="numeric"
+              onChange={(event) => patch({ totalFloors: digits(event.target.value) })}
+              placeholder="4"
+            />
+          </Field>
+        </div>
+
+        <Field label="Санузлов">
+          <Input
+            value={draft.bathrooms}
+            inputMode="numeric"
+            onChange={(event) => patch({ bathrooms: digits(event.target.value) })}
+          />
+        </Field>
+
+        <Field label="Удобства">
+          <div className="space-y-2.5">
+            <ToggleRow
+              label="Мебель"
+              checked={draft.furniture}
+              onChange={(furniture) => patch({ furniture })}
+            />
+            <ToggleRow
+              label="Балкон"
+              checked={draft.balcony}
+              onChange={(balcony) => patch({ balcony })}
+            />
+            <ToggleRow
+              label="Парковка"
+              checked={draft.parking}
+              onChange={(parking) => patch({ parking })}
+            />
+          </div>
+        </Field>
+
+        <LocationFields draft={draft} patch={patch} />
+      </div>
+    );
+  }
+
   const isLand = draft.subcategory === "land";
 
   return (

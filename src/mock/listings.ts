@@ -1,8 +1,15 @@
-import type { CarListing, Listing, RealEstateListing } from "@/lib/types";
+import type { CarListing, HotelListing, Listing, RealEstateListing, RentalListing } from "@/lib/types";
 import { CAR_LISTINGS } from "./cars";
+import { HOTEL_LISTINGS } from "./hotels";
 import { REAL_ESTATE_LISTINGS } from "./real-estate";
+import { RENTAL_LISTINGS } from "./rentals";
 
-export const ALL_LISTINGS: Listing[] = [...REAL_ESTATE_LISTINGS, ...CAR_LISTINGS];
+export const ALL_LISTINGS: Listing[] = [
+  ...REAL_ESTATE_LISTINGS,
+  ...CAR_LISTINGS,
+  ...RENTAL_LISTINGS,
+  ...HOTEL_LISTINGS,
+];
 
 const BY_ID = new Map<string, Listing>(ALL_LISTINGS.map((l) => [l.id, l]));
 
@@ -24,6 +31,16 @@ export function getCar(id: string): CarListing | undefined {
   return listing?.category === "cars" ? listing : undefined;
 }
 
+export function getRental(id: string): RentalListing | undefined {
+  const listing = BY_ID.get(id);
+  return listing?.category === "rentals" ? listing : undefined;
+}
+
+export function getHotel(id: string): HotelListing | undefined {
+  const listing = BY_ID.get(id);
+  return listing?.category === "hotels" ? listing : undefined;
+}
+
 /** Hand-picked highlights for the home page. */
 export const FEATURED_IDS = [
   "re-1",
@@ -43,6 +60,8 @@ const byViews = (a: Listing, b: Listing) => b.views - a.views;
 
 export const TOP_REAL_ESTATE = [...REAL_ESTATE_LISTINGS].sort(byViews).slice(0, 8);
 export const TOP_CARS = [...CAR_LISTINGS].sort(byViews).slice(0, 8);
+export const TOP_RENTALS = [...RENTAL_LISTINGS].sort(byViews).slice(0, 8);
+export const TOP_HOTELS = [...HOTEL_LISTINGS].sort(byViews).slice(0, 8);
 
 /** Listings that belong to the signed-in user of this prototype. */
 export const MY_LISTING_IDS = ["re-2", "car-5", "re-12"];
