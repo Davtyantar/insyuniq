@@ -5,13 +5,13 @@ import { CategoryPageSkeleton } from "@/components/category/category-page-skelet
 
 export const metadata: Metadata = {
   title: "Автомобили",
-  description: "Легковые, внедорожники, электромобили, грузовые и мото.",
+  description: "Легковые, внедорожники, электромобили, грузовые и мото."
 };
 
 export default function CarsPage() {
   return (
     <Suspense fallback={<CategoryPageSkeleton />}>
-      <CategoryPage category="cars" />
+      <CategoryPage category='cars' />
     </Suspense>
   );
 }
