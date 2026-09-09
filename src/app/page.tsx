@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BadgeCheck, Phone, ShieldCheck, Zap } from "lucide-react";
-import { Hero } from "@/components/home/hero";
+import { Categories } from "@/components/home/categories";
 import { HitsSection } from "@/components/home/hits-section";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export default function HomePage() {
     <>
       <PromoBanner />
 
-      <Hero />
+      <Categories />
 
       <HitsSection
         title="Хиты недвижимости"

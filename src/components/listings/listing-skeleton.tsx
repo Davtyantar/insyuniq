@@ -7,8 +7,8 @@ export function ListingCardSkeleton({ view = "grid" }: { view?: ViewMode }) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card",
-        isList && "sm:flex",
+        "flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card",
+        isList && "sm:flex-row",
       )}
     >
       <Skeleton
@@ -17,13 +17,14 @@ export function ListingCardSkeleton({ view = "grid" }: { view?: ViewMode }) {
           isList ? "aspect-[4/3] sm:aspect-auto sm:h-[212px] sm:w-[300px]" : "aspect-[4/3]",
         )}
       />
-      <div className="flex-1 space-y-3 p-4">
+      <div className="flex flex-1 flex-col gap-2.5 p-4">
         <Skeleton className="h-6 w-28" />
         <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <div className="flex gap-2 pt-2">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-3 w-1/2" />
+        <div className="space-y-1.5 pt-1">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-2/3" />
         </div>
       </div>
     </div>

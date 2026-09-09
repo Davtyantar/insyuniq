@@ -3,15 +3,14 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ImageIcon, MapPin } from "lucide-react";
+import { BadgeCheck, Clock, ImageIcon, MapPin } from "lucide-react";
 import { FavoriteButton } from "@/components/listings/favorite-button";
 import { Badge } from "@/components/ui/badge";
 import { listingHref } from "@/lib/categories";
 import { formatPrice, formatRelativeDate } from "@/lib/format";
-import { cardSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
+import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing, ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { getSeller } from "@/mock/sellers";
 
 interface ListingCardProps {
   listing: Listing;
@@ -39,8 +38,6 @@ function accentBadges(listing: Listing): string[] {
 const MAX_PREVIEW_DOTS = 6;
 
 export function ListingCard({ listing, view = "grid", priority, className }: ListingCardProps) {
-  const seller = getSeller(listing.sellerId);
-  const specs = cardSpecs(listing);
   const badges = accentBadges(listing);
   const isList = view === "list";
 
@@ -65,8 +62,8 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-slate-300 hover:shadow-lift",
-        isList && "sm:flex",
+        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm transition-shadow hover:shadow-lift",
+        isList && "sm:flex-row",
         className,
       )}
     >
@@ -115,17 +112,20 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
         <FavoriteButton listingId={listing.id} className="absolute right-3 top-3 z-20" />
 
         {zoneCount > 1 ? (
-          <div className="absolute inset-x-3 bottom-3 z-20 flex gap-1">
-            {Array.from({ length: zoneCount }, (_, i) => (
-              <span
-                key={i}
-                className={cn(
-                  "h-[3px] flex-1 rounded-full bg-white/40 transition-colors",
-                  i === activeIndex && "bg-white",
-                )}
-              />
-            ))}
-          </div>
+          <>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-t from-black/35 to-transparent" />
+            <div className="absolute inset-x-3 bottom-3 z-20 flex gap-1.5">
+              {Array.from({ length: zoneCount }, (_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "h-[3px] flex-1 rounded-full bg-white/40 shadow-[0_0_0_1px_rgba(0,0,0,0.15)] transition-all duration-200",
+                    i === activeIndex && "h-[4px] bg-white shadow-[0_0_4px_rgba(0,0,0,0.35)]",
+                  )}
+                />
+              ))}
+            </div>
+          </>
         ) : (
           <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-slate-950/65 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">
             <ImageIcon className="h-3 w-3" />
@@ -134,45 +134,32 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
         )}
       </div>
 
-      <div className={cn("flex flex-1 flex-col p-4", isList && "sm:p-5")}>
-        <div className="flex items-baseline gap-2">
-          <span className="text-[22px] font-semibold tracking-tight">
-            {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
-          </span>
-        </div>
+      <div className={cn("flex flex-1 flex-col gap-2 p-4", isList && "sm:p-5")}>
+        <span className="text-[22px] font-semibold tracking-tight text-foreground">
+          {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
+        </span>
 
         <h3
           className={cn(
-            "mt-1 font-medium leading-snug text-foreground",
+            "font-medium leading-snug text-foreground",
             isList ? "text-[17px]" : "text-[15px] line-clamp-2",
           )}
         >
           {listingSummary(listing)}
         </h3>
 
-        <ul className="mt-2.5 flex flex-wrap gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
-          {specs.slice(0, isList ? 6 : 4).map((spec, index) => (
-            <li key={spec} className="flex items-center gap-2">
-              {index > 0 && <span className="text-border">·</span>}
-              {spec}
-            </li>
-          ))}
-        </ul>
-
-        {isList && (
-          <p className="mt-3 hidden text-sm leading-relaxed text-muted-foreground sm:line-clamp-2">
-            {listing.description}
-          </p>
-        )}
-
-        <div className="mt-3 flex items-center gap-1.5 text-[13px] text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
           <MapPin className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">{locationLine(listing)}</span>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-[12px] text-muted-foreground">
-          <span className="truncate">{seller.name}</span>
-          <span className="shrink-0">{formatRelativeDate(listing.publishedAt)}</span>
+        <p className="line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
+          {listing.description}
+        </p>
+
+        <div className="mt-auto flex items-center gap-1.5 pt-2 text-[12px] font-medium text-accent">
+          <Clock className="h-3.5 w-3.5" />
+          {formatRelativeDate(listing.publishedAt)}
         </div>
       </div>
     </article>

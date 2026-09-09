@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPinned, ShieldCheck, Sparkles } from "lucide-react";
+import { MapTilt } from "@/components/home/map-tilt";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 
@@ -27,14 +28,9 @@ export function PromoBanner() {
           aria-hidden
           className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.22)_1.6px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.1)_1.2px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)]'
         />
-        <Image
-          src='/syunik-map.png'
-          alt=''
-          aria-hidden
-          width={1248}
-          height={1648}
-          className='pointer-events-none absolute right-[110px] top-1/2 z-0 h-[320px] w-auto -translate-y-1/2 opacity-80 sm:h-[390px] md:right-[134px] md:h-[470px] lg:h-[530px]'
-        />
+        <div className="absolute right-[110px] top-1/2 z-0 aspect-[78/103] h-[320px] -translate-y-1/2 opacity-80 sm:h-[390px] md:right-[134px] md:h-[470px] lg:h-[530px]">
+          <MapTilt />
+        </div>
 
         <div className='relative z-10 flex flex-col items-center gap-7 text-center md:flex-row md:items-center md:justify-between md:gap-10 md:text-left'>
           <div className='flex flex-col items-center gap-4 md:items-start'>
