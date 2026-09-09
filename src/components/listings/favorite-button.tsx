@@ -26,7 +26,7 @@ export function FavoriteButton({
     <button
       type="button"
       aria-pressed={active}
-      aria-label={active ? "Убрать из избранного" : "Добавить в избранное"}
+      aria-label={active ? "Հեռացնել հավանածներից" : "Ավելացնել հավանածներում"}
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -47,7 +47,7 @@ export function FavoriteButton({
           active ? "fill-destructive text-destructive" : "text-current",
         )}
       />
-      {withLabel && <span>{active ? "В избранном" : "В избранное"}</span>}
+      {withLabel && <span>{active ? "Հավանածների մեջ է" : "Հավանել"}</span>}
     </button>
   );
 }

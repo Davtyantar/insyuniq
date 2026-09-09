@@ -28,13 +28,13 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
   if (totalPages <= 1) return null;
 
   return (
-    <nav className={cn("flex items-center justify-center gap-1", className)} aria-label="Страницы">
+    <nav className={cn("flex items-center justify-center gap-1", className)} aria-label="Էջեր">
       <Button
         variant="outline"
         size="icon-sm"
         disabled={page === 1}
         onClick={() => onPageChange(page - 1)}
-        aria-label="Предыдущая страница"
+        aria-label="Նախորդ էջ"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -65,7 +65,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         size="icon-sm"
         disabled={page === totalPages}
         onClick={() => onPageChange(page + 1)}
-        aria-label="Следующая страница"
+        aria-label="Հաջորդ էջ"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

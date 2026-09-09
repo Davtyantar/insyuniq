@@ -63,6 +63,14 @@ export const TOP_CARS = [...CAR_LISTINGS].sort(byViews).slice(0, 8);
 export const TOP_RENTALS = [...RENTAL_LISTINGS].sort(byViews).slice(0, 8);
 export const TOP_HOTELS = [...HOTEL_LISTINGS].sort(byViews).slice(0, 8);
 
+/** Split out of TOP_HOTELS for their own home-page sections. */
+export const TOP_HOTEL_ROOMS = HOTEL_LISTINGS.filter((l) => l.subcategory === "hotels")
+  .sort(byViews)
+  .slice(0, 8);
+export const TOP_VACATION_HOUSES = HOTEL_LISTINGS.filter((l) => l.subcategory === "houses")
+  .sort(byViews)
+  .slice(0, 8);
+
 /** Listings that belong to the signed-in user of this prototype. */
 export const MY_LISTING_IDS = ["re-2", "car-5", "re-12"];
 export const MY_ARCHIVED_IDS = ["car-10", "re-6"];

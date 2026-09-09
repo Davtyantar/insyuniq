@@ -6,10 +6,10 @@ export default function NotFound() {
     <div className="container py-20">
       <EmptyState
         icon={FileQuestion}
-        title="Страница не найдена"
-        description="Объявление снято с публикации или ссылка введена неверно."
-        action={{ label: "На главную", href: "/" }}
-        secondaryAction={{ label: "Все объявления", href: "/search" }}
+        title="Էջը չի գտնվել"
+        description="Հայտարարությունը հանվել է հրապարակումից, կամ հղումը սխալ է մուտքագրվել։"
+        action={{ label: "Գլխավոր էջ", href: "/" }}
+        secondaryAction={{ label: "Բոլոր հայտարարությունները", href: "/search" }}
       />
     </div>
   );

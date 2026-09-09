@@ -7,11 +7,11 @@ import { useApp } from "@/components/providers/app-provider";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { href: "/", label: "Главная", icon: Home },
-  { href: "/search", label: "Поиск", icon: Search },
-  { href: "/create", label: "Подать", icon: Plus, primary: true },
-  { href: "/favorites", label: "Избранное", icon: Heart, badge: "favorites" as const },
-  { href: "/profile", label: "Профиль", icon: User },
+  { href: "/", label: "Գլխավոր", icon: Home },
+  { href: "/search", label: "Որոնում", icon: Search },
+  { href: "/create", label: "Հրապարակել", icon: Plus, primary: true },
+  { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
+  { href: "/profile", label: "Պրոֆիլ", icon: User },
 ];
 
 export function BottomNav() {

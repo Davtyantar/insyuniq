@@ -33,7 +33,7 @@ export function SortSelect({
 }: Pick<ResultsToolbarProps, "category" | "sort" | "onSortChange"> & { className?: string }) {
   return (
     <Select value={sort} onValueChange={(value) => onSortChange(value as SortKey)}>
-      <SelectTrigger className={cn("h-9 w-[190px] text-[13px]", className)} aria-label="Сортировка">
+      <SelectTrigger className={cn("h-9 w-[190px] text-[13px]", className)} aria-label="Դասավորում">
         <SelectValue />
       </SelectTrigger>
       <SelectContent align="end">
@@ -55,8 +55,8 @@ export function ViewToggle({
     <div className="hidden items-center gap-0.5 rounded-md border border-input bg-card p-0.5 sm:flex">
       {(
         [
-          { value: "grid" as const, icon: LayoutGrid, label: "Плиткой" },
-          { value: "list" as const, icon: Rows3, label: "Списком" },
+          { value: "grid" as const, icon: LayoutGrid, label: "Ցանցով" },
+          { value: "list" as const, icon: Rows3, label: "Ցուցակով" },
         ]
       ).map((option) => (
         <button
@@ -92,9 +92,9 @@ export function ResultsToolbar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-muted-foreground">
-        Найдено{" "}
+        Գտնվել է{" "}
         <span className="font-medium text-foreground">
-          {total.toLocaleString("ru-RU")} {plural(total, "объявление", "объявления", "объявлений")}
+          {total.toLocaleString("hy-AM")} {plural(total, "հայտարարություն", "հայտարարություններ")}
         </span>
       </p>
 
@@ -106,7 +106,7 @@ export function ResultsToolbar({
           onClick={onOpenFilters}
         >
           <SlidersHorizontal className="h-4 w-4" />
-          Фильтры
+          Ֆիլտրեր
           {activeFilters > 0 && (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-accent-foreground">
               {activeFilters}

@@ -31,30 +31,30 @@ function LocationFields({ draft, patch }: StepProps) {
   const districts = (DISTRICTS[draft.city] ?? []).map((d) => ({ value: d, label: d }));
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <Field label="Город" required>
+      <Field label="Քաղաք" required>
         <SelectField
           value={draft.city}
           onChange={(city) => patch({ city, district: "" })}
           options={CITIES}
-          placeholder="Выберите город"
-          anyLabel="Не выбран"
+          placeholder="Ընտրեք քաղաքը"
+          anyLabel="Ընտրված չէ"
         />
       </Field>
-      <Field label="Район">
+      <Field label="Թաղամաս">
         <SelectField
           value={draft.district}
           onChange={(district) => patch({ district })}
           options={districts}
-          placeholder={draft.city ? "Выберите район" : "Сначала город"}
-          anyLabel="Не выбран"
+          placeholder={draft.city ? "Ընտրեք թաղամասը" : "Նախ ընտրեք քաղաքը"}
+          anyLabel="Ընտրված չէ"
           disabled={!draft.city}
         />
       </Field>
-      <Field label="Адрес">
+      <Field label="Հասցե">
         <Input
           value={draft.address}
           onChange={(event) => patch({ address: event.target.value })}
-          placeholder="Улица и номер дома"
+          placeholder="Փողոց և տան համար"
         />
       </Field>
     </div>
@@ -67,69 +67,69 @@ export function StepSpecs({ draft, patch }: StepProps) {
     return (
       <div className="space-y-6">
         <StepHeader
-          title="Характеристики автомобиля"
-          description="Чем точнее данные, тем выше доверие покупателей."
+          title="Ավտոմեքենայի բնութագրերը"
+          description="Որքան ճշգրիտ են տվյալները, այնքան բարձր է գնորդների վստահությունը։"
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Марка" required>
+          <Field label="Մակնիշ" required>
             <SelectField
               value={draft.brand}
               onChange={(brand) => patch({ brand, model: "" })}
               options={CAR_BRAND_OPTIONS}
-              placeholder="Выберите марку"
-              anyLabel="Не выбрана"
+              placeholder="Ընտրեք մակնիշը"
+              anyLabel="Ընտրված չէ"
             />
           </Field>
-          <Field label="Модель" required>
+          <Field label="Մոդել" required>
             <SelectField
               value={draft.model}
               onChange={(model) => patch({ model })}
               options={models}
-              placeholder={draft.brand ? "Выберите модель" : "Сначала марка"}
-              anyLabel="Не выбрана"
+              placeholder={draft.brand ? "Ընտրեք մոդելը" : "Նախ ընտրեք մակնիշը"}
+              anyLabel="Ընտրված չէ"
               disabled={!draft.brand}
             />
           </Field>
-          <Field label="Год выпуска" required>
+          <Field label="Թողարկման տարի" required>
             <Input
               value={draft.year}
               inputMode="numeric"
               onChange={(event) => patch({ year: digits(event.target.value) })}
-              placeholder="Например, 2021"
+              placeholder="Օրինակ՝ 2021"
             />
           </Field>
-          <Field label="Пробег, км">
+          <Field label="Վազք, կմ">
             <Input
               value={draft.mileage}
               inputMode="numeric"
               onChange={(event) => patch({ mileage: digits(event.target.value) })}
-              placeholder="Например, 72000"
+              placeholder="Օրինակ՝ 72000"
             />
           </Field>
         </div>
 
-        <Field label="Тип кузова">
+        <Field label="Թափքի տեսակ">
           <SelectField
             value={draft.bodyType}
             onChange={(bodyType) => patch({ bodyType: bodyType as ListingDraft["bodyType"] })}
             options={BODY_TYPES}
-            placeholder="Выберите кузов"
-            anyLabel="Не выбран"
+            placeholder="Ընտրեք թափքը"
+            anyLabel="Ընտրված չէ"
           />
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Двигатель">
+          <Field label="Շարժիչ">
             <SelectField
               value={draft.fuel}
               onChange={(fuel) => patch({ fuel: fuel as ListingDraft["fuel"] })}
               options={FUEL_TYPES}
-              placeholder="Тип топлива"
-              anyLabel="Не выбран"
+              placeholder="Վառելիքի տեսակ"
+              anyLabel="Ընտրված չէ"
             />
           </Field>
-          <Field label="Объём, л">
+          <Field label="Ծավալ, լ">
             <Input
               value={draft.engineVolume}
               inputMode="decimal"
@@ -137,7 +137,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
               placeholder="2.5"
             />
           </Field>
-          <Field label="Мощность, л.с.">
+          <Field label="Հզորություն, ձ.ու.">
             <Input
               value={draft.power}
               inputMode="numeric"
@@ -148,18 +148,18 @@ export function StepSpecs({ draft, patch }: StepProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Коробка передач">
+          <Field label="Փոխանցումատուփ">
             <SelectField
               value={draft.transmission}
               onChange={(transmission) =>
                 patch({ transmission: transmission as ListingDraft["transmission"] })
               }
               options={TRANSMISSIONS}
-              placeholder="Выберите коробку"
-              anyLabel="Не выбрана"
+              placeholder="Ընտրեք փոխանցումատուփը"
+              anyLabel="Ընտրված չէ"
             />
           </Field>
-          <Field label="Привод">
+          <Field label="Քարշակ">
             <ChipGroup
               options={DRIVE_TYPES}
               values={draft.drive ? [draft.drive] : []}
@@ -169,16 +169,16 @@ export function StepSpecs({ draft, patch }: StepProps) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Цвет">
+          <Field label="Գույն">
             <SelectField
               value={draft.color}
               onChange={(color) => patch({ color })}
               options={CAR_COLORS}
-              placeholder="Выберите цвет"
-              anyLabel="Не выбран"
+              placeholder="Ընտրեք գույնը"
+              anyLabel="Ընտրված չէ"
             />
           </Field>
-          <Field label="Руль">
+          <Field label="Ղեկ">
             <ChipGroup
               options={STEERING_TYPES}
               values={[draft.steering]}
@@ -187,7 +187,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
               }
             />
           </Field>
-          <Field label="Владельцев по ПТС">
+          <Field label="Սեփականատերեր՝ ըստ վկայագրի">
             <Input
               value={draft.owners}
               inputMode="numeric"
@@ -197,7 +197,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
         </div>
 
         <ToggleRow
-          label="Автомобиль не участвовал в ДТП"
+          label="Ավտոմեքենան չի մասնակցել ավարիայի"
           checked={draft.accidentFree}
           onChange={(accidentFree) => patch({ accidentFree })}
         />
@@ -216,12 +216,12 @@ export function StepSpecs({ draft, patch }: StepProps) {
     return (
       <div className="space-y-6">
         <StepHeader
-          title={isHotel ? "Характеристики номера" : "Характеристики жилья"}
-          description="Укажите параметры — они попадут в карточку и в фильтры поиска."
+          title={isHotel ? "Համարի բնութագրերը" : "Բնակատեղիի բնութագրերը"}
+          description="Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։"
         />
 
         {!noRoomCount && (
-          <Field label="Количество комнат">
+          <Field label="Սենյակների քանակը">
             <ChipGroup
               options={ROOMS_OPTIONS}
               values={draft.rooms ? [draft.rooms] : []}
@@ -231,7 +231,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
         )}
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Площадь, м²" required>
+          <Field label="Մակերես, մ²" required>
             <Input
               value={draft.area}
               inputMode="numeric"
@@ -239,7 +239,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
               placeholder="45"
             />
           </Field>
-          <Field label="Этаж">
+          <Field label="Հարկ">
             <Input
               value={draft.floor}
               inputMode="numeric"
@@ -247,7 +247,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
               placeholder="2"
             />
           </Field>
-          <Field label="Этажность дома">
+          <Field label="Շենքի հարկայնությունը">
             <Input
               value={draft.totalFloors}
               inputMode="numeric"
@@ -257,7 +257,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
           </Field>
         </div>
 
-        <Field label="Санузлов">
+        <Field label="Սանհանգույցներ">
           <Input
             value={draft.bathrooms}
             inputMode="numeric"
@@ -265,20 +265,20 @@ export function StepSpecs({ draft, patch }: StepProps) {
           />
         </Field>
 
-        <Field label="Удобства">
+        <Field label="Հարմարություններ">
           <div className="space-y-2.5">
             <ToggleRow
-              label="Мебель"
+              label="Կահույք"
               checked={draft.furniture}
               onChange={(furniture) => patch({ furniture })}
             />
             <ToggleRow
-              label="Балкон"
+              label="Պատշգամբ"
               checked={draft.balcony}
               onChange={(balcony) => patch({ balcony })}
             />
             <ToggleRow
-              label="Парковка"
+              label="Կայանատեղի"
               checked={draft.parking}
               onChange={(parking) => patch({ parking })}
             />
@@ -295,12 +295,12 @@ export function StepSpecs({ draft, patch }: StepProps) {
   return (
     <div className="space-y-6">
       <StepHeader
-        title="Характеристики объекта"
-        description="Укажите параметры — они попадут в карточку и в фильтры поиска."
+        title="Օբյեկտի բնութագրերը"
+        description="Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։"
       />
 
       {!isLand && (
-        <Field label="Количество комнат">
+        <Field label="Սենյակների քանակը">
           <ChipGroup
             options={ROOMS_OPTIONS}
             values={draft.rooms ? [draft.rooms] : []}
@@ -310,7 +310,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label={isLand ? "Площадь участка, м²" : "Общая площадь, м²"} required>
+        <Field label={isLand ? "Հողատարածքի մակերես, մ²" : "Ընդհանուր մակերես, մ²"} required>
           <Input
             value={draft.area}
             inputMode="numeric"
@@ -319,7 +319,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
           />
         </Field>
         {isLand ? (
-          <Field label="Соток">
+          <Field label="Սոտկա">
             <Input
               value={draft.landArea}
               inputMode="numeric"
@@ -329,7 +329,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
           </Field>
         ) : (
           <>
-            <Field label="Этаж">
+            <Field label="Հարկ">
               <Input
                 value={draft.floor}
                 inputMode="numeric"
@@ -337,7 +337,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
                 placeholder="7"
               />
             </Field>
-            <Field label="Этажность дома">
+            <Field label="Շենքի հարկայնությունը">
               <Input
                 value={draft.totalFloors}
                 inputMode="numeric"
@@ -352,14 +352,14 @@ export function StepSpecs({ draft, patch }: StepProps) {
       {!isLand && (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Санузлов">
+            <Field label="Սանհանգույցներ">
               <Input
                 value={draft.bathrooms}
                 inputMode="numeric"
                 onChange={(event) => patch({ bathrooms: digits(event.target.value) })}
               />
             </Field>
-            <Field label="Год постройки">
+            <Field label="Կառուցման տարի">
               <Input
                 value={draft.buildYear}
                 inputMode="numeric"
@@ -367,7 +367,7 @@ export function StepSpecs({ draft, patch }: StepProps) {
                 placeholder="2022"
               />
             </Field>
-            <Field label="Высота потолков, м">
+            <Field label="Առաստաղի բարձրություն, մ">
               <Input
                 value={draft.ceilingHeight}
                 inputMode="decimal"
@@ -378,18 +378,18 @@ export function StepSpecs({ draft, patch }: StepProps) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Состояние">
+            <Field label="Վիճակ">
               <SelectField
                 value={draft.reCondition}
                 onChange={(reCondition) =>
                   patch({ reCondition: reCondition as ListingDraft["reCondition"] })
                 }
                 options={RE_CONDITIONS}
-                placeholder="Выберите состояние"
-                anyLabel="Не выбрано"
+                placeholder="Ընտրեք վիճակը"
+                anyLabel="Ընտրված չէ"
               />
             </Field>
-            <Field label="Тип дома">
+            <Field label="Շենքի տեսակ">
               <ChipGroup
                 options={BUILDING_TYPES}
                 values={[draft.buildingType]}
@@ -400,20 +400,20 @@ export function StepSpecs({ draft, patch }: StepProps) {
             </Field>
           </div>
 
-          <Field label="Дополнительно">
+          <Field label="Լրացուցիչ">
             <div className="space-y-2.5">
               <ToggleRow
-                label="Мебель"
+                label="Կահույք"
                 checked={draft.furniture}
                 onChange={(furniture) => patch({ furniture })}
               />
               <ToggleRow
-                label="Балкон"
+                label="Պատշգամբ"
                 checked={draft.balcony}
                 onChange={(balcony) => patch({ balcony })}
               />
               <ToggleRow
-                label="Парковка"
+                label="Կայանատեղի"
                 checked={draft.parking}
                 onChange={(parking) => patch({ parking })}
               />

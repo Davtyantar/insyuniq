@@ -4,28 +4,35 @@ import { Categories } from "@/components/home/categories";
 import { HitsSection } from "@/components/home/hits-section";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { Button } from "@/components/ui/button";
-import { TOP_CARS, TOP_HOTELS, TOP_REAL_ESTATE, TOP_RENTALS } from "@/mock/listings";
+import {
+  TOP_CARS,
+  TOP_HOTEL_ROOMS,
+  TOP_HOTELS,
+  TOP_REAL_ESTATE,
+  TOP_RENTALS,
+  TOP_VACATION_HOUSES,
+} from "@/mock/listings";
 
 const BENEFITS = [
   {
     icon: BadgeCheck,
-    title: "Проверенные объявления",
-    text: "Модерация документов и адреса до публикации.",
+    title: "Ստուգված հայտարարություններ",
+    text: "Փաստաթղթերի և հասցեի ստուգում մինչև հրապարակումը.",
   },
   {
     icon: Zap,
-    title: "Быстрая подача",
-    text: "Объявление публикуется за пару минут в семь шагов.",
+    title: "Արագ հրապարակում",
+    text: "Հայտարարությունը հրապարակվում է մի քանի րոպեում՝ յոթ քայլով.",
   },
   {
     icon: Phone,
-    title: "Прямой звонок продавцу",
-    text: "Телефон открывается в одно нажатие, без посредников.",
+    title: "Ուղիղ զանգ վաճառողին",
+    text: "Հեռախոսահամարը բացվում է մեկ սեղմումով, առանց միջնորդների.",
   },
   {
     icon: ShieldCheck,
-    title: "Безопасная сделка",
-    text: "Рекомендации и проверка истории по каждой категории.",
+    title: "Անվտանգ գործարք",
+    text: "Խորհուրդներ և պատմության ստուգում յուրաքանչյուր կատեգորիայում.",
   },
 ];
 
@@ -37,31 +44,45 @@ export default function HomePage() {
       <Categories />
 
       <HitsSection
-        title="Хиты недвижимости"
-        subtitle="Самые просматриваемые квартиры, дома и новостройки"
+        title="Անշարժ գույքի հիթեր"
+        subtitle="Ամենադիտված բնակարանները, տները և նորակառույցները"
         href="/real-estate"
         listings={TOP_REAL_ESTATE}
       />
 
       <HitsSection
-        title="Хиты автомобилей"
-        subtitle="Что чаще всего смотрят среди легковых и электромобилей"
+        title="Ավտոմեքենաների հիթեր"
+        subtitle="Ամենադիտված մարդատար և էլեկտրական մեքենաները"
         href="/cars"
         listings={TOP_CARS}
       />
 
       <HitsSection
-        title="Хиты аренды"
-        subtitle="Квартиры, дома, гаражи и коммерческая недвижимость в аренду"
+        title="Վարձակալության հիթեր"
+        subtitle="Բնակարաններ, տներ, ավտոտնակներ և կոմերցիոն գույք վարձով"
         href="/rentals"
         listings={TOP_RENTALS}
       />
 
       <HitsSection
-        title="Хиты отелей и отдыха"
-        subtitle="Отели, гостевые дома и жильё для отдыха посуточно и на срок"
+        title="Հյուրանոցների և հանգստի հիթեր"
+        subtitle="Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով"
         href="/hotels"
         listings={TOP_HOTELS}
+      />
+
+      <HitsSection
+        title="Հանգստյան տներ"
+        subtitle="Ամենադիտված հանգստյան տները՝ ընտանեկան և խմբակային հանգստի համար"
+        href="/hotels?subcategory=houses"
+        listings={TOP_VACATION_HOUSES}
+      />
+
+      <HitsSection
+        title="Հյուրանոցներ"
+        subtitle="Ամենադիտված հյուրանոցները Սյունիքի քաղաքներում"
+        href="/hotels?subcategory=hotels"
+        listings={TOP_HOTEL_ROOMS}
       />
 
       <section className="border-y border-border bg-card">
@@ -86,15 +107,15 @@ export default function HomePage() {
         <div className="flex flex-col items-start gap-6 rounded-xl border border-border bg-primary px-6 py-10 text-primary-foreground md:flex-row md:items-center md:justify-between md:px-10">
           <div>
             <h2 className="text-xl font-semibold tracking-tight md:text-2xl">
-              Продаёте квартиру или автомобиль?
+              Վաճառում եք բնակարան կամ ավտոմեքենա?
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-primary-foreground/70">
-              Разместите объявление бесплатно: добавьте фотографии, характеристики и получите первые
-              отклики уже сегодня.
+              Տեղադրեք հայտարարությունը անվճար՝ ավելացրեք լուսանկարներ, բնութագրեր և ստացեք
+              առաջին արձագանքները դեռ այսօր.
             </p>
           </div>
           <Button asChild size="lg" variant="accent" className="shrink-0">
-            <Link href="/create">Подать объявление</Link>
+            <Link href="/create">Հրապարակել հայտարարություն</Link>
           </Button>
         </div>
       </section>

@@ -4,8 +4,8 @@ import { CategoryPage } from "@/components/category/category-page";
 import { CategoryPageSkeleton } from "@/components/category/category-page-skeleton";
 
 export const metadata: Metadata = {
-  title: "Автомобили",
-  description: "Легковые, внедорожники, электромобили, грузовые и мото."
+  title: "Ավտոմեքենաներ",
+  description: "Մարդատար մեքենաներ, ամենագնացներ, էլեկտրական մեքենաներ, բեռնատարներ և մոտոտեխնիկա։"
 };
 
 export default function CarsPage() {

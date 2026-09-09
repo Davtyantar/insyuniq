@@ -49,8 +49,8 @@ export function StepPhotos({ draft, patch }: StepProps) {
   return (
     <div>
       <StepHeader
-        title="Фотографии"
-        description="Первое фото станет обложкой. Объявления с 5+ фото получают втрое больше откликов."
+        title="Լուսանկարներ"
+        description="Առաջին լուսանկարը կդառնա շապիկ։ 5+ լուսանկար ունեցող հայտարարությունները ստանում են եռակի ավելի արձագանք։"
       />
 
       <div
@@ -72,9 +72,9 @@ export function StepPhotos({ draft, patch }: StepProps) {
         <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-muted-foreground">
           <UploadCloud className="h-6 w-6" />
         </span>
-        <p className="text-[15px] font-medium">Перетащите фотографии сюда</p>
+        <p className="text-[15px] font-medium">Քաշեք լուսանկարները այստեղ</p>
         <p className="mt-1 text-[13px] text-muted-foreground">
-          JPG или PNG, до {MAX_PHOTOS} фотографий
+          JPG կամ PNG, մինչև {MAX_PHOTOS} լուսանկար
         </p>
         <Button
           type="button"
@@ -83,7 +83,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
           onClick={() => inputRef.current?.click()}
         >
           <ImagePlus className="h-4 w-4" />
-          Выбрать файлы
+          Ընտրել ֆայլեր
         </Button>
         <input
           ref={inputRef}
@@ -101,7 +101,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
       {draft.photos.length > 0 && (
         <>
           <p className="mt-5 text-[13px] text-muted-foreground">
-            {draft.photos.length} из {MAX_PHOTOS} загружено
+            {draft.photos.length}/{MAX_PHOTOS} վերբեռնված է
           </p>
           <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {draft.photos.map((photo, index) => (
@@ -114,7 +114,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
                 <img src={photo.url} alt={photo.name} className="h-full w-full object-cover" />
                 {index === 0 && (
                   <span className="absolute left-2 top-2 rounded-md bg-slate-950/70 px-2 py-0.5 text-[11px] font-medium text-white">
-                    Обложка
+                    Շապիկ
                   </span>
                 )}
                 <div className="absolute inset-x-2 bottom-2 flex justify-end gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
@@ -122,7 +122,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
                     <button
                       type="button"
                       onClick={() => makeCover(photo.id)}
-                      aria-label="Сделать обложкой"
+                      aria-label="Դարձնել շապիկ"
                       className="flex h-8 w-8 items-center justify-center rounded-md bg-card/90 backdrop-blur transition-colors hover:bg-card"
                     >
                       <Star className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
                   <button
                     type="button"
                     onClick={() => remove(photo.id)}
-                    aria-label="Удалить фото"
+                    aria-label="Ջնջել լուսանկարը"
                     className="flex h-8 w-8 items-center justify-center rounded-md bg-card/90 text-destructive backdrop-blur transition-colors hover:bg-card"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -145,8 +145,8 @@ export function StepPhotos({ draft, patch }: StepProps) {
 
       {draft.photos.length === 0 && (
         <p className="mt-4 text-[13px] text-muted-foreground">
-          Можно продолжить без фотографий — мы подставим временную обложку, но объявление будет
-          показываться реже.
+          Կարող եք շարունակել առանց լուսանկարների — մենք կդնենք ժամանակավոր շապիկ, բայց
+          հայտարարությունն ավելի հազվադեպ կցուցադրվի։
         </p>
       )}
     </div>

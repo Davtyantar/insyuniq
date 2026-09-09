@@ -4,8 +4,8 @@ import { CategoryPage } from "@/components/category/category-page";
 import { CategoryPageSkeleton } from "@/components/category/category-page-skeleton";
 
 export const metadata: Metadata = {
-  title: "Аренда",
-  description: "Квартиры, дома, коммерческая недвижимость и гаражи в аренду.",
+  title: "Վարձակալություն",
+  description: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով։",
 };
 
 export default function RentalsPage() {

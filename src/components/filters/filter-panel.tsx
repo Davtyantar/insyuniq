@@ -83,7 +83,7 @@ export function FilterPanel({
     <div className={cn("flex h-full flex-col", className)}>
       {!isDrawer && (
         <div className="flex items-center justify-between pb-4">
-          <h2 className="text-base font-semibold tracking-tight">Фильтры</h2>
+          <h2 className="text-base font-semibold tracking-tight">Ֆիլտրեր</h2>
           {activeCount > 0 && (
             <button
               type="button"
@@ -91,7 +91,7 @@ export function FilterPanel({
               className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              Сбросить
+              Զրոյացնել
             </button>
           )}
         </div>
@@ -114,10 +114,10 @@ export function FilterPanel({
         )}
       >
         <Button variant="accent" className="flex-1" onClick={onApply}>
-          Показать {resultCount}
+          Ցույց տալ {resultCount}
         </Button>
         <Button variant="outline" onClick={onReset} className="shrink-0">
-          Сбросить
+          Զրոյացնել
         </Button>
       </div>
     </div>

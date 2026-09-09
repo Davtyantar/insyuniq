@@ -18,17 +18,17 @@ interface Props {
 export function RentalFilterFields({ filters, onChange }: Props) {
   return (
     <>
-      <FilterSection title="Тип жилья">
+      <FilterSection title="Բնակարանի տեսակ">
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
           options={RENTAL_SUBCATEGORIES}
-          placeholder="Любой тип"
-          anyLabel="Любой тип"
+          placeholder="Ցանկացած տեսակ"
+          anyLabel="Ցանկացած տեսակ"
         />
       </FilterSection>
 
-      <FilterSection title="Срок аренды">
+      <FilterSection title="Վարձակալության ժամկետ">
         <ChipGroup
           options={RENTAL_TERMS}
           values={filters.term ? [filters.term] : []}
@@ -36,17 +36,17 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Расположение">
+      <FilterSection title="Տեղադրություն">
         <SelectField
           value={filters.city}
           onChange={(city) => onChange({ city })}
           options={CITIES}
-          placeholder="Весь Сюник"
-          anyLabel="Весь Сюник"
+          placeholder="Ողջ Սյունիք"
+          anyLabel="Ողջ Սյունիք"
         />
       </FilterSection>
 
-      <FilterSection title="Цена, $">
+      <FilterSection title="Գին, $">
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -55,7 +55,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Комнаты">
+      <FilterSection title="Սենյակներ">
         <ChipGroup
           options={ROOMS_OPTIONS}
           values={filters.rooms}
@@ -64,7 +64,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Площадь, м²" defaultOpen={false}>
+      <FilterSection title="Մակերես, մ²" defaultOpen={false}>
         <RangeFields
           from={filters.areaMin}
           to={filters.areaMax}
@@ -73,15 +73,15 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Объявления">
+      <FilterSection title="Հայտարարություններ">
         <ToggleRow
-          label="Только с фото"
+          label="Միայն նկարով"
           checked={filters.withPhoto}
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Только проверенные объявления"
-          hint="Документы и адрес подтверждены модератором"
+          label="Միայն ստուգված հայտարարություններ"
+          hint="Փաստաթղթերն ու հասցեն հաստատված են մոդերատորի կողմից"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

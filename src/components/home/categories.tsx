@@ -16,7 +16,7 @@ export function Categories() {
   return (
     <section className="container space-y-5 pt-6 md:pt-8">
       <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl">
-        Популярные категории
+        Հանրաճանաչ կատեգորիաներ
       </h2>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -25,10 +25,10 @@ export function Categories() {
           return (
             <div
               key={category.slug}
-              className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-6"
+              className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-black/5 dark:ring-white/10 sm:p-6"
             >
               <div className="flex items-center justify-between gap-3">
-                <h3 className="flex items-center gap-2 text-[18px] font-bold text-slate-900">
+                <h3 className="flex items-center gap-2 text-[18px] font-bold text-foreground">
                   <GroupIcon className="h-5 w-5 text-accent" />
                   {category.label}
                 </h3>
@@ -36,7 +36,7 @@ export function Categories() {
                   href={category.href}
                   className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-brand-700"
                 >
-                  Все объявления
+                  Բոլոր հայտարարությունները
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -46,7 +46,7 @@ export function Categories() {
                   <Link
                     key={sub.value}
                     href={`${category.href}?subcategory=${sub.value}`}
-                    className="flex items-center gap-2 rounded-xl bg-[#F5F5F7] px-3 py-2.5 text-[13px] font-medium leading-snug text-slate-700 transition-colors hover:bg-slate-200"
+                    className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5 text-[13px] font-medium leading-snug text-secondary-foreground/80 transition-colors hover:bg-secondary/70"
                   >
                     {sub.icon && <sub.icon className="h-4 w-4 shrink-0 text-accent" />}
                     <span className="truncate">{sub.label}</span>

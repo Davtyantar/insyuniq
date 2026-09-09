@@ -134,7 +134,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
     <div className="container py-5 lg:py-8">
       <nav className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
         <Link href="/" className="transition-colors hover:text-foreground">
-          Главная
+          Գլխավոր
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <span className="text-foreground">{config.label}</span>
@@ -167,7 +167,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
               : "border-input bg-card hover:bg-secondary",
           )}
         >
-          Все
+          Բոլորը
         </button>
         {config.subcategories.map((item) => (
           <button
@@ -215,10 +215,10 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
 
           {results.length === 0 && !isPending ? (
             <EmptyState
-              title="Ничего не найдено"
-              description="Попробуйте изменить фильтры или расширить диапазон цены — подходящих объявлений в этой выборке нет."
-              action={{ label: "Сбросить фильтры", onClick: resetFilters }}
-              secondaryAction={{ label: "Подать объявление", href: "/create" }}
+              title="Ոչինչ չի գտնվել"
+              description="Փորձեք փոխել ֆիլտրերը կամ ընդլայնել գնի միջակայքը — այս ընտրանքում համապատասխան հայտարարություններ չկան։"
+              action={{ label: "Զրոյացնել ֆիլտրերը", onClick: resetFilters }}
+              secondaryAction={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
             />
           ) : (
             <ListingGrid

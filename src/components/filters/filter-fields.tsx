@@ -53,8 +53,8 @@ export function RangeFields({
   to,
   onFrom,
   onTo,
-  fromPlaceholder = "от",
-  toPlaceholder = "до",
+  fromPlaceholder = "սկսած",
+  toPlaceholder = "մինչև",
   suffix,
 }: {
   from: string;
@@ -106,7 +106,7 @@ export function SelectField({
   onChange,
   options,
   placeholder,
-  anyLabel = "Любой",
+  anyLabel = "Ցանկացած",
   disabled,
 }: {
   value: string;

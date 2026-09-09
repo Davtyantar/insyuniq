@@ -14,7 +14,7 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: PageProps): Metadata {
   const listing = getRental(params.id);
-  if (!listing) return { title: "Объявление не найдено" };
+  if (!listing) return { title: "Հայտարարությունը չի գտնվել" };
   return { title: listing.title, description: listing.description.slice(0, 160) };
 }
 

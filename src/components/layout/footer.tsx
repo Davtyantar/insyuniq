@@ -5,14 +5,14 @@ import { CATEGORIES } from "@/lib/categories";
 
 const COLUMNS = [
   {
-    title: "Недвижимость",
+    title: "Անշարժ գույք",
     links: CATEGORIES["real-estate"].subcategories.map((s) => ({
       label: s.label,
       href: `/real-estate?subcategory=${s.value}`,
     })),
   },
   {
-    title: "Автомобили",
+    title: "Ավտոմեքենաներ",
     links: CATEGORIES.cars.subcategories.map((s) => ({
       label: s.label,
       href: `/cars?subcategory=${s.value}`,
@@ -33,11 +33,11 @@ const COLUMNS = [
     })),
   },
   {
-    title: "Сервис",
+    title: "Ծառայություններ",
     links: [
-      { label: "Подать объявление", href: "/create" },
-      { label: "Избранное", href: "/favorites" },
-      { label: "Профиль", href: "/profile" },
+      { label: "Հրապարակել հայտարարություն", href: "/create" },
+      { label: "Հավանածներ", href: "/favorites" },
+      { label: "Պրոֆիլ", href: "/profile" },
     ],
   },
 ];
@@ -49,8 +49,9 @@ export function Footer() {
         <div className="space-y-3">
           <Logo />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Площадка объявлений Сюникской области: недвижимость, автомобили и аренда жилья от
-            Капана и Гориса до Мегри. Проверенные продавцы и честные характеристики.
+            Սյունիքի մարզի հայտարարությունների հարթակ. անշարժ գույք, ավտոմեքենաներ և բնակարանների
+            վարձակալություն Կապանից ու Գորիսից մինչև Մեղրի. ստուգված վաճառողներ և ճշգրիտ
+            բնութագրեր։
           </p>
         </div>
         {COLUMNS.map((column) => (
@@ -74,9 +75,9 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container flex flex-col gap-2 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>
-            © {new Date().getFullYear()} {APP_NAME}. Демонстрационный проект, данные вымышленные.
+            © {new Date().getFullYear()} {APP_NAME}. Ցուցադրական նախագիծ, տվյալները գեղարվեստական են։
           </span>
-          <span>Капан, Сюникская область</span>
+          <span>Կապան, Սյունիքի մարզ</span>
         </div>
       </div>
     </footer>

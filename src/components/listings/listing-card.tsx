@@ -23,14 +23,14 @@ interface ListingCardProps {
 function accentBadges(listing: Listing): string[] {
   const badges: string[] = [];
   if (listing.category === "real-estate") {
-    if (listing.buildingType === "new") badges.push("Новостройка");
-    if (listing.deal === "rent") badges.push("Аренда");
+    if (listing.buildingType === "new") badges.push("Նորակառույց");
+    if (listing.deal === "rent") badges.push("Վարձակալություն");
   } else if (listing.category === "rentals" || listing.category === "hotels") {
-    badges.push(listing.term === "daily" ? "Посуточно" : "Длительный срок");
+    badges.push(listing.term === "daily" ? "Օրավարձով" : "Երկարաժամկետ");
   } else {
-    if (listing.fuel === "electric") badges.push("Электро");
-    if (listing.condition === "new") badges.push("Новый");
-    else if (listing.accidentFree) badges.push("Без ДТП");
+    if (listing.fuel === "electric") badges.push("Էլեկտրական");
+    if (listing.condition === "new") badges.push("Նոր");
+    else if (listing.accidentFree) badges.push("Առանց ավարիայի");
   }
   return badges;
 }
@@ -99,7 +99,7 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
           {listing.verified && (
             <Badge variant="outline" className="gap-1 text-brand-700">
               <BadgeCheck className="h-3.5 w-3.5" />
-              Проверено
+              Ստուգված
             </Badge>
           )}
           {badges.map((badge) => (
@@ -113,8 +113,9 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
 
         {zoneCount > 1 ? (
           <>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-t from-black/35 to-transparent" />
-            <div className="absolute inset-x-3 bottom-3 z-20 flex gap-1.5">
+            {/* Hover-scrub dots only make sense with a mouse; phones just get the count badge below. */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 hidden h-14 bg-gradient-to-t from-black/35 to-transparent sm:block" />
+            <div className="absolute inset-x-3 bottom-3 z-20 hidden gap-1.5 sm:flex">
               {Array.from({ length: zoneCount }, (_, i) => (
                 <span
                   key={i}
@@ -125,6 +126,10 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
                 />
               ))}
             </div>
+            <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-slate-950/65 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur sm:hidden">
+              <ImageIcon className="h-3 w-3" />
+              {listing.images.length}
+            </span>
           </>
         ) : (
           <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-slate-950/65 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">

@@ -34,41 +34,41 @@ export function CarFilterFields({ filters, onChange }: Props) {
 
   return (
     <>
-      <FilterSection title="Тип транспорта">
+      <FilterSection title="Տրանսպորտի տեսակ">
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
           options={CAR_SUBCATEGORIES}
-          placeholder="Любой тип"
-          anyLabel="Любой тип"
+          placeholder="Ցանկացած տեսակ"
+          anyLabel="Ցանկացած տեսակ"
         />
       </FilterSection>
 
-      <FilterSection title="Марка и модель">
+      <FilterSection title="Մակնիշ և մոդել">
         <div>
-          <FieldLabel>Марка</FieldLabel>
+          <FieldLabel>Մակնիշ</FieldLabel>
           <SelectField
             value={filters.brand}
             onChange={(brand) => onChange({ brand, model: "" })}
             options={CAR_BRAND_OPTIONS}
-            placeholder="Любая марка"
-            anyLabel="Любая марка"
+            placeholder="Ցանկացած մակնիշ"
+            anyLabel="Ցանկացած մակնիշ"
           />
         </div>
         <div>
-          <FieldLabel>Модель</FieldLabel>
+          <FieldLabel>Մոդել</FieldLabel>
           <SelectField
             value={filters.model}
             onChange={(model) => onChange({ model })}
             options={models}
-            placeholder={filters.brand ? "Любая модель" : "Сначала выберите марку"}
-            anyLabel="Любая модель"
+            placeholder={filters.brand ? "Ցանկացած մոդել" : "Նախ ընտրեք մակնիշը"}
+            anyLabel="Ցանկացած մոդել"
             disabled={!filters.brand}
           />
         </div>
       </FilterSection>
 
-      <FilterSection title="Год выпуска">
+      <FilterSection title="Թողարկման տարի">
         <RangeFields
           from={filters.yearMin}
           to={filters.yearMax}
@@ -77,7 +77,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Цена, $">
+      <FilterSection title="Գին, $">
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -86,7 +86,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Пробег, км">
+      <FilterSection title="Վազք, կմ">
         <RangeFields
           from={filters.mileageMin}
           to={filters.mileageMax}
@@ -95,7 +95,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Тип кузова" defaultOpen={false}>
+      <FilterSection title="Թափքի տեսակ" defaultOpen={false}>
         <CheckboxList
           options={BODY_TYPES}
           values={filters.bodyType}
@@ -104,7 +104,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Двигатель">
+      <FilterSection title="Շարժիչ">
         <CheckboxList
           options={FUEL_TYPES}
           values={filters.fuel}
@@ -112,7 +112,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
           columns={2}
         />
         <div>
-          <FieldLabel>Объём, л</FieldLabel>
+          <FieldLabel>Ծավալ, լ</FieldLabel>
           <RangeFields
             from={filters.engineMin}
             to={filters.engineMax}
@@ -122,7 +122,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         </div>
       </FilterSection>
 
-      <FilterSection title="Коробка передач" defaultOpen={false}>
+      <FilterSection title="Փոխանցումատուփ" defaultOpen={false}>
         <CheckboxList
           options={TRANSMISSIONS}
           values={filters.transmission}
@@ -131,7 +131,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Привод" defaultOpen={false}>
+      <FilterSection title="Քարշակ" defaultOpen={false}>
         <ChipGroup
           options={DRIVE_TYPES}
           values={filters.drive}
@@ -140,17 +140,17 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Цвет" defaultOpen={false}>
+      <FilterSection title="Գույն" defaultOpen={false}>
         <SelectField
           value={filters.color}
           onChange={(color) => onChange({ color })}
           options={CAR_COLORS}
-          placeholder="Любой цвет"
-          anyLabel="Любой цвет"
+          placeholder="Ցանկացած գույն"
+          anyLabel="Ցանկացած գույն"
         />
       </FilterSection>
 
-      <FilterSection title="Состояние и владельцы" defaultOpen={false}>
+      <FilterSection title="Վիճակ և սեփականատերեր" defaultOpen={false}>
         <ChipGroup
           options={CAR_CONDITIONS}
           values={filters.condition ? [filters.condition] : []}
@@ -159,7 +159,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
           }
         />
         <div>
-          <FieldLabel>Руль</FieldLabel>
+          <FieldLabel>Ղեկ</FieldLabel>
           <ChipGroup
             options={STEERING_TYPES}
             values={filters.steering ? [filters.steering] : []}
@@ -169,42 +169,42 @@ export function CarFilterFields({ filters, onChange }: Props) {
           />
         </div>
         <div>
-          <FieldLabel>Владельцев не более</FieldLabel>
+          <FieldLabel>Առավելագույնը սեփականատերեր</FieldLabel>
           <RangeFields
             from={filters.ownersMax}
             to=""
             onFrom={(ownersMax) => onChange({ ownersMax })}
             onTo={() => undefined}
-            fromPlaceholder="например, 2"
+            fromPlaceholder="օրինակ՝ 2"
             toPlaceholder="—"
           />
         </div>
       </FilterSection>
 
-      <FilterSection title="Расположение" defaultOpen={false}>
+      <FilterSection title="Տեղադրություն" defaultOpen={false}>
         <SelectField
           value={filters.city}
           onChange={(city) => onChange({ city })}
           options={CITIES}
-          placeholder="Весь Сюник"
-          anyLabel="Весь Сюник"
+          placeholder="Ողջ Սյունիք"
+          anyLabel="Ողջ Սյունիք"
         />
       </FilterSection>
 
-      <FilterSection title="Объявления">
+      <FilterSection title="Հայտարարություններ">
         <ToggleRow
-          label="Только с фото"
+          label="Միայն նկարով"
           checked={filters.withPhoto}
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Только проверенные объявления"
-          hint="Продавец и документы подтверждены"
+          label="Միայն ստուգված հայտարարություններ"
+          hint="Վաճառողն ու փաստաթղթերը հաստատված են"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />
         <ToggleRow
-          label="Без ДТП"
+          label="Առանց ավարիայի"
           checked={filters.accidentFree}
           onChange={(accidentFree) => onChange({ accidentFree })}
         />

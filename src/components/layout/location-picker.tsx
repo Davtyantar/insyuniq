@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CITIES } from "@/mock/taxonomy";
 
-const PLACEHOLDER = "Выбрать город";
+const PLACEHOLDER = "Ընտրել քաղաքը";
 
 /** City picker next to the header search — persists the choice to localStorage. */
 export function LocationPicker() {

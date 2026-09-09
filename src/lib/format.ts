@@ -6,10 +6,10 @@ const usd = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
-const num = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const num = new Intl.NumberFormat("hy-AM", { maximumFractionDigits: 0 });
 
 export function formatPrice(value: number, opts?: { perMonth?: boolean; perDay?: boolean }) {
-  const suffix = opts?.perDay ? "/сутки" : opts?.perMonth ? "/мес" : "";
+  const suffix = opts?.perDay ? "/օր" : opts?.perMonth ? "/ամիս" : "";
   return usd.format(value) + suffix;
 }
 
@@ -18,33 +18,33 @@ export function formatNumber(value: number) {
 }
 
 export function formatMileage(km: number) {
-  return `${num.format(km)} км`;
+  return `${num.format(km)} կմ`;
 }
 
 export function formatArea(m2: number) {
-  return `${num.format(m2)} м²`;
+  return `${num.format(m2)} մ²`;
 }
 
 export function formatEngine(liters: number) {
-  return `${liters.toFixed(1)} л`;
+  return `${liters.toFixed(1)} լ`;
 }
 
-/** "2 часа назад", "вчера", "12 марта" — deterministic against a fixed "now". */
+/** "2 ժամ առաջ", "երեկ", "12 մարտի" — deterministic against a fixed "now". */
 export function formatRelativeDate(iso: string, now: number = MOCK_NOW) {
   const date = new Date(iso);
   const diffMin = Math.round((now - date.getTime()) / 60000);
-  if (diffMin < 1) return "только что";
-  if (diffMin < 60) return `${diffMin} мин назад`;
+  if (diffMin < 1) return "հենց նոր";
+  if (diffMin < 60) return `${diffMin} րոպե առաջ`;
   const diffHours = Math.round(diffMin / 60);
-  if (diffHours < 24) return `${diffHours} ${plural(diffHours, "час", "часа", "часов")} назад`;
+  if (diffHours < 24) return `${diffHours} ${plural(diffHours, "ժամ", "ժամ")} առաջ`;
   const diffDays = Math.round(diffHours / 24);
-  if (diffDays === 1) return "вчера";
-  if (diffDays < 7) return `${diffDays} ${plural(diffDays, "день", "дня", "дней")} назад`;
-  return new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(date);
+  if (diffDays === 1) return "երեկ";
+  if (diffDays < 7) return `${diffDays} ${plural(diffDays, "օր", "օր")} առաջ`;
+  return new Intl.DateTimeFormat("hy-AM", { day: "numeric", month: "long" }).format(date);
 }
 
 export function formatFullDate(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
+  return new Intl.DateTimeFormat("hy-AM", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -52,48 +52,45 @@ export function formatFullDate(iso: string) {
 }
 
 export function formatMonthYear(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", { month: "long", year: "numeric" }).format(
+  return new Intl.DateTimeFormat("hy-AM", { month: "long", year: "numeric" }).format(
     new Date(iso),
   );
 }
 
 export function formatTime(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit" }).format(
+  return new Intl.DateTimeFormat("hy-AM", { hour: "2-digit", minute: "2-digit" }).format(
     new Date(iso),
   );
 }
 
-export function plural(n: number, one: string, few: string, many: string) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return one;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
-  return many;
+/** Armenian doesn't inflect the count word by size like Russian does — just singular vs. plural. */
+export function plural(n: number, one: string, many: string) {
+  return n === 1 ? one : many;
 }
 
 export function roomsLabel(rooms: number) {
-  if (rooms === 0) return "Студия";
-  return `${rooms}-комнатная`;
+  if (rooms === 0) return "Ստուդիո";
+  return `${rooms}-սենյականոց`;
 }
 
 export function maskPhone(phone: string) {
   return phone.slice(0, phone.length - 6) + "•• ••";
 }
 
-const CITY_PREPOSITIONAL: Record<string, string> = {
-  "Капан": "Капане",
-  "Горис": "Горисе",
-  "Сисиан": "Сисиане",
-  "Каджаран": "Каджаране",
-  "Мегри": "Мегри",
-  "Агарак": "Агараке",
-  "Дастакерт": "Дастакерте",
-  "Татев": "Татеве",
-  "Хндзореск": "Хндзореске",
-  "Шинуайр": "Шинуайре",
+const CITY_LOCATIVE: Record<string, string> = {
+  "Կապան": "Կապանում",
+  "Գորիս": "Գորիսում",
+  "Սիսիան": "Սիսիանում",
+  "Քաջարան": "Քաջարանում",
+  "Մեղրի": "Մեղրիում",
+  "Ագարակ": "Ագարակում",
+  "Դաստակերտ": "Դաստակերտում",
+  "Տաթև": "Տաթևում",
+  "Խնձորեսկ": "Խնձորեսկում",
+  "Շինուհայր": "Շինուհայրում",
 };
 
-/** "Капан" -> "Капане", for phrases like "квартиры в Капане". */
+/** "Կապան" -> "Կապանում", for phrases like "բնակարաններ Կապանում". */
 export function cityInPrepositional(city: string): string {
-  return CITY_PREPOSITIONAL[city] ?? city;
+  return CITY_LOCATIVE[city] ?? city;
 }

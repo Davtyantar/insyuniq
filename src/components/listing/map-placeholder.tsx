@@ -17,7 +17,7 @@ export function MapPlaceholder({ address, coords }: MapPlaceholderProps) {
           backgroundSize: "48px 48px",
         }}
         role="img"
-        aria-label={`Карта: ${address}`}
+        aria-label={`Քարտեզ․ ${address}`}
       >
         <div className="flex flex-col items-center gap-2 rounded-lg bg-card/90 px-5 py-4 text-center shadow-card backdrop-blur">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
@@ -30,10 +30,10 @@ export function MapPlaceholder({ address, coords }: MapPlaceholderProps) {
         </div>
       </div>
       <div className="flex items-center justify-between gap-3 border-t border-border bg-card px-4 py-3 text-[13px]">
-        <span className="text-muted-foreground">Точное местоположение показывает продавец</span>
+        <span className="text-muted-foreground">Ճշգրիտ գտնվելու վայրը ցույց է տալիս վաճառողը</span>
         <span className="inline-flex items-center gap-1.5 font-medium text-accent">
           <Navigation className="h-3.5 w-3.5" />
-          Построить маршрут
+          Կառուցել երթուղին
         </span>
       </div>
     </div>

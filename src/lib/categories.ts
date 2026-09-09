@@ -15,7 +15,7 @@ import type { CategorySlug, Listing } from "./types";
 export interface CategoryConfig {
   slug: CategorySlug;
   label: string;
-  /** Used in sentences: "Найдено 12 объявлений в недвижимости". */
+  /** Used in sentences like "Գտնվել է 12 հայտարարություն անշարժ գույքի կատեգորիայում". */
   labelPrepositional: string;
   href: string;
   icon: LucideIcon;
@@ -30,51 +30,51 @@ export interface CategoryConfig {
 export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
   "real-estate": {
     slug: "real-estate",
-    label: "Недвижимость",
-    labelPrepositional: "недвижимости",
+    label: "Անշարժ գույք",
+    labelPrepositional: "անշարժ գույքի",
     href: "/real-estate",
     icon: Building2,
-    searchPlaceholder: "Квартира, дом, район…",
+    searchPlaceholder: "Բնակարան, տուն, թաղամաս…",
     subcategories: REAL_ESTATE_SUBCATEGORIES,
     listings: REAL_ESTATE_LISTINGS,
     cover: REAL_ESTATE_LISTINGS[0].images[0],
-    tagline: "Квартиры, дома и участки по всему Сюнику",
+    tagline: "Բնակարաններ, տներ և հողատարածքներ ողջ Սյունիքում",
   },
   cars: {
     slug: "cars",
-    label: "Автомобили",
-    labelPrepositional: "автомобилях",
+    label: "Ավտոմեքենաներ",
+    labelPrepositional: "ավտոմեքենաների",
     href: "/cars",
     icon: Car,
-    searchPlaceholder: "Марка, модель, например BMW X5",
+    searchPlaceholder: "Մակնիշ, մոդել, օրինակ՝ BMW X5",
     subcategories: CAR_SUBCATEGORIES,
     listings: CAR_LISTINGS,
     cover: CAR_LISTINGS[4].images[0],
-    tagline: "Легковые, внедорожники и электромобили в Сюнике",
+    tagline: "Մարդատար, ամենագնաց և էլեկտրական մեքենաներ Սյունիքում",
   },
   rentals: {
     slug: "rentals",
-    label: "Аренда",
-    labelPrepositional: "аренде",
+    label: "Վարձակալություն",
+    labelPrepositional: "վարձակալության",
     href: "/rentals",
     icon: KeyRound,
-    searchPlaceholder: "Квартира, дом, гараж в аренду…",
+    searchPlaceholder: "Բնակարան, տուն, ավտոտնակ վարձով…",
     subcategories: RENTAL_SUBCATEGORIES,
     listings: RENTAL_LISTINGS,
     cover: RENTAL_LISTINGS[0].images[0],
-    tagline: "Квартиры, дома, коммерческая недвижимость и гаражи в аренду",
+    tagline: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով",
   },
   hotels: {
     slug: "hotels",
-    label: "Отели и отдых",
-    labelPrepositional: "отелях и отдыхе",
+    label: "Հյուրանոցներ և հանգիստ",
+    labelPrepositional: "հյուրանոցների և հանգստի",
     href: "/hotels",
     icon: BedDouble,
-    searchPlaceholder: "Отель, гостевой дом, квартира на сутки…",
+    searchPlaceholder: "Հյուրանոց, հյուրատուն, օրավարձ բնակարան…",
     subcategories: HOTEL_SUBCATEGORIES,
     listings: HOTEL_LISTINGS,
     cover: HOTEL_LISTINGS[0].images[0],
-    tagline: "Отели, гостевые дома и жильё для отдыха посуточно и на срок",
+    tagline: "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով",
   },
 };
 

@@ -37,75 +37,75 @@ export interface Option<T extends string = string> {
 
 /** Towns and larger villages of the Syunik region, north to south. */
 export const CITIES: Option[] = [
-  { value: "Капан", label: "Капан" },
-  { value: "Горис", label: "Горис" },
-  { value: "Сисиан", label: "Сисиан" },
-  { value: "Каджаран", label: "Каджаран" },
-  { value: "Мегри", label: "Мегри" },
-  { value: "Агарак", label: "Агарак" },
-  { value: "Дастакерт", label: "Дастакерт" },
-  { value: "Татев", label: "Татев" },
-  { value: "Хндзореск", label: "Хндзореск" },
-  { value: "Шинуайр", label: "Шинуайр" }
+  { value: "Կապան", label: "Կապան" },
+  { value: "Գորիս", label: "Գորիս" },
+  { value: "Սիսիան", label: "Սիսիան" },
+  { value: "Քաջարան", label: "Քաջարան" },
+  { value: "Մեղրի", label: "Մեղրի" },
+  { value: "Ագարակ", label: "Ագարակ" },
+  { value: "Դաստակերտ", label: "Դաստակերտ" },
+  { value: "Տաթև", label: "Տաթև" },
+  { value: "Խնձորեսկ", label: "Խնձորեսկ" },
+  { value: "Շինուհայր", label: "Շինուհայր" }
 ];
 
 export const DISTRICTS: Record<string, string[]> = {
-  Капан: ["Центр", "Вачаган", "Ачанан", "Шахумян", "Дзорк", "Каварт", "Ахбюр"],
-  Горис: ["Центр", "Верин Горис", "Ахбюр", "Давид Бек", "Сюник"],
-  Сисиан: ["Центр", "Аревик", "Норашен", "Сисакан"],
-  Каджаран: ["Центр", "Норашен", "Лернаин"],
-  Мегри: ["Центр", "Пркашен", "Мец Тагх"],
-  Агарак: ["Центр", "Заводской"],
-  Дастакерт: ["Центр"],
-  Татев: ["Центр", "Ущелье Воротана"],
-  Хндзореск: ["Центр", "Старый Хндзореск"],
-  Шинуайр: ["Центр"]
+  Կապան: ["Կենտրոն", "Վաչագան", "Աճանան", "Շահումյան", "Ձորք", "Կավարտ", "Աղբյուր"],
+  Գորիս: ["Կենտրոն", "Վերին Գորիս", "Աղբյուր", "Դավիթ Բեկ", "Սյունիք"],
+  Սիսիան: ["Կենտրոն", "Արևիկ", "Նորաշեն", "Սիսական"],
+  Քաջարան: ["Կենտրոն", "Նորաշեն", "Լեռնային"],
+  Մեղրի: ["Կենտրոն", "Պրկաշեն", "Մեծ Թաղ"],
+  Ագարակ: ["Կենտրոն", "Գործարանային"],
+  Դաստակերտ: ["Կենտրոն"],
+  Տաթև: ["Կենտրոն", "Որոտանի կիրճ"],
+  Խնձորեսկ: ["Կենտրոն", "Հին Խնձորեսկ"],
+  Շինուհայր: ["Կենտրոն"]
 };
 
 export const REAL_ESTATE_SUBCATEGORIES: Option[] = [
-  { value: "apartments", label: "Квартиры", icon: Building },
-  { value: "houses", label: "Дома", icon: Home },
-  { value: "garages", label: "Гаражи", icon: Warehouse },
-  { value: "new-buildings", label: "Новостройки", icon: Construction },
-  { value: "commercial", label: "Коммерческая недвижимость", icon: Store },
-  { value: "land", label: "Земельные участки", icon: LandPlot }
+  { value: "apartments", label: "Բնակարաններ", icon: Building },
+  { value: "houses", label: "Տներ", icon: Home },
+  { value: "garages", label: "Ավտոտնակներ", icon: Warehouse },
+  { value: "new-buildings", label: "Նորակառույցներ", icon: Construction },
+  { value: "commercial", label: "Կոմերցիոն անշարժ գույք", icon: Store },
+  { value: "land", label: "Հողատարածքներ", icon: LandPlot }
 ];
 
 export const CAR_SUBCATEGORIES: Option[] = [
-  { value: "passenger", label: "Легковые", icon: Car },
-  { value: "suv", label: "Внедорожники", icon: CarFront },
-  { value: "electric", label: "Электромобили", icon: Zap },
-  { value: "trucks", label: "Грузовые", icon: Truck },
-  { value: "moto", label: "Мото", icon: Bike },
-  { value: "parts", label: "Запчасти", icon: Wrench }
+  { value: "passenger", label: "Մարդատար մեքենաներ", icon: Car },
+  { value: "suv", label: "Ամենագնացներ", icon: CarFront },
+  { value: "electric", label: "Էլեկտրական մեքենաներ", icon: Zap },
+  { value: "trucks", label: "Բեռնատարներ", icon: Truck },
+  { value: "moto", label: "Մոտոտեխնիկա", icon: Bike },
+  { value: "parts", label: "Պահեստամասեր", icon: Wrench }
 ];
 
 export const RENTAL_SUBCATEGORIES: Option[] = [
-  { value: "apartments", label: "Аренда квартир", icon: Building },
-  { value: "houses", label: "Аренда домов", icon: Home },
-  { value: "commercial", label: "Коммерческая аренда", icon: Store },
-  { value: "garages", label: "Аренда гаражей", icon: Warehouse }
+  { value: "apartments", label: "Բնակարանների վարձակալություն", icon: Building },
+  { value: "houses", label: "Տների վարձակալություն", icon: Home },
+  { value: "commercial", label: "Կոմերցիոն վարձակալություն", icon: Store },
+  { value: "garages", label: "Ավտոտնակների վարձակալություն", icon: Warehouse }
 ];
 
 export const HOTEL_SUBCATEGORIES: Option[] = [
-  { value: "hotels", label: "Отели", icon: Hotel },
-  { value: "guesthouses", label: "Гостевые дома", icon: DoorOpen },
-  { value: "houses", label: "Дома отдыха", icon: Home },
-  { value: "cottages", label: "Коттеджи", icon: TreePine }
+  { value: "hotels", label: "Հյուրանոցներ", icon: Hotel },
+  { value: "guesthouses", label: "Հյուրատներ", icon: DoorOpen },
+  { value: "houses", label: "Հանգստյան տներ", icon: Home },
+  { value: "cottages", label: "Կոթեջներ", icon: TreePine }
 ];
 
 export const RENTAL_TERMS: Option<RentalTerm>[] = [
-  { value: "daily", label: "Посуточно" },
-  { value: "long", label: "Длительный срок" }
+  { value: "daily", label: "Օրավարձով" },
+  { value: "long", label: "Երկարաժամկետ" }
 ];
 
 export const DEAL_TYPES: Option<DealType>[] = [
-  { value: "sale", label: "Купить" },
-  { value: "rent", label: "Снять" }
+  { value: "sale", label: "Գնել" },
+  { value: "rent", label: "Վարձել" }
 ];
 
 export const ROOMS_OPTIONS: Option[] = [
-  { value: "0", label: "Студия" },
+  { value: "0", label: "Ստուդիո" },
   { value: "1", label: "1" },
   { value: "2", label: "2" },
   { value: "3", label: "3" },
@@ -114,16 +114,16 @@ export const ROOMS_OPTIONS: Option[] = [
 ];
 
 export const RE_CONDITIONS: Option<RealEstateCondition>[] = [
-  { value: "euro", label: "Евроремонт" },
-  { value: "renovated", label: "После ремонта" },
-  { value: "good", label: "Хорошее" },
-  { value: "needs-repair", label: "Требует ремонта" },
-  { value: "shell", label: "Без отделки" }
+  { value: "euro", label: "Եվրովերանորոգում" },
+  { value: "renovated", label: "Վերանորոգված" },
+  { value: "good", label: "Լավ վիճակում" },
+  { value: "needs-repair", label: "Կարիք ունի վերանորոգման" },
+  { value: "shell", label: "Առանց հարդարման" }
 ];
 
 export const BUILDING_TYPES: Option[] = [
-  { value: "new", label: "Новостройка" },
-  { value: "secondary", label: "Вторичка" }
+  { value: "new", label: "Նորակառույց" },
+  { value: "secondary", label: "Երկրորդային ֆոնդ" }
 ];
 
 export const CAR_BRANDS: Record<string, string[]> = {
@@ -154,62 +154,62 @@ export const CAR_BRAND_OPTIONS: Option[] = Object.keys(CAR_BRANDS).map(
 );
 
 export const BODY_TYPES: Option<BodyType>[] = [
-  { value: "sedan", label: "Седан" },
-  { value: "hatchback", label: "Хэтчбек" },
-  { value: "suv", label: "Внедорожник" },
-  { value: "crossover", label: "Кроссовер" },
-  { value: "wagon", label: "Универсал" },
-  { value: "coupe", label: "Купе" },
-  { value: "minivan", label: "Минивэн" },
-  { value: "pickup", label: "Пикап" },
-  { value: "van", label: "Фургон" }
+  { value: "sedan", label: "Սեդան" },
+  { value: "hatchback", label: "Հեչբեկ" },
+  { value: "suv", label: "Ամենագնաց" },
+  { value: "crossover", label: "Կրոսովեր" },
+  { value: "wagon", label: "Ունիվերսալ" },
+  { value: "coupe", label: "Կուպե" },
+  { value: "minivan", label: "Մինիվեն" },
+  { value: "pickup", label: "Պիկապ" },
+  { value: "van", label: "Ֆուրգոն" }
 ];
 
 export const FUEL_TYPES: Option<FuelType>[] = [
-  { value: "petrol", label: "Бензин" },
-  { value: "diesel", label: "Дизель" },
-  { value: "hybrid", label: "Гибрид" },
-  { value: "electric", label: "Электро" },
-  { value: "gas", label: "Газ" }
+  { value: "petrol", label: "Բենզին" },
+  { value: "diesel", label: "Դիզել" },
+  { value: "hybrid", label: "Հիբրիդ" },
+  { value: "electric", label: "Էլեկտրական" },
+  { value: "gas", label: "Գազ" }
 ];
 
 export const TRANSMISSIONS: Option<Transmission>[] = [
-  { value: "automatic", label: "Автомат" },
-  { value: "manual", label: "Механика" },
-  { value: "robot", label: "Робот" },
-  { value: "variator", label: "Вариатор" }
+  { value: "automatic", label: "Ավտոմատ" },
+  { value: "manual", label: "Մեխանիկական" },
+  { value: "robot", label: "Ռոբոտացված" },
+  { value: "variator", label: "Վարիատոր" }
 ];
 
 export const DRIVE_TYPES: Option<DriveType>[] = [
-  { value: "fwd", label: "Передний" },
-  { value: "rwd", label: "Задний" },
-  { value: "awd", label: "Полный" }
+  { value: "fwd", label: "Առաջին" },
+  { value: "rwd", label: "Հետին" },
+  { value: "awd", label: "Լրիվ" }
 ];
 
 export const CAR_COLORS: Option[] = [
-  { value: "Белый", label: "Белый" },
-  { value: "Чёрный", label: "Чёрный" },
-  { value: "Серый", label: "Серый" },
-  { value: "Серебристый", label: "Серебристый" },
-  { value: "Синий", label: "Синий" },
-  { value: "Красный", label: "Красный" },
-  { value: "Зелёный", label: "Зелёный" },
-  { value: "Коричневый", label: "Коричневый" }
+  { value: "Սպիտակ", label: "Սպիտակ" },
+  { value: "Սև", label: "Սև" },
+  { value: "Մոխրագույն", label: "Մոխրագույն" },
+  { value: "Արծաթագույն", label: "Արծաթագույն" },
+  { value: "Կապույտ", label: "Կապույտ" },
+  { value: "Կարմիր", label: "Կարմիր" },
+  { value: "Կանաչ", label: "Կանաչ" },
+  { value: "Շագանակագույն", label: "Շագանակագույն" }
 ];
 
 export const CAR_CONDITIONS: Option<CarCondition>[] = [
-  { value: "new", label: "Новый" },
-  { value: "used", label: "С пробегом" }
+  { value: "new", label: "Նոր" },
+  { value: "used", label: "Վազքով" }
 ];
 
 export const STEERING_TYPES: Option<Steering>[] = [
-  { value: "left", label: "Левый" },
-  { value: "right", label: "Правый" }
+  { value: "left", label: "Ձախ" },
+  { value: "right", label: "Աջ" }
 ];
 
 export const SELLER_TYPES: Record<SellerType, string> = {
-  owner: "Собственник",
-  agency: "Агентство недвижимости",
-  dealer: "Автосалон",
-  private: "Частное лицо"
+  owner: "Սեփականատեր",
+  agency: "Անշարժ գույքի գործակալություն",
+  dealer: "Ավտոսրահ",
+  private: "Ֆիզիկական անձ"
 };

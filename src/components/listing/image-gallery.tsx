@@ -54,7 +54,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
             <div key={src + i} className="relative aspect-[4/3] w-full shrink-0 snap-center">
               <Image
                 src={src}
-                alt={`${alt} — фото ${i + 1}`}
+                alt={`${alt} — նկար ${i + 1}`}
                 fill
                 sizes="100vw"
                 priority={i === 0}
@@ -88,7 +88,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
               key={src + i}
               type="button"
               onClick={() => setIndex(i)}
-              aria-label={`Фото ${i + 1}`}
+              aria-label={`Նկար ${i + 1}`}
               className={cn(
                 "relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-md border-2 transition-colors",
                 i === index ? "border-accent" : "border-transparent hover:border-border",
@@ -102,7 +102,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
         <div className="group relative aspect-[4/3] min-w-0 flex-1 overflow-hidden rounded-lg border border-border bg-secondary">
           <Image
             src={images[index]}
-            alt={`${alt} — фото ${index + 1}`}
+            alt={`${alt} — նկար ${index + 1}`}
             fill
             sizes="(max-width: 1280px) 60vw, 760px"
             priority
@@ -112,7 +112,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <button
             type="button"
             onClick={() => go(index - 1)}
-            aria-label="Предыдущее фото"
+            aria-label="Նախորդ նկարը"
             className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-card/90 opacity-0 shadow-card backdrop-blur transition-opacity hover:bg-card group-hover:opacity-100"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -120,7 +120,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <button
             type="button"
             onClick={() => go(index + 1)}
-            aria-label="Следующее фото"
+            aria-label="Հաջորդ նկարը"
             className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-card/90 opacity-0 shadow-card backdrop-blur transition-opacity hover:bg-card group-hover:opacity-100"
           >
             <ChevronRight className="h-5 w-5" />
@@ -132,7 +132,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
             className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-slate-950/65 px-2.5 py-1.5 text-[12px] font-medium text-white backdrop-blur transition-colors hover:bg-slate-950/80"
           >
             <Expand className="h-3.5 w-3.5" />
-            На весь экран
+            Ամբողջ էկրանով
           </button>
 
           <FavoriteButton listingId={listingId} className="absolute right-3 top-3" />
@@ -149,7 +149,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <div className="relative h-full w-full">
             <Image
               src={images[index]}
-              alt={`${alt} — фото ${index + 1}`}
+              alt={`${alt} — նկար ${index + 1}`}
               fill
               sizes="100vw"
               className="object-contain"
@@ -158,7 +158,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <button
             type="button"
             onClick={() => go(index - 1)}
-            aria-label="Предыдущее фото"
+            aria-label="Նախորդ նկարը"
             className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -166,7 +166,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
           <button
             type="button"
             onClick={() => go(index + 1)}
-            aria-label="Следующее фото"
+            aria-label="Հաջորդ նկարը"
             className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
           >
             <ChevronRight className="h-6 w-6" />

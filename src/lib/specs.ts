@@ -33,24 +33,24 @@ export function listingSummary(listing: Listing): string {
     return `${listing.brand} ${listing.model}, ${listing.year}`;
   }
   if (listing.category === "rentals") {
-    if (listing.subcategory === "garages") return `Гараж · ${formatArea(listing.area)}`;
+    if (listing.subcategory === "garages") return `Ավտոտնակ · ${formatArea(listing.area)}`;
     if (listing.subcategory === "commercial") {
-      return `Коммерческое помещение · ${formatArea(listing.area)}`;
+      return `Կոմերցիոն տարածք · ${formatArea(listing.area)}`;
     }
     return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
   }
   if (listing.category === "hotels") {
-    if (listing.subcategory === "hotels") return `Отель · ${formatArea(listing.area)}`;
+    if (listing.subcategory === "hotels") return `Հյուրանոց · ${formatArea(listing.area)}`;
     return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
   }
   if (listing.subcategory === "land") {
-    return `Участок ${listing.landArea} ${plural(listing.landArea ?? 0, "сотка", "сотки", "соток")}`;
+    return `Հողատարածք ${listing.landArea} ${plural(listing.landArea ?? 0, "սոտկա", "սոտկա")}`;
   }
   if (listing.subcategory === "commercial") {
-    return `Коммерческое помещение · ${formatArea(listing.area)}`;
+    return `Կոմերցիոն տարածք · ${formatArea(listing.area)}`;
   }
   if (listing.subcategory === "garages") {
-    return `Гараж · ${formatArea(listing.area)}`;
+    return `Ավտոտնակ · ${formatArea(listing.area)}`;
   }
   return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
 }
@@ -59,11 +59,11 @@ export function listingSummary(listing: Listing): string {
 export function cardSpecs(listing: Listing): string[] {
   if (listing.category === "cars") {
     return [
-      listing.fuel === "electric" ? `${listing.power} л.с.` : formatEngine(listing.engineVolume),
+      listing.fuel === "electric" ? `${listing.power} ձ.ու.` : formatEngine(listing.engineVolume),
       label("fuel", listing.fuel),
       label("transmission", listing.transmission),
       formatMileage(listing.mileage),
-      label("drive", listing.drive) + " привод",
+      label("drive", listing.drive) + " քարշակ",
     ];
   }
 
@@ -71,11 +71,11 @@ export function cardSpecs(listing: Listing): string[] {
     const noRoomCount = listing.subcategory === "garages" || listing.subcategory === "commercial";
     const specs: string[] = [label("rentalTerm", listing.term)];
     if (!noRoomCount) {
-      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
+      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "սենյակ", "սենյակ")}`);
     }
     specs.push(formatArea(listing.area));
     if (listing.floor && listing.totalFloors) {
-      specs.push(`${listing.floor}/${listing.totalFloors} этаж`);
+      specs.push(`${listing.floor}/${listing.totalFloors} հարկ`);
     }
     return specs;
   }
@@ -84,11 +84,11 @@ export function cardSpecs(listing: Listing): string[] {
     const noRoomCount = listing.subcategory === "hotels";
     const specs: string[] = [label("rentalTerm", listing.term)];
     if (!noRoomCount) {
-      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
+      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "սենյակ", "սենյակ")}`);
     }
     specs.push(formatArea(listing.area));
     if (listing.floor && listing.totalFloors) {
-      specs.push(`${listing.floor}/${listing.totalFloors} этаж`);
+      specs.push(`${listing.floor}/${listing.totalFloors} հարկ`);
     }
     return specs;
   }
@@ -96,17 +96,17 @@ export function cardSpecs(listing: Listing): string[] {
   const specs: string[] = [];
   if (listing.subcategory !== "land") {
     if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
-      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "комната", "комнаты", "комнат")}`);
+      specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "սենյակ", "սենյակ")}`);
     }
     specs.push(formatArea(listing.area));
     if (listing.floor && listing.totalFloors) {
-      specs.push(`${listing.floor}/${listing.totalFloors} этаж`);
+      specs.push(`${listing.floor}/${listing.totalFloors} հարկ`);
     }
     specs.push(label("buildingType", listing.buildingType));
   } else {
     specs.push(
-      `${listing.landArea} ${plural(listing.landArea ?? 0, "сотка", "сотки", "соток")}`,
-      "Под строительство",
+      `${listing.landArea} ${plural(listing.landArea ?? 0, "սոտկա", "սոտկա")}`,
+      "Շինարարության համար",
     );
   }
   return specs;
@@ -116,46 +116,46 @@ export function cardSpecs(listing: Listing): string[] {
 export function detailSpecs(listing: Listing): Spec[] {
   if (listing.category === "cars") {
     return [
-      { label: "Марка", value: listing.brand },
-      { label: "Модель", value: listing.model },
-      { label: "Год выпуска", value: String(listing.year) },
-      { label: "Пробег", value: formatMileage(listing.mileage) },
-      { label: "Тип кузова", value: label("bodyType", listing.bodyType) },
-      { label: "Двигатель", value: label("fuel", listing.fuel) },
+      { label: "Մակնիշ", value: listing.brand },
+      { label: "Մոդել", value: listing.model },
+      { label: "Թողարկման տարի", value: String(listing.year) },
+      { label: "Վազք", value: formatMileage(listing.mileage) },
+      { label: "Թափքի տեսակ", value: label("bodyType", listing.bodyType) },
+      { label: "Շարժիչ", value: label("fuel", listing.fuel) },
       {
-        label: "Объём двигателя",
-        value: listing.engineVolume ? formatEngine(listing.engineVolume) : "Электро",
+        label: "Շարժիչի ծավալը",
+        value: listing.engineVolume ? formatEngine(listing.engineVolume) : "Էլեկտրական",
       },
-      { label: "Мощность", value: `${listing.power} л.с.` },
-      { label: "Коробка передач", value: label("transmission", listing.transmission) },
-      { label: "Привод", value: label("drive", listing.drive) },
-      { label: "Цвет", value: listing.color },
-      { label: "Состояние", value: label("carCondition", listing.condition) },
-      { label: "Руль", value: label("steering", listing.steering) },
-      { label: "Владельцев", value: String(listing.owners) },
-      { label: "ДТП", value: listing.accidentFree ? "Не участвовал" : "Был окрашен элемент" },
-      { label: "Растаможен", value: listing.customsCleared ? "Да" : "Нет" },
+      { label: "Հզորություն", value: `${listing.power} ձ.ու.` },
+      { label: "Փոխանցումատուփ", value: label("transmission", listing.transmission) },
+      { label: "Քարշակ", value: label("drive", listing.drive) },
+      { label: "Գույն", value: listing.color },
+      { label: "Վիճակ", value: label("carCondition", listing.condition) },
+      { label: "Ղեկ", value: label("steering", listing.steering) },
+      { label: "Սեփականատերեր", value: String(listing.owners) },
+      { label: "ԱՊՊԱ", value: listing.accidentFree ? "Չի մասնակցել" : "Ներկված է եղել տարր" },
+      { label: "Մաքսազերծված", value: listing.customsCleared ? "Այո" : "Ոչ" },
     ];
   }
 
   if (listing.category === "rentals") {
     const noRoomCount = listing.subcategory === "garages" || listing.subcategory === "commercial";
     const specs: Spec[] = [
-      { label: "Тип", value: label("rentalSubcategory", listing.subcategory) },
-      { label: "Срок аренды", value: label("rentalTerm", listing.term) },
+      { label: "Տեսակ", value: label("rentalSubcategory", listing.subcategory) },
+      { label: "Վարձակալության ժամկետ", value: label("rentalTerm", listing.term) },
     ];
     if (!noRoomCount) {
-      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+      specs.push({ label: "Սենյակներ", value: listing.rooms ? String(listing.rooms) : "Ստուդիո" });
     }
-    specs.push({ label: "Площадь", value: formatArea(listing.area) });
+    specs.push({ label: "Մակերես", value: formatArea(listing.area) });
     if (listing.floor && listing.totalFloors) {
-      specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
+      specs.push({ label: "Հարկ", value: `${listing.floor}-ը ${listing.totalFloors}-ից` });
     }
     specs.push(
-      { label: "Санузлов", value: String(listing.bathrooms) },
-      { label: "Мебель", value: listing.furniture ? "Есть" : "Нет" },
-      { label: "Балкон", value: listing.balcony ? "Есть" : "Нет" },
-      { label: "Парковка", value: listing.parking ? "Есть" : "Нет" },
+      { label: "Սանհանգույցներ", value: String(listing.bathrooms) },
+      { label: "Կահույք", value: listing.furniture ? "Կա" : "Չկա" },
+      { label: "Պատշգամբ", value: listing.balcony ? "Կա" : "Չկա" },
+      { label: "Կայանատեղի", value: listing.parking ? "Կա" : "Չկա" },
     );
     return specs;
   }
@@ -163,60 +163,60 @@ export function detailSpecs(listing: Listing): Spec[] {
   if (listing.category === "hotels") {
     const noRoomCount = listing.subcategory === "hotels";
     const specs: Spec[] = [
-      { label: "Тип", value: label("hotelSubcategory", listing.subcategory) },
-      { label: "Срок аренды", value: label("rentalTerm", listing.term) },
+      { label: "Տեսակ", value: label("hotelSubcategory", listing.subcategory) },
+      { label: "Վարձակալության ժամկետ", value: label("rentalTerm", listing.term) },
     ];
     if (!noRoomCount) {
-      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+      specs.push({ label: "Սենյակներ", value: listing.rooms ? String(listing.rooms) : "Ստուդիո" });
     }
-    specs.push({ label: "Площадь", value: formatArea(listing.area) });
+    specs.push({ label: "Մակերես", value: formatArea(listing.area) });
     if (listing.floor && listing.totalFloors) {
-      specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
+      specs.push({ label: "Հարկ", value: `${listing.floor}-ը ${listing.totalFloors}-ից` });
     }
     specs.push(
-      { label: "Санузлов", value: String(listing.bathrooms) },
-      { label: "Мебель", value: listing.furniture ? "Есть" : "Нет" },
-      { label: "Балкон", value: listing.balcony ? "Есть" : "Нет" },
-      { label: "Парковка", value: listing.parking ? "Есть" : "Нет" },
+      { label: "Սանհանգույցներ", value: String(listing.bathrooms) },
+      { label: "Կահույք", value: listing.furniture ? "Կա" : "Չկա" },
+      { label: "Պատշգամբ", value: listing.balcony ? "Կա" : "Չկա" },
+      { label: "Կայանատեղի", value: listing.parking ? "Կա" : "Չկա" },
     );
     return specs;
   }
 
   const specs: Spec[] = [
-    { label: "Тип", value: label("reSubcategory", listing.subcategory) },
-    { label: "Сделка", value: label("deal", listing.deal) },
+    { label: "Տեսակ", value: label("reSubcategory", listing.subcategory) },
+    { label: "Գործարք", value: label("deal", listing.deal) },
   ];
   if (listing.subcategory !== "land") {
     if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
-      specs.push({ label: "Комнат", value: listing.rooms ? String(listing.rooms) : "Студия" });
+      specs.push({ label: "Սենյակներ", value: listing.rooms ? String(listing.rooms) : "Ստուդիո" });
     }
-    specs.push({ label: "Общая площадь", value: formatArea(listing.area) });
+    specs.push({ label: "Ընդհանուր մակերես", value: formatArea(listing.area) });
     if (listing.floor && listing.totalFloors) {
-      specs.push({ label: "Этаж", value: `${listing.floor} из ${listing.totalFloors}` });
+      specs.push({ label: "Հարկ", value: `${listing.floor}-ը ${listing.totalFloors}-ից` });
     }
     specs.push(
-      { label: "Санузлов", value: String(listing.bathrooms) },
-      { label: "Состояние", value: label("reCondition", listing.condition) },
-      { label: "Тип дома", value: label("buildingType", listing.buildingType) },
+      { label: "Սանհանգույցներ", value: String(listing.bathrooms) },
+      { label: "Վիճակ", value: label("reCondition", listing.condition) },
+      { label: "Շենքի տեսակ", value: label("buildingType", listing.buildingType) },
     );
-    if (listing.buildYear) specs.push({ label: "Год постройки", value: String(listing.buildYear) });
+    if (listing.buildYear) specs.push({ label: "Կառուցման տարի", value: String(listing.buildYear) });
     if (listing.ceilingHeight) {
-      specs.push({ label: "Высота потолков", value: `${listing.ceilingHeight} м` });
+      specs.push({ label: "Առաստաղի բարձրություն", value: `${listing.ceilingHeight} մ` });
     }
     specs.push(
-      { label: "Мебель", value: listing.furniture ? "Есть" : "Нет" },
-      { label: "Балкон", value: listing.balcony ? "Есть" : "Нет" },
-      { label: "Парковка", value: listing.parking ? "Есть" : "Нет" },
+      { label: "Կահույք", value: listing.furniture ? "Կա" : "Չկա" },
+      { label: "Պատշգամբ", value: listing.balcony ? "Կա" : "Չկա" },
+      { label: "Կայանատեղի", value: listing.parking ? "Կա" : "Չկա" },
     );
   }
   if (listing.landArea) {
     specs.push({
-      label: "Участок",
-      value: `${listing.landArea} ${plural(listing.landArea, "сотка", "сотки", "соток")}`,
+      label: "Հողատարածք",
+      value: `${listing.landArea} ${plural(listing.landArea, "սոտկա", "սոտկա")}`,
     });
   }
   if (listing.subcategory === "land") {
-    specs.push({ label: "Площадь", value: `${formatNumber(listing.area)} м²` });
+    specs.push({ label: "Մակերես", value: `${formatNumber(listing.area)} մ²` });
   }
   return specs;
 }

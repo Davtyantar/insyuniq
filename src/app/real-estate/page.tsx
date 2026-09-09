@@ -4,8 +4,8 @@ import { CategoryPage } from "@/components/category/category-page";
 import { CategoryPageSkeleton } from "@/components/category/category-page-skeleton";
 
 export const metadata: Metadata = {
-  title: "Недвижимость",
-  description: "Квартиры, дома, новостройки, коммерческая недвижимость и участки.",
+  title: "Անշարժ գույք",
+  description: "Բնակարաններ, տներ, նորակառույցներ, կոմերցիոն անշարժ գույք և հողատարածքներ։",
 };
 
 export default function RealEstatePage() {

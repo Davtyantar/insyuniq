@@ -7,6 +7,13 @@ import type { Listing } from "@/lib/types";
 const FAVORITES_KEY = "syuniq:favorites";
 const CITY_KEY = "syuniq:city";
 const LOCALE_KEY = "syuniq:locale";
+const THEME_KEY = "syuniq:theme";
+
+export type Theme = "light" | "dark";
+
+function applyThemeClass(theme: Theme) {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+}
 
 interface AppState {
   favorites: string[];
@@ -21,6 +28,9 @@ interface AppState {
   /** Interface language; defaults to Russian until the user picks one. */
   locale: Locale;
   setLocale: (locale: Locale) => void;
+  /** Light/dark theme; a blocking inline script in the document head applies it before first paint. */
+  theme: Theme;
+  toggleTheme: () => void;
   /** False until localStorage has been read, so SSR and first paint agree. */
   hydrated: boolean;
 }
@@ -31,7 +41,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = React.useState<string[]>([]);
   const [published, setPublished] = React.useState<Listing[]>([]);
   const [city, setCityState] = React.useState<string | null>(null);
-  const [locale, setLocaleState] = React.useState<Locale>("ru");
+  const [locale, setLocaleState] = React.useState<Locale>("am");
+  const [theme, setThemeState] = React.useState<Theme>("light");
   const [hydrated, setHydrated] = React.useState(false);
 
   React.useEffect(() => {
@@ -55,6 +66,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore unavailable storage — locale simply starts at the default.
     }
+    // The blocking inline script in <head> already set the "dark" class before paint;
+    // just mirror that into state so React and the DOM agree.
+    setThemeState(document.documentElement.classList.contains("dark") ? "dark" : "light");
     setHydrated(true);
   }, []);
 
@@ -95,6 +109,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const toggleTheme = React.useCallback(() => {
+    setThemeState((prev) => {
+      const next: Theme = prev === "dark" ? "light" : "dark";
+      applyThemeClass(next);
+      try {
+        window.localStorage.setItem(THEME_KEY, next);
+      } catch {
+        // Storage can be full or blocked; theme stays in memory for this session.
+      }
+      return next;
+    });
+  }, []);
+
   const value = React.useMemo<AppState>(
     () => ({
       favorites,
@@ -106,6 +133,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      theme,
+      toggleTheme,
       hydrated,
     }),
     [
@@ -118,6 +147,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      theme,
+      toggleTheme,
       hydrated,
     ],
   );

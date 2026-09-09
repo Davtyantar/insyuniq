@@ -25,7 +25,7 @@ export function SellerCard({ seller }: { seller: Seller }) {
             {seller.online && (
               <span className="flex items-center gap-1 text-[11px] text-emerald-600">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                онлайн
+                առցանց
               </span>
             )}
           </div>
@@ -36,10 +36,10 @@ export function SellerCard({ seller }: { seller: Seller }) {
               {seller.rating.toFixed(1)}
             </span>
             <span>
-              {seller.reviews} {plural(seller.reviews, "отзыв", "отзыва", "отзывов")}
+              {seller.reviews} {plural(seller.reviews, "կարծիք", "կարծիքներ")}
             </span>
             <span>
-              {seller.listingsCount} {plural(seller.listingsCount, "объявление", "объявления", "объявлений")}
+              {seller.listingsCount} {plural(seller.listingsCount, "հայտարարություն", "հայտարարություններ")}
             </span>
           </div>
         </div>
@@ -47,11 +47,11 @@ export function SellerCard({ seller }: { seller: Seller }) {
 
       <dl className="mt-4 space-y-1.5 text-[13px]">
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">На сайте с</dt>
+          <dt className="text-muted-foreground">Կայքում է</dt>
           <dd>{formatMonthYear(seller.registeredAt)}</dd>
         </div>
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">Ответы</dt>
+          <dt className="text-muted-foreground">Պատասխանում է</dt>
           <dd className="text-right">{seller.responseTime}</dd>
         </div>
       </dl>
@@ -64,12 +64,12 @@ export function SellerCard({ seller }: { seller: Seller }) {
           onClick={() => setRevealed(true)}
         >
           <Phone className="h-4 w-4" />
-          {revealed ? seller.phone : `${maskPhone(seller.phone)} · Показать телефон`}
+          {revealed ? seller.phone : `${maskPhone(seller.phone)} · Ցույց տալ հեռախոսը`}
         </Button>
       </div>
 
       <Badge variant="accent" className="mt-4">
-        Не переводите предоплату до осмотра
+        Կանխավճար մի փոխանցեք մինչև զննումը
       </Badge>
     </div>
   );

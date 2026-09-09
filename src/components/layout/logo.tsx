@@ -22,7 +22,10 @@ export function Logo({ className, compact }: { className?: string; compact?: boo
       href="/"
       aria-label={APP_NAME}
       onClick={handleClick}
-      className={cn("shrink-0 transition-opacity hover:opacity-80", className)}
+      className={cn(
+        "shrink-0 rounded-lg transition-opacity hover:opacity-80 dark:bg-white/95 dark:px-2 dark:py-1",
+        className,
+      )}
     >
       <Image
         src="/logo.png"

@@ -13,8 +13,8 @@ export function StepCategory({ draft, patch }: StepProps) {
   return (
     <div>
       <StepHeader
-        title="Что вы размещаете?"
-        description="От категории зависят характеристики, которые мы спросим дальше."
+        title="Ի՞նչ եք տեղադրում"
+        description="Կատեգորիայից են կախված այն բնութագրերը, որոնք հետո կհարցնենք։"
       />
       <div className="grid gap-3 sm:grid-cols-2">
         {CATEGORY_LIST.map((category) => (

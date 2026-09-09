@@ -13,8 +13,8 @@ export function StepPreview({ listing }: { listing: Listing }) {
   return (
     <div>
       <StepHeader
-        title="Проверьте объявление"
-        description="Так его увидят покупатели. Вернитесь на любой шаг, если нужно что-то поправить."
+        title="Ստուգեք հայտարարությունը"
+        description="Հենց այսպես կտեսնեն այն գնորդները։ Վերադարձեք ցանկացած քայլի, եթե ինչ-որ բան պետք է ուղղել։"
       />
 
       <article className="overflow-hidden rounded-lg border border-border bg-card">
@@ -23,13 +23,13 @@ export function StepPreview({ listing }: { listing: Listing }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={listing.images[0]}
-            alt={listing.title || "Фото объявления"}
+            alt={listing.title || "Հայտարարության լուսանկար"}
             className="h-full w-full object-cover"
           />
           <div className="absolute left-3 top-3 flex gap-1.5">
-            <Badge variant="outline">Черновик</Badge>
+            <Badge variant="outline">Սևագիր</Badge>
             {listing.images.length > 1 && (
-              <Badge variant="outline">{listing.images.length} фото</Badge>
+              <Badge variant="outline">{listing.images.length} լուսանկար</Badge>
             )}
           </div>
         </div>
@@ -59,14 +59,14 @@ export function StepPreview({ listing }: { listing: Listing }) {
           </p>
 
           <div className="mt-5 border-t border-border pt-4">
-            <h4 className="text-sm font-semibold">Описание</h4>
+            <h4 className="text-sm font-semibold">Նկարագրություն</h4>
             <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground/90">
               {listing.description}
             </p>
           </div>
 
           <div className="mt-5 border-t border-border pt-4">
-            <h4 className="text-sm font-semibold">Характеристики</h4>
+            <h4 className="text-sm font-semibold">Բնութագրեր</h4>
             <dl className="mt-2 grid gap-x-8 sm:grid-cols-2">
               {specs.map((spec) => (
                 <div

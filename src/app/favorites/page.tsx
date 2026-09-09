@@ -10,11 +10,11 @@ import { plural } from "@/lib/format";
 import { getListings } from "@/mock/listings";
 
 const TABS = [
-  { value: "all", label: "Все" },
-  { value: "real-estate", label: "Недвижимость" },
-  { value: "cars", label: "Автомобили" },
-  { value: "rentals", label: "Аренда" },
-  { value: "hotels", label: "Отели и отдых" },
+  { value: "all", label: "Բոլորը" },
+  { value: "real-estate", label: "Անշարժ գույք" },
+  { value: "cars", label: "Ավտոմեքենաներ" },
+  { value: "rentals", label: "Վարձակալություն" },
+  { value: "hotels", label: "Հյուրանոցներ և հանգիստ" },
 ];
 
 export default function FavoritesPage() {
@@ -35,11 +35,11 @@ export default function FavoritesPage() {
     <div className="container py-6 lg:py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">Избранное</h1>
+          <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">Հավանածներ</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {hydrated
-              ? `${listings.length} ${plural(listings.length, "объявление", "объявления", "объявлений")} сохранено`
-              : "Загружаем сохранённые объявления…"}
+              ? `${listings.length} ${plural(listings.length, "հայտարարություն", "հայտարարություններ")} պահպանված`
+              : "Բեռնում ենք պահպանված հայտարարությունները…"}
           </p>
         </div>
         <Tabs value={tab} onValueChange={setTab}>
@@ -56,17 +56,17 @@ export default function FavoritesPage() {
 
       <div className="mt-6">
         {!hydrated ? (
-          <ListingGrid listings={[]} loading skeletonCount={6} columns={3} />
+          <ListingGrid listings={[]} loading skeletonCount={6} columns={4} />
         ) : visible.length === 0 ? (
           <EmptyState
             icon={Heart}
-            title={listings.length === 0 ? "В избранном пока пусто" : "В этой категории пусто"}
-            description="Нажимайте на сердечко в карточке объявления, чтобы вернуться к нему позже с любого устройства."
-            action={{ label: "Смотреть недвижимость", href: "/real-estate" }}
-            secondaryAction={{ label: "Смотреть автомобили", href: "/cars" }}
+            title={listings.length === 0 ? "Հավանածներում դեռ դատարկ է" : "Այս կատեգորիայում դատարկ է"}
+            description="Սեղմեք սրտիկի վրա հայտարարության քարտում, որպեսզի հետո վերադառնաք դրան ցանկացած սարքից։"
+            action={{ label: "Դիտել անշարժ գույքը", href: "/real-estate" }}
+            secondaryAction={{ label: "Դիտել ավտոմեքենաները", href: "/cars" }}
           />
         ) : (
-          <ListingGrid listings={visible} columns={3} />
+          <ListingGrid listings={visible} columns={4} />
         )}
       </div>
     </div>

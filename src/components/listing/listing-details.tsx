@@ -31,7 +31,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
       <div className="container py-4 lg:py-6">
         <nav className="flex flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
           <Link href="/" className="transition-colors hover:text-foreground">
-            Главная
+            Գլխավոր
           </Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <Link href={category.href} className="transition-colors hover:text-foreground">
@@ -55,14 +55,14 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
             <ImageGallery images={listing.images} alt={listing.title} listingId={listing.id} />
 
             <section>
-              <h2 className="text-lg font-semibold tracking-tight">Описание</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Նկարագրություն</h2>
               <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">
                 {listing.description}
               </p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold tracking-tight">Характеристики</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Բնութագրեր</h2>
               <dl className="mt-3 grid gap-x-10 sm:grid-cols-2">
                 {specs.map((spec) => (
                   <div
@@ -77,7 +77,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold tracking-tight">Местоположение</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Գտնվելու վայրը</h2>
               <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 {locationLine(listing)}, {listing.address}
@@ -94,7 +94,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 {listing.verified && (
                   <Badge variant="accent" className="gap-1">
                     <BadgeCheck className="h-3.5 w-3.5" />
-                    Проверенное объявление
+                    Ստուգված հայտարարություն
                   </Badge>
                 )}
                 <Badge variant="default">{subcategoryLabel}</Badge>
@@ -129,7 +129,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5" />
-                  {formatNumber(listing.views)} просмотров
+                  {formatNumber(listing.views)} դիտում
                 </span>
                 <span className="ml-auto">№ {listing.id.toUpperCase()}</span>
               </div>
@@ -150,12 +150,12 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
       {similar.length > 0 && (
         <section className="container py-10">
           <div className="flex items-end justify-between gap-4">
-            <h2 className="text-xl font-semibold tracking-tight">Похожие объявления</h2>
+            <h2 className="text-xl font-semibold tracking-tight">Նմանատիպ հայտարարություններ</h2>
             <Link
               href={category.href}
               className="text-sm font-medium text-accent transition-colors hover:text-brand-700"
             >
-              Все в категории
+              Բոլորը կատեգորիայում
             </Link>
           </div>
           <ListingGrid listings={similar} columns={4} className="mt-5" />

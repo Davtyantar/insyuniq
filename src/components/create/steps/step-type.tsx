@@ -19,8 +19,8 @@ export function StepType({ draft, patch }: StepProps) {
   return (
     <div>
       <StepHeader
-        title="Тип объявления"
-        description={`Выберите раздел в категории «${config.label}».`}
+        title="Հայտարարության տեսակը"
+        description={`Ընտրեք բաժինը «${config.label}» կատեգորիայում։`}
       />
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -37,7 +37,7 @@ export function StepType({ draft, patch }: StepProps) {
 
       <div className="mt-6">
         {draft.category === "real-estate" && (
-          <Field label="Тип сделки" required>
+          <Field label="Գործարքի տեսակը" required>
             <ChipGroup
               options={DEAL_TYPES}
               values={[draft.deal]}
@@ -46,7 +46,7 @@ export function StepType({ draft, patch }: StepProps) {
           </Field>
         )}
         {draft.category === "cars" && (
-          <Field label="Состояние" required>
+          <Field label="Վիճակը" required>
             <ChipGroup
               options={CAR_CONDITIONS}
               values={[draft.carCondition]}
@@ -57,7 +57,7 @@ export function StepType({ draft, patch }: StepProps) {
           </Field>
         )}
         {(draft.category === "rentals" || draft.category === "hotels") && (
-          <Field label="Срок аренды" required>
+          <Field label="Վարձակալության ժամկետը" required>
             <ChipGroup
               options={RENTAL_TERMS}
               values={[draft.term]}

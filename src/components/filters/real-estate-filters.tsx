@@ -30,17 +30,17 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
 
   return (
     <>
-      <FilterSection title="Тип недвижимости">
+      <FilterSection title="Անշարժ գույքի տեսակ">
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
           options={REAL_ESTATE_SUBCATEGORIES}
-          placeholder="Любой тип"
-          anyLabel="Любой тип"
+          placeholder="Ցանկացած տեսակ"
+          anyLabel="Ցանկացած տեսակ"
         />
       </FilterSection>
 
-      <FilterSection title="Тип сделки">
+      <FilterSection title="Գործարքի տեսակ">
         <ChipGroup
           options={DEAL_TYPES}
           values={filters.deal ? [filters.deal] : []}
@@ -48,31 +48,31 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Расположение">
+      <FilterSection title="Տեղադրություն">
         <div>
-          <FieldLabel>Город</FieldLabel>
+          <FieldLabel>Քաղաք</FieldLabel>
           <SelectField
             value={filters.city}
             onChange={(city) => onChange({ city, district: "" })}
             options={CITIES}
-            placeholder="Весь Сюник"
-            anyLabel="Весь Сюник"
+            placeholder="Ողջ Սյունիք"
+            anyLabel="Ողջ Սյունիք"
           />
         </div>
         <div>
-          <FieldLabel>Район</FieldLabel>
+          <FieldLabel>Թաղամաս</FieldLabel>
           <SelectField
             value={filters.district}
             onChange={(district) => onChange({ district })}
             options={districts}
-            placeholder={filters.city ? "Любой район" : "Сначала выберите город"}
-            anyLabel="Любой район"
+            placeholder={filters.city ? "Ցանկացած թաղամաս" : "Նախ ընտրեք քաղաքը"}
+            anyLabel="Ցանկացած թաղամաս"
             disabled={!filters.city}
           />
         </div>
       </FilterSection>
 
-      <FilterSection title="Цена, $">
+      <FilterSection title="Գին, $">
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -81,7 +81,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Комнаты">
+      <FilterSection title="Սենյակներ">
         <ChipGroup
           options={ROOMS_OPTIONS}
           values={filters.rooms}
@@ -90,7 +90,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Площадь, м²">
+      <FilterSection title="Մակերես, մ²">
         <RangeFields
           from={filters.areaMin}
           to={filters.areaMax}
@@ -99,9 +99,9 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Этаж" defaultOpen={false}>
+      <FilterSection title="Հարկ" defaultOpen={false}>
         <div>
-          <FieldLabel>Этаж квартиры</FieldLabel>
+          <FieldLabel>Բնակարանի հարկը</FieldLabel>
           <RangeFields
             from={filters.floorMin}
             to={filters.floorMax}
@@ -110,19 +110,19 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
           />
         </div>
         <div>
-          <FieldLabel>Этажность дома, не менее</FieldLabel>
+          <FieldLabel>Շենքի հարկայնությունը, ոչ պակաս</FieldLabel>
           <RangeFields
             from={filters.totalFloorsMin}
             to=""
             onFrom={(totalFloorsMin) => onChange({ totalFloorsMin })}
             onTo={() => undefined}
-            fromPlaceholder="от"
+            fromPlaceholder="սկսած"
             toPlaceholder="—"
           />
         </div>
       </FilterSection>
 
-      <FilterSection title="Состояние" defaultOpen={false}>
+      <FilterSection title="Վիճակ" defaultOpen={false}>
         <CheckboxList
           options={RE_CONDITIONS}
           values={filters.condition}
@@ -130,7 +130,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Тип дома" defaultOpen={false}>
+      <FilterSection title="Շենքի տեսակ" defaultOpen={false}>
         <ChipGroup
           options={BUILDING_TYPES}
           values={filters.buildingType ? [filters.buildingType] : []}
@@ -140,33 +140,33 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Удобства" defaultOpen={false}>
+      <FilterSection title="Հարմարություններ" defaultOpen={false}>
         <ToggleRow
-          label="Мебель"
+          label="Կահույք"
           checked={filters.furniture}
           onChange={(furniture) => onChange({ furniture })}
         />
         <ToggleRow
-          label="Балкон"
+          label="Պատշգամբ"
           checked={filters.balcony}
           onChange={(balcony) => onChange({ balcony })}
         />
         <ToggleRow
-          label="Парковка"
+          label="Կայանատեղի"
           checked={filters.parking}
           onChange={(parking) => onChange({ parking })}
         />
       </FilterSection>
 
-      <FilterSection title="Объявления">
+      <FilterSection title="Հայտարարություններ">
         <ToggleRow
-          label="Только с фото"
+          label="Միայն նկարով"
           checked={filters.withPhoto}
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Только проверенные объявления"
-          hint="Документы и адрес подтверждены модератором"
+          label="Միայն ստուգված հայտարարություններ"
+          hint="Փաստաթղթերն ու հասցեն հաստատված են մոդերատորի կողմից"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

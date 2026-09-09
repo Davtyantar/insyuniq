@@ -27,7 +27,7 @@ import { CITIES } from "@/mock/taxonomy";
 function SettingsForm() {
   const [name, setName] = React.useState(CURRENT_USER.name);
   const [phone, setPhone] = React.useState(CURRENT_USER.phone);
-  const [city, setCity] = React.useState("Капан");
+  const [city, setCity] = React.useState("Կապան");
   const [saved, setSaved] = React.useState(false);
   const [notifications, setNotifications] = React.useState({
     priceDrops: true,
@@ -45,20 +45,20 @@ function SettingsForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="profile-name" className="mb-1.5 block">
-            Имя
+            Անուն
           </Label>
           <Input id="profile-name" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
           <Label htmlFor="profile-phone" className="mb-1.5 block">
-            Телефон
+            Հեռախոս
           </Label>
           <Input id="profile-phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
         <div className="sm:col-span-2">
-          <Label className="mb-1.5 block">Город</Label>
+          <Label className="mb-1.5 block">Քաղաք</Label>
           <Select value={city} onValueChange={setCity}>
-            <SelectTrigger aria-label="Город">
+            <SelectTrigger aria-label="Քաղաք">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -73,10 +73,10 @@ function SettingsForm() {
       </div>
 
       <div className="space-y-3 border-t border-border pt-5">
-        <h3 className="text-sm font-semibold">Уведомления</h3>
+        <h3 className="text-sm font-semibold">Ծանուցումներ</h3>
         {[
-          { key: "priceDrops" as const, label: "Снижение цены в избранном" },
-          { key: "newsletter" as const, label: "Подборки объявлений раз в неделю" },
+          { key: "priceDrops" as const, label: "Գնի իջեցում հավանածներում" },
+          { key: "newsletter" as const, label: "Հայտարարությունների ընտրանի շաբաթը մեկ" },
         ].map((item) => (
           <label key={item.key} className="flex items-center justify-between gap-4 text-sm">
             {item.label}
@@ -92,9 +92,9 @@ function SettingsForm() {
 
       <div className="flex items-center gap-3 border-t border-border pt-5">
         <Button type="submit" variant="accent">
-          Сохранить изменения
+          Պահպանել փոփոխությունները
         </Button>
-        {saved && <span className="text-[13px] text-emerald-600">Изменения сохранены</span>}
+        {saved && <span className="text-[13px] text-emerald-600">Փոփոխությունները պահպանված են</span>}
       </div>
     </form>
   );
@@ -106,9 +106,9 @@ export default function ProfilePage() {
   const favoriteListings = getListings(favorites);
 
   const stats = [
-    { label: "Объявлений", value: myListings.length },
-    { label: "В избранном", value: hydrated ? favoriteListings.length : 0 },
-    { label: "В архиве", value: MY_ARCHIVED.length },
+    { label: "Հայտարարություն", value: myListings.length },
+    { label: "Հավանածներում", value: hydrated ? favoriteListings.length : 0 },
+    { label: "Արխիվում", value: MY_ARCHIVED.length },
   ];
 
   return (
@@ -125,7 +125,7 @@ export default function ProfilePage() {
               {CURRENT_USER.name}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              На сайте с {formatMonthYear(CURRENT_USER.registeredAt)}
+              Կայքում՝ {formatMonthYear(CURRENT_USER.registeredAt)}-ից
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
               <span className="inline-flex items-center gap-1 font-medium">
@@ -134,7 +134,7 @@ export default function ProfilePage() {
               </span>
               <span className="text-muted-foreground">
                 {CURRENT_USER.reviews}{" "}
-                {plural(CURRENT_USER.reviews, "отзыв", "отзыва", "отзывов")}
+                {plural(CURRENT_USER.reviews, "կարծիք", "կարծիք")}
               </span>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function ProfilePage() {
           </div>
 
           <Button asChild variant="accent" className="sm:self-center">
-            <Link href="/create">Подать объявление</Link>
+            <Link href="/create">Հրապարակել հայտարարություն</Link>
           </Button>
         </div>
       </section>
@@ -158,19 +158,19 @@ export default function ProfilePage() {
         <TabsList>
           <TabsTrigger value="listings" className="gap-2">
             <Package className="h-4 w-4" />
-            Мои объявления
+            Իմ հայտարարությունները
           </TabsTrigger>
           <TabsTrigger value="favorites" className="gap-2">
             <Heart className="h-4 w-4" />
-            Избранное
+            Հավանածներ
           </TabsTrigger>
           <TabsTrigger value="archive" className="gap-2">
             <Archive className="h-4 w-4" />
-            Архив
+            Արխիվ
           </TabsTrigger>
           <TabsTrigger value="settings" className="gap-2">
             <Settings className="h-4 w-4" />
-            Настройки
+            Կարգավորումներ
           </TabsTrigger>
         </TabsList>
 
@@ -178,9 +178,9 @@ export default function ProfilePage() {
           {myListings.length === 0 ? (
             <EmptyState
               icon={Package}
-              title="У вас пока нет объявлений"
-              description="Разместите первое объявление — это бесплатно и занимает пару минут."
-              action={{ label: "Подать объявление", href: "/create" }}
+              title="Դուք դեռ հայտարարություն չունեք"
+              description="Տեղադրեք ձեր առաջին հայտարարությունը — դա անվճար է և տևում է մի քանի րոպե։"
+              action={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
             />
           ) : (
             <ListingGrid listings={myListings} columns={3} />
@@ -193,9 +193,9 @@ export default function ProfilePage() {
           ) : favoriteListings.length === 0 ? (
             <EmptyState
               icon={Heart}
-              title="В избранном пусто"
-              description="Сохраняйте объявления, чтобы сравнить их позже."
-              action={{ label: "Смотреть объявления", href: "/search" }}
+              title="Հավանածներում դատարկ է"
+              description="Պահպանեք հայտարարությունները, որպեսզի հետո համեմատեք դրանք։"
+              action={{ label: "Դիտել հայտարարությունները", href: "/search" }}
             />
           ) : (
             <ListingGrid listings={favoriteListings} columns={3} />
@@ -204,11 +204,11 @@ export default function ProfilePage() {
 
         <TabsContent value="archive" className="mt-5">
           {MY_ARCHIVED.length === 0 ? (
-            <EmptyState icon={Archive} title="Архив пуст" />
+            <EmptyState icon={Archive} title="Արխիվը դատարկ է" />
           ) : (
             <>
               <p className="mb-4 text-sm text-muted-foreground">
-                Снятые с публикации объявления. Их не видно в поиске.
+                Հրապարակումից հանված հայտարարություններ։ Դրանք չեն երևում որոնման մեջ։
               </p>
               <ListingGrid listings={MY_ARCHIVED} columns={3} className="opacity-75" />
             </>

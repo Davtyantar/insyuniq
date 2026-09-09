@@ -6,6 +6,7 @@ import { Heart, Plus, User } from "lucide-react";
 import { LanguagePicker } from "@/components/layout/language-picker";
 import { LocationPicker } from "@/components/layout/location-picker";
 import { Logo } from "@/components/layout/logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useApp } from "@/components/providers/app-provider";
 import { SearchBar } from "@/components/search/search-bar";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,8 @@ import { CATEGORY_LIST } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 const ACTIONS = [
-  { href: "/favorites", label: "Избранное", icon: Heart, badge: "favorites" as const },
-  { href: "/profile", label: "Войти", icon: User, badge: null },
+  { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
+  { href: "/profile", label: "Մուտք", icon: User, badge: null },
 ];
 
 function CountBadge({ count }: { count: number }) {
@@ -55,12 +56,13 @@ export function Header() {
               </Link>
             </Button>
           ))}
+          <ThemeToggle />
         </nav>
 
         <Button variant="accent" asChild className="shrink-0 gap-2">
-          <Link href="/create" title="Подать объявление">
+          <Link href="/create" title="Հրապարակել հայտարարություն">
             <Plus className="h-[18px] w-[18px]" />
-            <span className="hidden sm:inline">Подать объявление</span>
+            <span className="hidden sm:inline">Հրապարակել հայտարարություն</span>
           </Link>
         </Button>
       </div>
@@ -89,7 +91,7 @@ export function Header() {
           href="/search"
           className="py-2.5 text-muted-foreground transition-colors hover:text-foreground"
         >
-          Все объявления
+          Բոլոր հայտարարությունները
         </Link>
       </div>
       )}

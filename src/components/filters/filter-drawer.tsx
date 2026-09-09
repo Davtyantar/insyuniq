@@ -19,7 +19,7 @@ export function FilterDrawer({ open, onOpenChange, ...panelProps }: FilterDrawer
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent variant="sheet" className="flex max-h-[92vh] flex-col p-0">
         <DialogHeader className="border-b border-border px-4 py-4">
-          <DialogTitle>Фильтры</DialogTitle>
+          <DialogTitle>Ֆիլտրեր</DialogTitle>
         </DialogHeader>
         <FilterPanel
           {...panelProps}

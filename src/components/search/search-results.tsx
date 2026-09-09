@@ -13,11 +13,11 @@ import type { SortKey, ViewMode } from "@/lib/types";
 import { ALL_LISTINGS } from "@/mock/listings";
 
 const TABS = [
-  { value: "all", label: "Все" },
-  { value: "real-estate", label: "Недвижимость" },
-  { value: "cars", label: "Автомобили" },
-  { value: "rentals", label: "Аренда" },
-  { value: "hotels", label: "Отели и отдых" },
+  { value: "all", label: "Բոլորը" },
+  { value: "real-estate", label: "Անշարժ գույք" },
+  { value: "cars", label: "Ավտոմեքենաներ" },
+  { value: "rentals", label: "Վարձակալություն" },
+  { value: "hotels", label: "Հյուրանոցներ և հանգիստ" },
 ];
 
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
@@ -58,16 +58,16 @@ export function SearchResults() {
     <div className="container py-6 lg:py-8">
       <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">
         {q ? (
-          `Результаты по запросу «${q}»`
+          `Արդյունքներ «${q}» հարցման համար`
         ) : (
           <>
-            Все объявления
+            Բոլոր հայտարարությունները
             <CityAccent />
           </>
         )}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        {visible.length} {plural(visible.length, "объявление", "объявления", "объявлений")}
+        {visible.length} {plural(visible.length, "հայտարարություն", "հայտարարություններ")}
         {city && ` · ${city}`}
       </p>
 
@@ -96,10 +96,10 @@ export function SearchResults() {
       <div className="mt-5">
         {visible.length === 0 ? (
           <EmptyState
-            title="Ничего не найдено"
-            description="Попробуйте другой запрос или посмотрите объявления по категориям."
-            action={{ label: "Сбросить поиск", onClick: () => router.push("/search") }}
-            secondaryAction={{ label: "Подать объявление", href: "/create" }}
+            title="Ոչինչ չի գտնվել"
+            description="Փորձեք այլ հարցում կամ դիտեք հայտարարությունները ըստ կատեգորիաների։"
+            action={{ label: "Մաքրել որոնումը", onClick: () => router.push("/search") }}
+            secondaryAction={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
           />
         ) : (
           <ListingGrid listings={visible} view={view} columns={4} />

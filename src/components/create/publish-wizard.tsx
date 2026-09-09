@@ -73,19 +73,19 @@ function SuccessState({ listing, onReset }: { listing: Listing; onReset: () => v
       <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-700">
         <PartyPopper className="h-7 w-7" />
       </span>
-      <h2 className="text-xl font-semibold tracking-tight">Объявление опубликовано</h2>
+      <h2 className="text-xl font-semibold tracking-tight">Հայտարարությունը հրապարակված է</h2>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-        «{listing.title}» уже доступно в каталоге. Обычно первые отклики приходят в течение суток.
+        «{listing.title}»-ն արդեն հասանելի է կատալոգում։ Առաջին արձագանքները սովորաբար գալիս են մեկ օրվա ընթացքում։
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
         <Button asChild variant="accent">
-          <Link href={listingHref(listing)}>Открыть объявление</Link>
+          <Link href={listingHref(listing)}>Բացել հայտարարությունը</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/profile">Мои объявления</Link>
+          <Link href="/profile">Իմ հայտարարությունները</Link>
         </Button>
         <Button variant="ghost" onClick={onReset}>
-          Подать ещё одно
+          Հրապարակել ևս մեկը
         </Button>
       </div>
     </div>
@@ -150,10 +150,10 @@ export function PublishWizard() {
     <div className="container py-6 lg:py-8">
       <header className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">
-          Подать объявление
+          Հրապարակել հայտարարություն
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Шаг {step} из {WIZARD_STEPS.length} · {WIZARD_STEPS[step - 1].title}
+          Քայլ {step}-ը {WIZARD_STEPS.length}-ից · {WIZARD_STEPS[step - 1].title}
         </p>
         <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-secondary">
           <div
@@ -193,18 +193,18 @@ export function PublishWizard() {
           <div className="mt-4 flex items-center justify-between gap-3">
             <Button variant="outline" onClick={back} disabled={step === 1} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Назад
+              Հետ
             </Button>
 
             {step < WIZARD_STEPS.length ? (
               <Button variant="accent" onClick={next} className="gap-2">
-                Далее
+                Հաջորդը
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
               <Button variant="accent" size="lg" onClick={publish} className="gap-2">
                 <Check className="h-4 w-4" />
-                Опубликовать объявление
+                Հրապարակել հայտարարությունը
               </Button>
             )}
           </div>

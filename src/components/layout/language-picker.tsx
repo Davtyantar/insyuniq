@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LOCALE_OPTIONS, type Locale } from "@/lib/i18n";
 
-/** Language switcher with flags — persists the choice to localStorage. Site copy stays Russian for now. */
+/** Language switcher with flags — persists the choice to localStorage. Site copy is hardcoded Armenian. */
 export function LanguagePicker() {
   const { locale, setLocale } = useApp();
 
@@ -22,7 +22,7 @@ export function LanguagePicker() {
         <button
           type="button"
           className="hidden shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:flex"
-          title="Язык"
+          title="Լեզու"
         >
           <FlagIcon locale={locale} />
           <span className="uppercase tracking-wide">{locale}</span>

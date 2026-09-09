@@ -4,7 +4,7 @@ import { ListingCardSkeleton } from "@/components/listings/listing-skeleton";
 import { SearchResults } from "@/components/search/search-results";
 
 export const metadata: Metadata = {
-  title: "Поиск объявлений",
+  title: "Հայտարարությունների որոնում",
 };
 
 function SearchSkeleton() {

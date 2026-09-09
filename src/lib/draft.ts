@@ -128,13 +128,13 @@ export const EMPTY_DRAFT: ListingDraft = {
 };
 
 export const WIZARD_STEPS = [
-  { id: 1, title: "Категория", hint: "Что вы размещаете" },
-  { id: 2, title: "Тип объявления", hint: "Уточните раздел" },
-  { id: 3, title: "Характеристики", hint: "Основные параметры" },
-  { id: 4, title: "Фотографии", hint: "Чем больше, тем лучше" },
-  { id: 5, title: "Описание", hint: "Заголовок и текст" },
-  { id: 6, title: "Цена и контакты", hint: "Как с вами связаться" },
-  { id: 7, title: "Предпросмотр", hint: "Проверьте и публикуйте" },
+  { id: 1, title: "Կատեգորիա", hint: "Ինչ եք տեղադրում" },
+  { id: 2, title: "Հայտարարության տեսակ", hint: "Ճշտեք բաժինը" },
+  { id: 3, title: "Բնութագրեր", hint: "Հիմնական պարամետրեր" },
+  { id: 4, title: "Լուսանկարներ", hint: "Որքան շատ, այնքան լավ" },
+  { id: 5, title: "Նկարագրություն", hint: "Վերնագիր և տեքստ" },
+  { id: 6, title: "Գին և կոնտակտներ", hint: "Ինչպես կապվել ձեզ հետ" },
+  { id: 7, title: "Նախադիտում", hint: "Ստուգեք և հրապարակեք" },
 ] as const;
 
 const numberOr = (value: string, fallback = 0) => {
@@ -147,33 +147,33 @@ export function stepErrors(step: number, draft: ListingDraft): string[] {
   const errors: string[] = [];
   switch (step) {
     case 1:
-      if (!draft.category) errors.push("Выберите категорию");
+      if (!draft.category) errors.push("Ընտրեք կատեգորիան");
       break;
     case 2:
-      if (!draft.subcategory) errors.push("Выберите тип объявления");
+      if (!draft.subcategory) errors.push("Ընտրեք հայտարարության տեսակը");
       break;
     case 3:
-      if (!draft.city) errors.push("Укажите город");
+      if (!draft.city) errors.push("Նշեք քաղաքը");
       if (
         draft.category === "real-estate" ||
         draft.category === "rentals" ||
         draft.category === "hotels"
       ) {
-        if (!draft.area) errors.push("Укажите площадь");
+        if (!draft.area) errors.push("Նշեք մակերեսը");
       } else {
-        if (!draft.brand) errors.push("Выберите марку");
-        if (!draft.model) errors.push("Выберите модель");
-        if (!draft.year) errors.push("Укажите год выпуска");
+        if (!draft.brand) errors.push("Ընտրեք մակնիշը");
+        if (!draft.model) errors.push("Ընտրեք մոդելը");
+        if (!draft.year) errors.push("Նշեք թողարկման տարին");
       }
       break;
     case 5:
-      if (draft.title.trim().length < 10) errors.push("Заголовок от 10 символов");
-      if (draft.description.trim().length < 40) errors.push("Описание от 40 символов");
+      if (draft.title.trim().length < 10) errors.push("Վերնագիրը՝ նվազագույնը 10 նիշ");
+      if (draft.description.trim().length < 40) errors.push("Նկարագրությունը՝ նվազագույնը 40 նիշ");
       break;
     case 6:
-      if (!draft.price) errors.push("Укажите цену");
-      if (draft.phone.trim().length < 6) errors.push("Укажите телефон");
-      if (!draft.contactName.trim()) errors.push("Укажите имя");
+      if (!draft.price) errors.push("Նշեք գինը");
+      if (draft.phone.trim().length < 6) errors.push("Նշեք հեռախոսահամարը");
+      if (!draft.contactName.trim()) errors.push("Նշեք անունը");
       break;
     default:
       break;
@@ -244,7 +244,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
       power: numberOr(draft.power, 150),
       transmission: (draft.transmission || "automatic") as Transmission,
       drive: (draft.drive || "fwd") as DriveType,
-      color: draft.color || "Белый",
+      color: draft.color || "Սպիտակ",
       condition: draft.carCondition,
       steering: draft.steering,
       owners: numberOr(draft.owners, 1),

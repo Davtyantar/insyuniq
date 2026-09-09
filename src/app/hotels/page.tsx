@@ -4,8 +4,8 @@ import { CategoryPage } from "@/components/category/category-page";
 import { CategoryPageSkeleton } from "@/components/category/category-page-skeleton";
 
 export const metadata: Metadata = {
-  title: "Отели и отдых",
-  description: "Отели, гостевые дома и жильё для отдыха посуточно и на длительный срок.",
+  title: "Հյուրանոցներ և հանգիստ",
+  description: "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և երկարաժամկետ։",
 };
 
 export default function HotelsPage() {

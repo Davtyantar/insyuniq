@@ -18,13 +18,13 @@ export function StepPrice({ draft, patch }: StepProps) {
   const isLongRental = isStay && draft.term === "long";
   const perMonth = isRent || isLongRental;
 
-  const priceLabel = isDaily ? "Цена за сутки, $" : perMonth ? "Цена за месяц, $" : "Цена, $";
+  const priceLabel = isDaily ? "Գին օրավարձով, $" : perMonth ? "Գին ամսավարձով, $" : "Գին, $";
 
   return (
     <div className="space-y-6">
       <StepHeader
-        title="Цена и контакты"
-        description="Цену указывайте в долларах — так ищет большинство покупателей."
+        title="Գին և կոնտակտներ"
+        description="Գինը նշեք դոլարով — այդպես է փնտրում գնորդների մեծ մասը։"
       />
 
       <Field
@@ -32,7 +32,7 @@ export function StepPrice({ draft, patch }: StepProps) {
         required
         hint={
           price > 0
-            ? `Покупатель увидит ${formatPrice(price, { perMonth, perDay: isDaily })}`
+            ? `Գնորդը կտեսնի ${formatPrice(price, { perMonth, perDay: isDaily })}`
             : undefined
         }
       >
@@ -46,14 +46,14 @@ export function StepPrice({ draft, patch }: StepProps) {
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Имя" required>
+        <Field label="Անուն" required>
           <Input
             value={draft.contactName}
             onChange={(event) => patch({ contactName: event.target.value })}
-            placeholder="Как к вам обращаться"
+            placeholder="Ինչպես դիմենք ձեզ"
           />
         </Field>
-        <Field label="Телефон" required>
+        <Field label="Հեռախոս" required>
           <Input
             value={draft.phone}
             onChange={(event) => patch({ phone: event.target.value })}
@@ -63,8 +63,8 @@ export function StepPrice({ draft, patch }: StepProps) {
       </div>
 
       <p className="rounded-lg border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
-        Номер показывается покупателям только после нажатия «Показать телефон» — звонить будут
-        напрямую вам.
+        Հեռախոսահամարը գնորդներին ցուցադրվում է միայն «Ցուցադրել հեռախոսը» կոճակը սեղմելուց հետո —
+        կզանգահարեն ուղիղ ձեզ։
       </p>
     </div>
   );

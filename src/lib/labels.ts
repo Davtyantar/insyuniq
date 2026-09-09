@@ -37,7 +37,7 @@ const MAPS: Record<string, Record<string, string>> = {
   steering: toMap(STEERING_TYPES),
 };
 
-/** Resolves an enum value to its Russian label, falling back to the raw value. */
+/** Resolves an enum value to its Armenian label, falling back to the raw value. */
 export function label(map: keyof typeof MAPS, value?: string | null): string {
   if (!value) return "—";
   return MAPS[map][value] ?? value;
