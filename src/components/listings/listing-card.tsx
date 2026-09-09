@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, ImageIcon, MapPin } from "lucide-react";
@@ -33,11 +36,31 @@ function accentBadges(listing: Listing): string[] {
   return badges;
 }
 
+const MAX_PREVIEW_DOTS = 6;
+
 export function ListingCard({ listing, view = "grid", priority, className }: ListingCardProps) {
   const seller = getSeller(listing.sellerId);
   const specs = cardSpecs(listing);
   const badges = accentBadges(listing);
   const isList = view === "list";
+
+  const imageRef = React.useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const zoneCount = Math.min(listing.images.length, MAX_PREVIEW_DOTS);
+
+  const scrub = React.useCallback(
+    (event: React.MouseEvent) => {
+      const rect = imageRef.current?.getBoundingClientRect();
+      if (!rect || zoneCount < 2) return;
+      if (event.clientY < rect.top || event.clientY > rect.bottom) return;
+      const fraction = (event.clientX - rect.left) / rect.width;
+      const next = Math.min(zoneCount - 1, Math.max(0, Math.floor(fraction * zoneCount)));
+      setActiveIndex((prev) => (prev === next ? prev : next));
+    },
+    [zoneCount],
+  );
+
+  const reset = React.useCallback(() => setActiveIndex(0), []);
 
   return (
     <article
@@ -47,25 +70,32 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
         className,
       )}
     >
-      <Link href={listingHref(listing)} className="absolute inset-0 z-10" aria-label={listing.title}>
+      <Link
+        href={listingHref(listing)}
+        className="absolute inset-0 z-10"
+        aria-label={listing.title}
+        onMouseMove={scrub}
+        onMouseLeave={reset}
+      >
         <span className="sr-only">{listing.title}</span>
       </Link>
 
       <div
+        ref={imageRef}
         className={cn(
           "relative shrink-0 overflow-hidden bg-secondary",
           isList ? "aspect-[4/3] sm:aspect-auto sm:h-[212px] sm:w-[300px]" : "aspect-[4/3]",
         )}
       >
         <Image
-          src={listing.images[0]}
+          src={listing.images[activeIndex]}
           alt={listing.title}
           fill
           sizes={isList ? "(max-width: 640px) 100vw, 300px" : "(max-width: 768px) 100vw, 33vw"}
           priority={priority}
           // Photos added through the publish wizard are object URLs the optimiser cannot fetch.
-          unoptimized={listing.images[0].startsWith("blob:")}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          unoptimized={listing.images[activeIndex].startsWith("blob:")}
+          className="object-cover"
         />
 
         <div className="absolute left-3 top-3 z-20 flex flex-wrap gap-1.5">
@@ -84,10 +114,24 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
 
         <FavoriteButton listingId={listing.id} className="absolute right-3 top-3 z-20" />
 
-        <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-slate-950/65 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">
-          <ImageIcon className="h-3 w-3" />
-          {listing.images.length}
-        </span>
+        {zoneCount > 1 ? (
+          <div className="absolute inset-x-3 bottom-3 z-20 flex gap-1">
+            {Array.from({ length: zoneCount }, (_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  "h-[3px] flex-1 rounded-full bg-white/40 transition-colors",
+                  i === activeIndex && "bg-white",
+                )}
+              />
+            ))}
+          </div>
+        ) : (
+          <span className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-md bg-slate-950/65 px-1.5 py-0.5 text-[11px] font-medium text-white backdrop-blur">
+            <ImageIcon className="h-3 w-3" />
+            {listing.images.length}
+          </span>
+        )}
       </div>
 
       <div className={cn("flex flex-1 flex-col p-4", isList && "sm:p-5")}>

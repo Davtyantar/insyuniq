@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BadgeCheck, Phone, ShieldCheck, Zap } from "lucide-react";
 import { Hero } from "@/components/home/hero";
 import { HitsSection } from "@/components/home/hits-section";
+import { PromoBanner } from "@/components/home/promo-banner";
 import { Button } from "@/components/ui/button";
 import { TOP_CARS, TOP_HOTELS, TOP_REAL_ESTATE, TOP_RENTALS } from "@/mock/listings";
 
@@ -31,6 +32,8 @@ const BENEFITS = [
 export default function HomePage() {
   return (
     <>
+      <PromoBanner />
+
       <Hero />
 
       <HitsSection
