@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
 import { listingHref } from "@/lib/categories";
 import { formatPrice } from "@/lib/format";
@@ -44,6 +45,7 @@ function matchListings(query: string): Listing[] {
 export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { currency } = useApp();
   const [query, setQuery] = React.useState(defaultQuery);
   const [open, setOpen] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState(-1);
@@ -174,10 +176,13 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
                     </p>
                   </div>
                   <span className="shrink-0 text-[13px] font-semibold text-foreground">
-                    {formatPrice(listing.price, {
-                      perMonth: isMonthly(listing),
-                      perDay: isDaily(listing),
-                    })}
+                    {formatPrice(listing.price, { currency })}
+                    {isDaily(listing) && (
+                      <span className="ml-0.5 text-[11px] font-normal text-accent">օր</span>
+                    )}
+                    {isMonthly(listing) && (
+                      <span className="ml-0.5 text-[11px] font-normal text-accent">ամիս</span>
+                    )}
                   </span>
                 </Link>
               ))}

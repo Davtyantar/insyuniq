@@ -27,8 +27,8 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 interface DialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
-  /** Bottom sheet on mobile, centred dialog from `sm` up. */
-  variant?: "center" | "sheet" | "full";
+  /** "blur" is a transparent, edge-to-edge panel over a heavily blurred backdrop — for lightboxes and other content that should float over the page instead of sitting on a solid panel. */
+  variant?: "center" | "sheet" | "full" | "blur";
   hideClose?: boolean;
 }
 
@@ -37,7 +37,9 @@ const DialogContent = React.forwardRef<
   DialogContentProps
 >(({ className, children, variant = "center", hideClose, ...props }, ref) => (
   <DialogPortal>
-    <DialogOverlay />
+    <DialogOverlay
+      className={cn(variant === "blur" && "bg-slate-950/35 backdrop-blur-xl")}
+    />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
@@ -47,6 +49,8 @@ const DialogContent = React.forwardRef<
         variant === "sheet" &&
           "inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl data-[state=open]:animate-slide-up sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:w-[560px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl",
         variant === "full" && "inset-0 rounded-none border-0 bg-slate-950 p-0",
+        variant === "blur" &&
+          "inset-0 flex items-center justify-center rounded-none border-0 bg-transparent p-0 shadow-none data-[state=open]:animate-fade-in",
         className,
       )}
       {...props}
@@ -56,7 +60,8 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Close
           className={cn(
             "absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring",
-            variant === "full" && "z-10 bg-white/10 text-white hover:bg-white/20 hover:text-white",
+            (variant === "full" || variant === "blur") &&
+              "z-10 bg-card/80 text-foreground shadow-md backdrop-blur hover:bg-card",
           )}
         >
           <X className="h-5 w-5" />

@@ -1,3 +1,21 @@
+import { Clock } from "lucide-react";
+import { EmptyState } from "@/components/listings/empty-state";
+
+export default function ProfilePage() {
+  return (
+    <div className="container flex min-h-[60vh] items-center justify-center py-10">
+      <EmptyState
+        icon={Clock}
+        title="Շուտով հասանելի կլինի"
+        description="Անձնական էջը դեռ մշակման փուլում է․ ձեր հայտարարությունները, հավանածները և կարգավորումները կառավարելու հնարավորությունը կհայտնվի շատ շուտով։"
+        action={{ label: "Վերադառնալ գլխավոր էջ", href: "/" }}
+      />
+    </div>
+  );
+}
+
+/* Temporarily disabled — restore this once the profile page is ready to ship.
+
 "use client";
 
 import * as React from "react";
@@ -222,3 +240,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+*/

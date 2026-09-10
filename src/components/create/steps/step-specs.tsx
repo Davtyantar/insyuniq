@@ -282,6 +282,13 @@ export function StepSpecs({ draft, patch }: StepProps) {
               checked={draft.parking}
               onChange={(parking) => patch({ parking })}
             />
+            {draft.category === "hotels" && (
+              <ToggleRow
+                label="Լողավազան"
+                checked={draft.pool}
+                onChange={(pool) => patch({ pool })}
+              />
+            )}
           </div>
         </Field>
 

@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
+import type { Currency } from "@/lib/currency";
 import type { Locale } from "@/lib/i18n";
 import type { Listing } from "@/lib/types";
 
 const FAVORITES_KEY = "syuniq:favorites";
 const CITY_KEY = "syuniq:city";
 const LOCALE_KEY = "syuniq:locale";
+const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
 
 export type Theme = "light" | "dark";
@@ -28,6 +30,9 @@ interface AppState {
   /** Interface language; defaults to Russian until the user picks one. */
   locale: Locale;
   setLocale: (locale: Locale) => void;
+  /** Currency prices are displayed in; listing prices are stored in USD and converted for display. */
+  currency: Currency;
+  setCurrency: (currency: Currency) => void;
   /** Light/dark theme; a blocking inline script in the document head applies it before first paint. */
   theme: Theme;
   toggleTheme: () => void;
@@ -42,6 +47,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [published, setPublished] = React.useState<Listing[]>([]);
   const [city, setCityState] = React.useState<string | null>(null);
   const [locale, setLocaleState] = React.useState<Locale>("am");
+  const [currency, setCurrencyState] = React.useState<Currency>("USD");
   const [theme, setThemeState] = React.useState<Theme>("light");
   const [hydrated, setHydrated] = React.useState(false);
 
@@ -65,6 +71,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {
       // Ignore unavailable storage — locale simply starts at the default.
+    }
+    try {
+      const savedCurrency = window.localStorage.getItem(CURRENCY_KEY);
+      if (savedCurrency === "USD" || savedCurrency === "AMD" || savedCurrency === "EUR" || savedCurrency === "RUB") {
+        setCurrencyState(savedCurrency);
+      }
+    } catch {
+      // Ignore unavailable storage — currency simply starts at the default.
     }
     // The blocking inline script in <head> already set the "dark" class before paint;
     // just mirror that into state so React and the DOM agree.
@@ -109,6 +123,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const setCurrency = React.useCallback((next: Currency) => {
+    setCurrencyState(next);
+    try {
+      window.localStorage.setItem(CURRENCY_KEY, next);
+    } catch {
+      // Storage can be full or blocked; currency stays in memory for this session.
+    }
+  }, []);
+
   const toggleTheme = React.useCallback(() => {
     setThemeState((prev) => {
       const next: Theme = prev === "dark" ? "light" : "dark";
@@ -133,6 +156,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      currency,
+      setCurrency,
       theme,
       toggleTheme,
       hydrated,
@@ -147,6 +172,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      currency,
+      setCurrency,
       theme,
       toggleTheme,
       hydrated,

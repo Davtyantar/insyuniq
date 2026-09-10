@@ -8,7 +8,13 @@ import {
   ToggleRow,
 } from "@/components/filters/filter-fields";
 import type { HotelFilters } from "@/lib/types";
-import { CITIES, HOTEL_SUBCATEGORIES, RENTAL_TERMS, ROOMS_OPTIONS } from "@/mock/taxonomy";
+import {
+  CITIES,
+  HOTEL_SUBCATEGORIES,
+  POOL_OPTIONS,
+  RENTAL_TERMS,
+  ROOMS_OPTIONS,
+} from "@/mock/taxonomy";
 
 interface Props {
   filters: HotelFilters;
@@ -61,6 +67,14 @@ export function HotelFilterFields({ filters, onChange }: Props) {
           values={filters.rooms}
           onChange={(rooms) => onChange({ rooms })}
           multiple
+        />
+      </FilterSection>
+
+      <FilterSection title="Լողավազան">
+        <ChipGroup
+          options={POOL_OPTIONS}
+          values={filters.pool ? [filters.pool] : []}
+          onChange={(values) => onChange({ pool: (values[0] ?? "") as HotelFilters["pool"] })}
         />
       </FilterSection>
 

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPinned, ShieldCheck, Sparkles } from "lucide-react";
+import { MapPinned, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CtaButton } from "@/components/ui/cta-button";
 import { APP_NAME } from "@/lib/constants";
 
 const STATS = [
@@ -27,7 +28,7 @@ export function PromoBanner() {
           aria-hidden
           className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.22)_1.6px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.1)_1.2px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)]'
         />
-        <div className="pointer-events-none absolute right-[110px] top-1/2 z-0 hidden aspect-[78/103] h-[320px] -translate-y-1/2 opacity-80 sm:block sm:h-[390px] md:right-[134px] md:h-[470px] lg:h-[530px]">
+        <div className="pointer-events-none absolute right-[320px] top-1/2 z-0 hidden aspect-[78/103] h-[300px] -translate-y-1/2 sm:block sm:h-[360px] md:right-[380px] md:h-[420px] lg:right-[420px] lg:h-[460px]">
           <Image src="/syunik-map.png" alt="" aria-hidden fill className="object-contain" />
         </div>
 
@@ -49,12 +50,7 @@ export function PromoBanner() {
               Անշարժ գույք, ավտոմեքենաներ, վարձակալություն և հյուրանոցներ՝ մեկ տեղում
             </p>
             <div className='mt-1 flex flex-wrap items-center justify-center gap-3 md:justify-start'>
-              <Button asChild size='lg' variant='accent' className='gap-2'>
-                <Link href='/create'>
-                  Հրապարակել հայտարարություն
-                  <ArrowRight className='h-4 w-4' />
-                </Link>
-              </Button>
+              <CtaButton href='/create'>Հրապարակել հայտարարություն</CtaButton>
               <Button
                 asChild
                 size='lg'

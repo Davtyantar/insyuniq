@@ -54,6 +54,9 @@ export interface ListingDraft {
   balcony: boolean;
   parking: boolean;
 
+  // Hotels
+  pool: boolean;
+
   // Cars
   brand: string;
   model: string;
@@ -101,6 +104,7 @@ export const EMPTY_DRAFT: ListingDraft = {
   furniture: false,
   balcony: false,
   parking: false,
+  pool: false,
   brand: "",
   model: "",
   year: "",
@@ -197,7 +201,8 @@ function draftImages(draft: ListingDraft): string[] {
     if (
       draft.subcategory === "houses" ||
       draft.subcategory === "guesthouses" ||
-      draft.subcategory === "cottages"
+      draft.subcategory === "cottages" ||
+      draft.subcategory === "daily-houses"
     ) {
       return [HOUSE_PHOTOS[0], HOUSE_PHOTOS[1]];
     }
@@ -286,6 +291,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
       furniture: draft.furniture,
       balcony: draft.balcony,
       parking: draft.parking,
+      pool: draft.pool,
     };
     return stay;
   }

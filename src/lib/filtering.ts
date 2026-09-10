@@ -88,6 +88,7 @@ export const DEFAULT_HOTEL_FILTERS: HotelFilters = {
   rooms: [],
   areaMin: "",
   areaMax: "",
+  pool: "",
 };
 
 export function defaultFilters(category: CategorySlug) {
@@ -270,6 +271,8 @@ export function filterHotels(listings: HotelListing[], filters: HotelFilters): H
       if (!filters.rooms.includes(bucket)) return false;
     }
     if (!inRange(l.area, num(filters.areaMin), num(filters.areaMax))) return false;
+    if (filters.pool === "yes" && !l.pool) return false;
+    if (filters.pool === "no" && l.pool) return false;
     return true;
   });
 }

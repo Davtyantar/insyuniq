@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import { FavoriteButton } from "@/components/listings/favorite-button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { cn } from "@/lib/utils";
 
 interface ImageGalleryProps {
@@ -58,7 +58,11 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
                 fill
                 sizes="100vw"
                 priority={i === 0}
-                className="object-cover"
+                onClick={() => {
+                  setIndex(i);
+                  setFullscreen(true);
+                }}
+                className="cursor-zoom-in object-cover"
               />
             </div>
           ))}
@@ -106,7 +110,8 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
             fill
             sizes="(max-width: 1280px) 60vw, 760px"
             priority
-            className="object-cover"
+            onClick={() => setFullscreen(true)}
+            className="cursor-zoom-in object-cover"
           />
 
           <button
@@ -143,39 +148,14 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
         </div>
       </div>
 
-      <Dialog open={fullscreen} onOpenChange={setFullscreen}>
-        <DialogContent variant="full" className="flex items-center justify-center">
-          <DialogTitle className="sr-only">{alt}</DialogTitle>
-          <div className="relative h-full w-full">
-            <Image
-              src={images[index]}
-              alt={`${alt} — նկար ${index + 1}`}
-              fill
-              sizes="100vw"
-              className="object-contain"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => go(index - 1)}
-            aria-label="Նախորդ նկարը"
-            className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(index + 1)}
-            aria-label="Հաջորդ նկարը"
-            className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-          <span className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-md bg-white/10 px-3 py-1 text-sm text-white backdrop-blur">
-            {index + 1} / {images.length}
-          </span>
-        </DialogContent>
-      </Dialog>
+      <ImageLightbox
+        images={images}
+        alt={alt}
+        index={index}
+        onIndexChange={setIndex}
+        open={fullscreen}
+        onOpenChange={setFullscreen}
+      />
     </div>
   );
 }

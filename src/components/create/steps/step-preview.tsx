@@ -2,12 +2,14 @@
 
 import { MapPin } from "lucide-react";
 import { StepHeader } from "@/components/create/field";
+import { useApp } from "@/components/providers/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/format";
 import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing } from "@/lib/types";
 
 export function StepPreview({ listing }: { listing: Listing }) {
+  const { currency } = useApp();
   const specs = detailSpecs(listing);
 
   return (
@@ -36,7 +38,13 @@ export function StepPreview({ listing }: { listing: Listing }) {
 
         <div className="p-5">
           <p className="text-[28px] font-semibold leading-none tracking-tight">
-            {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
+            {formatPrice(listing.price, { currency })}
+            {isDaily(listing) && (
+              <span className="ml-1 text-sm font-normal text-accent">օր</span>
+            )}
+            {isMonthly(listing) && (
+              <span className="ml-1 text-sm font-normal text-accent">ամիս</span>
+            )}
           </p>
           <h3 className="mt-2.5 text-[18px] font-medium leading-snug">{listing.title}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{listingSummary(listing)}</p>

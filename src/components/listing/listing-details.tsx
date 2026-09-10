@@ -3,12 +3,12 @@ import { BadgeCheck, ChevronRight, Eye, MapPin } from "lucide-react";
 import { ImageGallery } from "@/components/listing/image-gallery";
 import { MapPlaceholder } from "@/components/listing/map-placeholder";
 import { MobileContactBar } from "@/components/listing/mobile-contact-bar";
+import { PriceTag } from "@/components/listing/price-tag";
 import { SellerCard } from "@/components/listing/seller-card";
 import { FavoriteButton } from "@/components/listings/favorite-button";
 import { ListingGrid } from "@/components/listings/listing-grid";
-import { Badge } from "@/components/ui/badge";
 import { CATEGORIES } from "@/lib/categories";
-import { formatFullDate, formatNumber, formatPrice, formatRelativeDate } from "@/lib/format";
+import { formatFullDate, formatNumber, formatRelativeDate } from "@/lib/format";
 import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing } from "@/lib/types";
 import { getSeller } from "@/mock/sellers";
@@ -29,7 +29,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
   return (
     <div className="pb-20 md:pb-0">
       <div className="container py-4 lg:py-6">
-        <nav className="flex flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
+        <nav className="flex flex-wrap items-center gap-1.5 text-[13px] text-foreground/70">
           <Link href="/" className="transition-colors hover:text-foreground">
             Գլխավոր
           </Link>
@@ -42,7 +42,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
               <ChevronRight className="h-3.5 w-3.5" />
               <Link
                 href={`${category.href}?subcategory=${listing.subcategory}`}
-                className="transition-colors hover:text-foreground"
+                className="font-medium text-foreground transition-colors hover:text-accent"
               >
                 {subcategoryLabel}
               </Link>
@@ -90,19 +90,22 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
           <aside className="min-w-0 space-y-4 lg:sticky lg:top-[124px] lg:self-start">
             <div className="rounded-lg border border-border bg-card p-5">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <PriceTag
+                  price={listing.price}
+                  perMonth={isMonthly(listing)}
+                  perDay={isDaily(listing)}
+                  className="text-[32px] font-semibold leading-none tracking-tight"
+                />
                 {listing.verified && (
-                  <Badge variant="accent" className="gap-1">
-                    <BadgeCheck className="h-3.5 w-3.5" />
-                    Ստուգված հայտարարություն
-                  </Badge>
+                  <BadgeCheck
+                    className="h-6 w-6 shrink-0 text-accent"
+                    aria-label="Ստուգված հայտարարություն"
+                  >
+                    <title>Ստուգված հայտարարություն</title>
+                  </BadgeCheck>
                 )}
-                <Badge variant="default">{subcategoryLabel}</Badge>
               </div>
-
-              <p className="mt-3 text-[32px] font-semibold leading-none tracking-tight">
-                {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
-              </p>
 
               <h1 className="mt-3 text-[19px] font-medium leading-snug">{listing.title}</h1>
               <p className="mt-1 text-sm text-muted-foreground">{listingSummary(listing)}</p>

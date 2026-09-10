@@ -70,6 +70,9 @@ export const TOP_HOTEL_ROOMS = HOTEL_LISTINGS.filter((l) => l.subcategory === "h
 export const TOP_VACATION_HOUSES = HOTEL_LISTINGS.filter((l) => l.subcategory === "houses")
   .sort(byViews)
   .slice(0, 8);
+export const TOP_DAILY_HOUSES = HOTEL_LISTINGS.filter((l) => l.subcategory === "daily-houses")
+  .sort(byViews)
+  .slice(0, 8);
 
 /** Listings that belong to the signed-in user of this prototype. */
 export const MY_LISTING_IDS = ["re-2", "car-5", "re-12"];

@@ -1,6 +1,7 @@
 "use client";
 
 import { Field, StepHeader } from "@/components/create/field";
+import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
 import type { ListingDraft } from "@/lib/draft";
@@ -11,6 +12,7 @@ interface StepProps {
 }
 
 export function StepPrice({ draft, patch }: StepProps) {
+  const { currency } = useApp();
   const price = Number(draft.price) || 0;
   const isRent = draft.category === "real-estate" && draft.deal === "rent";
   const isStay = draft.category === "rentals" || draft.category === "hotels";
@@ -32,7 +34,7 @@ export function StepPrice({ draft, patch }: StepProps) {
         required
         hint={
           price > 0
-            ? `Գնորդը կտեսնի ${formatPrice(price, { perMonth, perDay: isDaily })}`
+            ? `Գնորդը կտեսնի ${formatPrice(price, { perMonth, perDay: isDaily, currency })}`
             : undefined
         }
       >

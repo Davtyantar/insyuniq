@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { CityAccent } from "@/components/city-accent";
 import { ListingCard } from "@/components/listings/listing-card";
-import { ListingGrid } from "@/components/listings/listing-grid";
 import type { Listing } from "@/lib/types";
 
 interface HitsSectionProps {
@@ -15,12 +14,23 @@ interface HitsSectionProps {
   listings: Listing[];
 }
 
-/** Short "top picks" row for one category on the home page. */
+/** Gap between cards (Tailwind gap-3 = 0.75rem), used to compute the one-card scroll step. */
+const GAP_PX = 12;
+
+/**
+ * Short "top picks" row for one category on the home page — a peek-scroll carousel.
+ * Only ~4 cards show at once (fewer on narrow screens); the arrows reveal one more at a time
+ * instead of jumping a full page, so the rest of the list stays tucked away until asked for.
+ */
 export function HitsSection({ title, subtitle, href, listings }: HitsSectionProps) {
   const scrollerRef = React.useRef<HTMLDivElement>(null);
 
-  function scrollByPage(direction: 1 | -1) {
-    scrollerRef.current?.scrollBy({ left: direction * scrollerRef.current.clientWidth, behavior: "smooth" });
+  function scrollByCard(direction: 1 | -1) {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = (card?.getBoundingClientRect().width ?? el.clientWidth) + GAP_PX;
+    el.scrollBy({ left: direction * step, behavior: "smooth" });
   }
 
   return (
@@ -41,12 +51,11 @@ export function HitsSection({ title, subtitle, href, listings }: HitsSectionProp
             Տեսնել բոլորը
             <ArrowRight className="h-4 w-4" />
           </Link>
-          {/* Slider nav — only the mobile 2-up row below scrolls, so only show these under sm. */}
-          <div className="flex items-center gap-1.5 sm:hidden">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               aria-label="Նախորդները"
-              onClick={() => scrollByPage(-1)}
+              onClick={() => scrollByCard(-1)}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -54,7 +63,7 @@ export function HitsSection({ title, subtitle, href, listings }: HitsSectionProp
             <button
               type="button"
               aria-label="Հաջորդները"
-              onClick={() => scrollByPage(1)}
+              onClick={() => scrollByCard(1)}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary"
             >
               <ChevronRight className="h-4 w-4" />
@@ -63,20 +72,19 @@ export function HitsSection({ title, subtitle, href, listings }: HitsSectionProp
         </div>
       </div>
 
-      {/* Mobile: 2-up horizontal slider. */}
       <div
         ref={scrollerRef}
-        className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto sm:hidden"
+        className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto"
       >
         {listings.map((listing, index) => (
-          <div key={listing.id} className="w-[calc(50%-6px)] shrink-0 snap-start">
-            <ListingCard listing={listing} priority={index < 2} />
+          <div
+            key={listing.id}
+            className="w-[calc(50%-6px)] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
+          >
+            <ListingCard listing={listing} priority={index < 4} />
           </div>
         ))}
       </div>
-
-      {/* Tablet and up: regular grid. */}
-      <ListingGrid listings={listings} columns={4} className="mt-5 hidden sm:grid" />
     </section>
   );
 }

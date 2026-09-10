@@ -128,7 +128,7 @@ export interface RentalListing extends BaseListing {
   parking: boolean;
 }
 
-export type HotelSubcategory = "hotels" | "guesthouses" | "houses" | "cottages";
+export type HotelSubcategory = "hotels" | "guesthouses" | "houses" | "cottages" | "daily-houses";
 
 export interface HotelListing extends BaseListing {
   category: "hotels";
@@ -142,6 +142,7 @@ export interface HotelListing extends BaseListing {
   furniture: boolean;
   balcony: boolean;
   parking: boolean;
+  pool: boolean;
 }
 
 export type Listing = RealEstateListing | CarListing | RentalListing | HotelListing;
@@ -232,6 +233,7 @@ export interface HotelFilters extends CommonFilters {
   rooms: string[];
   areaMin: string;
   areaMax: string;
+  pool: "" | "yes" | "no";
 }
 
 export type AnyFilters = RealEstateFilters | CarFilters | RentalFilters | HotelFilters;

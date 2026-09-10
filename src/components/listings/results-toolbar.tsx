@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SORT_OPTIONS } from "@/lib/filtering";
-import { plural } from "@/lib/format";
+import { groupDigits, plural } from "@/lib/format";
 import type { CategorySlug, SortKey, ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -94,7 +94,7 @@ export function ResultsToolbar({
       <p className="text-sm text-muted-foreground">
         Գտնվել է{" "}
         <span className="font-medium text-foreground">
-          {total.toLocaleString("hy-AM")} {plural(total, "հայտարարություն", "հայտարարություններ")}
+          {groupDigits(total)} {plural(total, "հայտարարություն", "հայտարարություններ")}
         </span>
       </p>
 

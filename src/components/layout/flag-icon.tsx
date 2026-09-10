@@ -28,8 +28,28 @@ export function FlagIcon({ locale, className }: { locale: Locale; className?: st
   return (
     <svg viewBox="0 0 30 20" className={shared} aria-hidden="true">
       <rect width="30" height="20" fill="#fff" />
-      <rect x="12" width="6" height="20" fill="#ce1124" />
-      <rect y="7" width="30" height="6" fill="#ce1124" />
+      <rect y="0" width="30" height="2.22" fill="#b22234" />
+      <rect y="4.44" width="30" height="2.22" fill="#b22234" />
+      <rect y="8.88" width="30" height="2.22" fill="#b22234" />
+      <rect y="13.32" width="30" height="2.22" fill="#b22234" />
+      <rect y="17.76" width="30" height="2.22" fill="#b22234" />
+      <rect width="13" height="11.1" fill="#3c3b6e" />
+      <g fill="#fff">
+        <circle cx="2.2" cy="1.9" r="0.55" />
+        <circle cx="5.2" cy="1.9" r="0.55" />
+        <circle cx="8.2" cy="1.9" r="0.55" />
+        <circle cx="11.2" cy="1.9" r="0.55" />
+        <circle cx="3.7" cy="4.1" r="0.55" />
+        <circle cx="6.7" cy="4.1" r="0.55" />
+        <circle cx="9.7" cy="4.1" r="0.55" />
+        <circle cx="2.2" cy="6.3" r="0.55" />
+        <circle cx="5.2" cy="6.3" r="0.55" />
+        <circle cx="8.2" cy="6.3" r="0.55" />
+        <circle cx="11.2" cy="6.3" r="0.55" />
+        <circle cx="3.7" cy="8.5" r="0.55" />
+        <circle cx="6.7" cy="8.5" r="0.55" />
+        <circle cx="9.7" cy="8.5" r="0.55" />
+      </g>
     </svg>
   );
 }

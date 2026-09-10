@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { ChevronDown, MapPin } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import {
@@ -17,9 +18,26 @@ const PLACEHOLDER = "Ընտրել քաղաքը";
 export function LocationPicker() {
   const { city, setCity, hydrated } = useApp();
   const label = hydrated ? city ?? PLACEHOLDER : PLACEHOLDER;
+  const [open, setOpen] = React.useState(false);
+
+  // Radix's default "modal" behavior locks page scroll while open — this menu should stay
+  // over a normally-scrollable page, closing itself the moment the user scrolls instead.
+  React.useEffect(() => {
+    if (!open) return;
+    function close() {
+      setOpen(false);
+    }
+    window.addEventListener("scroll", close, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", close, { capture: true });
+  }, [open]);
+
+  function selectCity(value: string) {
+    setCity(value);
+    setOpen(false);
+  }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -32,7 +50,7 @@ export function LocationPicker() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuRadioGroup value={city ?? ""} onValueChange={setCity}>
+        <DropdownMenuRadioGroup value={city ?? ""} onValueChange={selectCity}>
           {CITIES.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value}>
               {option.label}

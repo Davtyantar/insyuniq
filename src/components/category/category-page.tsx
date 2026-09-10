@@ -101,6 +101,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
 
   function applyDraft() {
     navigate(draft, { page: undefined });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function resetFilters() {
@@ -132,16 +133,16 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
 
   return (
     <div className="container py-5 lg:py-8">
-      <nav className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+      <nav className="flex items-center gap-1.5 text-[13px] text-foreground/70">
         <Link href="/" className="transition-colors hover:text-foreground">
           Գլխավոր
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-foreground">{config.label}</span>
+        <span className="font-medium text-foreground">{config.label}</span>
         {subcategory && (
           <>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-foreground">
+            <span className="font-medium text-foreground">
               {config.subcategories.find((s) => s.value === subcategory)?.label}
             </span>
           </>

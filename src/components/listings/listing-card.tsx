@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, Clock, ImageIcon, MapPin } from "lucide-react";
 import { FavoriteButton } from "@/components/listings/favorite-button";
+import { useApp } from "@/components/providers/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { listingHref } from "@/lib/categories";
 import { formatPrice, formatRelativeDate } from "@/lib/format";
@@ -38,6 +39,7 @@ function accentBadges(listing: Listing): string[] {
 const MAX_PREVIEW_DOTS = 6;
 
 export function ListingCard({ listing, view = "grid", priority, className }: ListingCardProps) {
+  const { currency } = useApp();
   const badges = accentBadges(listing);
   const isList = view === "list";
 
@@ -96,12 +98,6 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
         />
 
         <div className="absolute left-3 top-3 z-20 flex flex-wrap gap-1.5">
-          {listing.verified && (
-            <Badge variant="outline" className="gap-1 text-brand-700">
-              <BadgeCheck className="h-3.5 w-3.5" />
-              Ստուգված
-            </Badge>
-          )}
           {badges.map((badge) => (
             <Badge key={badge} variant="outline">
               {badge}
@@ -140,9 +136,25 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
       </div>
 
       <div className={cn("flex flex-1 flex-col gap-2 p-4", isList && "sm:p-5")}>
-        <span className="text-[22px] font-semibold tracking-tight text-foreground">
-          {formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) })}
-        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[22px] font-semibold tracking-tight text-foreground">
+            {formatPrice(listing.price, { currency })}
+            {isDaily(listing) && (
+              <span className="ml-1 text-[13px] font-normal text-accent">օր</span>
+            )}
+            {isMonthly(listing) && (
+              <span className="ml-1 text-[13px] font-normal text-accent">ամիս</span>
+            )}
+          </span>
+          {listing.verified && (
+            <BadgeCheck
+              className="h-5 w-5 shrink-0 text-accent"
+              aria-label="Ստուգված հայտարարություն"
+            >
+              <title>Ստուգված հայտարարություն</title>
+            </BadgeCheck>
+          )}
+        </div>
 
         <h3
           className={cn(
