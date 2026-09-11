@@ -17,9 +17,8 @@ const PLACEHOLDER = "Ընտրել քաղաքը";
 
 /** City picker next to the header search — persists the choice to localStorage. */
 export function LocationPicker() {
-  const { city, setCity, hydrated } = useApp();
+  const { city, setCity, hydrated, locationMenuOpen: open, setLocationMenuOpen: setOpen } = useApp();
   const label = hydrated ? city ?? PLACEHOLDER : PLACEHOLDER;
-  const [open, setOpen] = React.useState(false);
 
   // Radix's default "modal" behavior locks page scroll while open — this menu should stay
   // over a normally-scrollable page, closing itself the moment the user scrolls instead.
@@ -30,7 +29,7 @@ export function LocationPicker() {
     }
     window.addEventListener("scroll", close, { passive: true, capture: true });
     return () => window.removeEventListener("scroll", close, { capture: true });
-  }, [open]);
+  }, [open, setOpen]);
 
   function selectCity(value: string) {
     setCity(value);

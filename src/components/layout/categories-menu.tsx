@@ -3,13 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { ChevronRight, Menu } from "lucide-react";
+import { useApp } from "@/components/providers/app-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CATEGORY_LIST } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 /** Burger menu next to the logo: hover a category on the left, jump straight to a subcategory on the right. */
 export function CategoriesMenu() {
-  const [open, setOpen] = React.useState(false);
+  const { categoriesMenuOpen: open, setCategoriesMenuOpen: setOpen } = useApp();
   const [active, setActive] = React.useState(CATEGORY_LIST[0].slug);
 
   // Radix's default "modal" behavior locks page scroll while open — this menu should stay
@@ -22,7 +23,7 @@ export function CategoriesMenu() {
     }
     window.addEventListener("scroll", close, { passive: true, capture: true });
     return () => window.removeEventListener("scroll", close, { capture: true });
-  }, [open]);
+  }, [open, setOpen]);
 
   const activeCategory = CATEGORY_LIST.find((category) => category.slug === active) ?? CATEGORY_LIST[0];
 
@@ -38,8 +39,8 @@ export function CategoriesMenu() {
           <span className="hidden lg:inline">Բաժիններ</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="flex w-[560px] max-w-[90vw] gap-0 p-0">
-        <div className="w-[220px] shrink-0 border-r border-border p-1.5">
+      <DropdownMenuContent align="start" className="flex w-[660px] max-w-[92vw] gap-0 p-0">
+        <div className="flex w-[240px] shrink-0 flex-col gap-1 border-r border-border p-2.5">
           {CATEGORY_LIST.map((category) => (
             <Link
               key={category.slug}
@@ -47,7 +48,7 @@ export function CategoriesMenu() {
               onMouseEnter={() => setActive(category.slug)}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                 active === category.slug
                   ? "bg-secondary font-medium text-foreground"
                   : "text-foreground hover:bg-secondary/70",
@@ -60,24 +61,24 @@ export function CategoriesMenu() {
           ))}
         </div>
 
-        <div className="min-w-0 flex-1 p-3">
+        <div className="min-w-0 flex-1 p-4">
           <Link
             href={activeCategory.href}
             onClick={() => setOpen(false)}
-            className="mb-2 block px-1 text-sm font-semibold text-foreground transition-colors hover:text-accent"
+            className="mb-3 block px-1 text-sm font-semibold text-foreground transition-colors hover:text-accent"
           >
             {activeCategory.label}
           </Link>
-          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+          <div className="flex flex-col gap-0.5">
             {activeCategory.subcategories.map((sub) => (
               <Link
                 key={sub.value}
                 href={`${activeCategory.href}?subcategory=${sub.value}`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground"
+                className="flex items-center gap-2.5 whitespace-nowrap rounded-md px-2.5 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground"
               >
-                {sub.icon && <sub.icon className="h-3.5 w-3.5 shrink-0" />}
-                <span className="truncate">{sub.label}</span>
+                {sub.icon && <sub.icon className="h-4 w-4 shrink-0" />}
+                <span>{sub.label}</span>
               </Link>
             ))}
           </div>

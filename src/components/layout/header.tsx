@@ -30,22 +30,24 @@ function CountBadge({ count }: { count: number }) {
 
 export function Header() {
   const pathname = usePathname();
-  const { favorites, hydrated, searchOpen } = useApp();
+  const { favorites, hydrated, searchOpen, categoriesMenuOpen } = useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
   // The home page already lists every category as tiles, so the nav row would repeat it.
   const showCategoryNav = pathname !== "/";
+  // Both the search field and the categories menu spotlight the top bar the same way.
+  const spotlight = searchOpen || categoriesMenuOpen;
 
   return (
     <header
       className={cn(
         "sticky top-0 z-40 border-b transition-colors duration-200",
-        searchOpen ? "border-transparent" : "border-border",
+        spotlight ? "border-transparent" : "border-border",
       )}
     >
       <div
         className={cn(
           "w-full backdrop-blur transition-shadow duration-200",
-          searchOpen
+          spotlight
             ? "relative z-10 bg-card shadow-lg"
             : "bg-card/90 supports-[backdrop-filter]:bg-card/75",
         )}
@@ -87,7 +89,7 @@ export function Header() {
       <div
         className={cn(
           "relative w-full border-t bg-card/90 backdrop-blur transition-colors duration-200 supports-[backdrop-filter]:bg-card/75",
-          searchOpen ? "border-transparent" : "border-border/70",
+          spotlight ? "border-transparent" : "border-border/70",
         )}
       >
         <div className="container hidden h-11 items-center gap-6 text-sm md:flex">
@@ -122,7 +124,7 @@ export function Header() {
           </Link>
         </div>
 
-        {searchOpen && (
+        {spotlight && (
           <div
             aria-hidden
             className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-200"

@@ -15,6 +15,9 @@ const MAX_RECENT_SEARCHES = 8;
 
 export type Theme = "light" | "dark";
 
+/** Only one header dropdown (search, categories menu, city, language/currency) can be open at a time. */
+type HeaderMenu = "search" | "categories" | "location" | "language" | null;
+
 function applyThemeClass(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
@@ -40,9 +43,19 @@ interface AppState {
   toggleTheme: () => void;
   /** False until localStorage has been read, so SSR and first paint agree. */
   hydrated: boolean;
-  /** Whether the header search field is focused/open; dims the rest of the page to spotlight it. */
+  /** Whether the header search field is focused/open; dims the rest of the page to spotlight it.
+   * Only one header dropdown is ever open at once — opening one closes the others. */
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+  /** Whether the header categories mega menu is open; also dims the rest of the page. */
+  categoriesMenuOpen: boolean;
+  setCategoriesMenuOpen: (open: boolean) => void;
+  /** Whether the city picker dropdown is open. */
+  locationMenuOpen: boolean;
+  setLocationMenuOpen: (open: boolean) => void;
+  /** Whether the language/currency picker dropdown is open. */
+  languageMenuOpen: boolean;
+  setLanguageMenuOpen: (open: boolean) => void;
   /** Most recent search queries, newest first; shown in the search dropdown before the user types. */
   recentSearches: string[];
   addRecentSearch: (query: string) => void;
@@ -59,8 +72,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = React.useState<Currency>("USD");
   const [theme, setThemeState] = React.useState<Theme>("light");
   const [hydrated, setHydrated] = React.useState(false);
-  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [activeHeaderMenu, setActiveHeaderMenu] = React.useState<HeaderMenu>(null);
   const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
+
+  const searchOpen = activeHeaderMenu === "search";
+  const categoriesMenuOpen = activeHeaderMenu === "categories";
+  const locationMenuOpen = activeHeaderMenu === "location";
+  const languageMenuOpen = activeHeaderMenu === "language";
+
+  const setSearchOpen = React.useCallback((open: boolean) => {
+    setActiveHeaderMenu((prev) => (open ? "search" : prev === "search" ? null : prev));
+  }, []);
+  const setCategoriesMenuOpen = React.useCallback((open: boolean) => {
+    setActiveHeaderMenu((prev) => (open ? "categories" : prev === "categories" ? null : prev));
+  }, []);
+  const setLocationMenuOpen = React.useCallback((open: boolean) => {
+    setActiveHeaderMenu((prev) => (open ? "location" : prev === "location" ? null : prev));
+  }, []);
+  const setLanguageMenuOpen = React.useCallback((open: boolean) => {
+    setActiveHeaderMenu((prev) => (open ? "language" : prev === "language" ? null : prev));
+  }, []);
 
   React.useEffect(() => {
     try {
@@ -206,6 +237,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hydrated,
       searchOpen,
       setSearchOpen,
+      categoriesMenuOpen,
+      setCategoriesMenuOpen,
+      locationMenuOpen,
+      setLocationMenuOpen,
+      languageMenuOpen,
+      setLanguageMenuOpen,
       recentSearches,
       addRecentSearch,
       clearRecentSearches,
@@ -227,6 +264,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hydrated,
       searchOpen,
       setSearchOpen,
+      categoriesMenuOpen,
+      setCategoriesMenuOpen,
+      locationMenuOpen,
+      setLocationMenuOpen,
+      languageMenuOpen,
+      setLanguageMenuOpen,
       recentSearches,
       addRecentSearch,
       clearRecentSearches,

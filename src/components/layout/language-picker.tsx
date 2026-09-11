@@ -14,8 +14,14 @@ type Tab = "language" | "currency";
 
 /** Combined language + currency switcher — persists both choices to localStorage. */
 export function LanguagePicker() {
-  const { locale, setLocale, currency, setCurrency } = useApp();
-  const [open, setOpen] = React.useState(false);
+  const {
+    locale,
+    setLocale,
+    currency,
+    setCurrency,
+    languageMenuOpen: open,
+    setLanguageMenuOpen: setOpen,
+  } = useApp();
   const [tab, setTab] = React.useState<Tab>("language");
   const localeLabel = LOCALE_OPTIONS.find((option) => option.value === locale)?.label ?? locale;
   const activeCurrency = currencyOption(currency);
@@ -29,7 +35,7 @@ export function LanguagePicker() {
     }
     window.addEventListener("scroll", close, { passive: true, capture: true });
     return () => window.removeEventListener("scroll", close, { capture: true });
-  }, [open]);
+  }, [open, setOpen]);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
