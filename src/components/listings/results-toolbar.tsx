@@ -23,6 +23,7 @@ interface ResultsToolbarProps {
   onViewChange: (view: ViewMode) => void;
   onOpenFilters: () => void;
   activeFilters: number;
+  hideViewToggle?: boolean;
 }
 
 export function SortSelect({
@@ -88,6 +89,7 @@ export function ResultsToolbar({
   onViewChange,
   onOpenFilters,
   activeFilters,
+  hideViewToggle,
 }: ResultsToolbarProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -114,7 +116,7 @@ export function ResultsToolbar({
           )}
         </Button>
         <SortSelect category={category} sort={sort} onSortChange={onSortChange} />
-        <ViewToggle view={view} onViewChange={onViewChange} />
+        {!hideViewToggle && <ViewToggle view={view} onViewChange={onViewChange} />}
       </div>
     </div>
   );

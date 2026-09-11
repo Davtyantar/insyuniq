@@ -24,21 +24,25 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#141a24" },
-  ],
+  // Not media-conditional: the page always defaults to light regardless of the
+  // OS/browser color-scheme preference, so the browser chrome matches that.
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
 
 // Runs before hydration so the page never flashes the wrong theme.
+// Always defaults to light — the OS/browser dark-mode preference is intentionally
+// ignored so the site starts white until the user explicitly picks dark.
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
     var stored = localStorage.getItem("syuniq:theme");
-    var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (dark) document.documentElement.classList.add("dark");
+    if (stored === "dark") {
+      document.documentElement.classList.add("dark");
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", "#141a24");
+    }
   } catch (e) {}
 })();
 `;

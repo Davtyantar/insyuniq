@@ -21,6 +21,7 @@ import {
   filterHotels,
   filterRealEstate,
   filterRentals,
+  filterWork,
   filtersToQuery,
   parseFilters,
   sortListings,
@@ -39,12 +40,15 @@ import type {
   RentalListing,
   SortKey,
   ViewMode,
+  WorkFilters,
+  WorkListing,
 } from "@/lib/types";
 
 function runFilters(category: CategorySlug, listings: Listing[], filters: AnyFilters): Listing[] {
   if (category === "cars") return filterCars(listings as CarListing[], filters as CarFilters);
   if (category === "rentals") return filterRentals(listings as RentalListing[], filters as RentalFilters);
   if (category === "hotels") return filterHotels(listings as HotelListing[], filters as HotelFilters);
+  if (category === "work") return filterWork(listings as WorkListing[], filters as WorkFilters);
   return filterRealEstate(listings as RealEstateListing[], filters as RealEstateFilters);
 }
 
@@ -63,7 +67,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
   const page = Number(searchParams.get("page") ?? 1) || 1;
 
   const [draft, setDraft] = React.useState<AnyFilters>(applied);
-  const [view, setView] = React.useState<ViewMode>("grid");
+  const [view, setView] = React.useState<ViewMode>(category === "work" ? "list" : "grid");
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
 
@@ -153,20 +157,21 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
         {subcategory
           ? config.subcategories.find((s) => s.value === subcategory)?.label
           : config.label}
-        <CityAccent />{" "}
-        {applied.city && <span className="text-muted-foreground">· {applied.city}</span>}
+        <CityAccent />
       </h1>
 
-      <FloatingTabs
-        className="mt-4"
-        items={[{ value: "", label: "Բոլորը" }, ...config.subcategories]}
-        value={subcategory ?? ""}
-        onChange={selectSubcategory}
-      />
+      {category !== "work" && (
+        <FloatingTabs
+          className="mt-4"
+          items={[{ value: "", label: "Բոլորը" }, ...config.subcategories]}
+          value={subcategory ?? ""}
+          onChange={selectSubcategory}
+        />
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
-          <div className="sticky top-[124px] max-h-[calc(100vh-148px)] overflow-y-auto thin-scrollbar rounded-lg border border-border bg-card p-4">
+          <div className="sticky top-[124px] rounded-lg border border-border bg-card p-4">
             <FilterPanel
               category={category}
               filters={draft}
@@ -189,6 +194,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
             onViewChange={setView}
             onOpenFilters={() => setDrawerOpen(true)}
             activeFilters={activeCount}
+            hideViewToggle={category === "work"}
           />
 
           {results.length === 0 && !isPending ? (

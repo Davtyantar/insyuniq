@@ -14,9 +14,10 @@ export interface Spec {
   value: string;
 }
 
-/** Rent — real estate by the month, or a long-term rental/stay — is priced per month. */
+/** Rent — real estate by the month, a long-term rental/stay, or a salary — is priced per month. */
 export function isMonthly(listing: Listing): boolean {
   return (
+    listing.category === "work" ||
     (listing.category === "real-estate" && listing.deal === "rent") ||
     ((listing.category === "rentals" || listing.category === "hotels") && listing.term === "long")
   );
@@ -29,6 +30,9 @@ export function isDaily(listing: Listing): boolean {
 
 /** One-line summary shown right under the price on a card. */
 export function listingSummary(listing: Listing): string {
+  if (listing.category === "work") {
+    return `${listing.employer} · ${label("workSubcategory", listing.subcategory)}`;
+  }
   if (listing.category === "cars") {
     return `${listing.brand} ${listing.model}, ${listing.year}`;
   }
@@ -57,6 +61,16 @@ export function listingSummary(listing: Listing): string {
 
 /** Compact chips on a listing card. */
 export function cardSpecs(listing: Listing): string[] {
+  if (listing.category === "work") {
+    const specs = [
+      label("workSubcategory", listing.subcategory),
+      label("employmentType", listing.employmentType),
+      label("experience", listing.experience),
+    ];
+    if (listing.schedule) specs.push(listing.schedule);
+    return specs;
+  }
+
   if (listing.category === "cars") {
     return [
       listing.fuel === "electric" ? `${listing.power} ձ.ու.` : formatEngine(listing.engineVolume),
@@ -114,6 +128,17 @@ export function cardSpecs(listing: Listing): string[] {
 
 /** Full specification table on the detail page. */
 export function detailSpecs(listing: Listing): Spec[] {
+  if (listing.category === "work") {
+    const specs: Spec[] = [
+      { label: "Ոլորտ", value: label("workSubcategory", listing.subcategory) },
+      { label: "Գործատու", value: listing.employer },
+      { label: "Զբաղվածության տեսակ", value: label("employmentType", listing.employmentType) },
+      { label: "Աշխատանքային փորձ", value: label("experience", listing.experience) },
+    ];
+    if (listing.schedule) specs.push({ label: "Գրաֆիկ", value: listing.schedule });
+    return specs;
+  }
+
   if (listing.category === "cars") {
     return [
       { label: "Մակնիշ", value: listing.brand },

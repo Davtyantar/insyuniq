@@ -73,6 +73,24 @@ export const HOTEL_PHOTOS = [
 /** Wide landscape shot behind the home page hero. */
 export const HERO_PHOTO = u("1500382017468-9049fed747ef");
 
+/** Workplaces and job scenes — offices, trades, retail, hiring. */
+export const WORK_PHOTOS = [
+  "1521737711867-e3b97375f902",
+  "1522071820081-009f0129c71c",
+  "1517048676732-d65bc937f952",
+  "1504328345606-18bbc8c9d7d1",
+  "1556740738-b6a63e27c4df",
+  "1498050108023-c5249f4df085",
+  "1556761175-5973dc0f32e7",
+  "1521791136064-7986c2920216",
+  "1587560699334-cc4ff634909a",
+  "1600880292203-757bb62b4baf",
+  "1521791055366-0d553872125f",
+  "1489533119213-66a5cd877091",
+  "1600880292089-90a7e086ee0c",
+  "1454165804606-c3d57bc86b40",
+].map(u);
+
 /** Cars, keyed loosely by what the shot shows so brands stay believable. */
 export const CAR_PHOTOS = {
   toyotaSedan: u("1621007947382-bb3c3994e3fb"),

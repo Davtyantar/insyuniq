@@ -1,4 +1,4 @@
-export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels";
+export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels" | "work";
 
 export type SellerType = "owner" | "agency" | "dealer" | "private";
 
@@ -146,7 +146,37 @@ export interface HotelListing extends BaseListing {
   pool: boolean;
 }
 
-export type Listing = RealEstateListing | CarListing | RentalListing | HotelListing;
+export type WorkSubcategory =
+  | "sales"
+  | "construction"
+  | "hospitality"
+  | "education"
+  | "driving"
+  | "it"
+  | "production"
+  | "beauty"
+  | "security"
+  | "other";
+
+export type EmploymentType = "full-time" | "part-time" | "remote" | "internship";
+export type ExperienceLevel = "none" | "junior" | "mid" | "senior";
+
+/** Job postings. `price` on BaseListing carries the monthly salary. */
+export interface WorkListing extends BaseListing {
+  category: "work";
+  subcategory: WorkSubcategory;
+  employer: string;
+  employmentType: EmploymentType;
+  experience: ExperienceLevel;
+  schedule?: string;
+}
+
+export type Listing =
+  | RealEstateListing
+  | CarListing
+  | RentalListing
+  | HotelListing
+  | WorkListing;
 
 export function isRealEstate(listing: Listing): listing is RealEstateListing {
   return listing.category === "real-estate";
@@ -164,6 +194,10 @@ export function isHotelStay(listing: Listing): listing is HotelListing {
   return listing.category === "hotels";
 }
 
+export function isWork(listing: Listing): listing is WorkListing {
+  return listing.category === "work";
+}
+
 export type SortKey =
   | "relevant"
   | "date-desc"
@@ -175,7 +209,8 @@ export type SortKey =
 
 export interface CommonFilters {
   q: string;
-  city: string;
+  /** More than one city may be selected at once. */
+  city: string[];
   priceMin: string;
   priceMax: string;
   withPhoto: boolean;
@@ -237,6 +272,17 @@ export interface HotelFilters extends CommonFilters {
   pool: "" | "yes" | "no";
 }
 
-export type AnyFilters = RealEstateFilters | CarFilters | RentalFilters | HotelFilters;
+export interface WorkFilters extends CommonFilters {
+  subcategory: string;
+  employmentType: string[];
+  experience: ExperienceLevel | "";
+}
+
+export type AnyFilters =
+  | RealEstateFilters
+  | CarFilters
+  | RentalFilters
+  | HotelFilters
+  | WorkFilters;
 
 export type ViewMode = "grid" | "list";

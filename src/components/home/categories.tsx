@@ -11,7 +11,7 @@ export function Categories() {
       </h2>
 
       <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
-        {CATEGORY_LIST.map((category) => {
+        {CATEGORY_LIST.filter((category) => category.slug !== "work").map((category) => {
           return (
             <div
               key={category.slug}

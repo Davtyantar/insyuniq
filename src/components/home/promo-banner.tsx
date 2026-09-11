@@ -14,9 +14,7 @@ export function PromoBanner() {
   const { city, hydrated } = useApp();
   const locationLabel =
     hydrated && city ? cityInPrepositional(city) : "Ողջ մարզում";
-  const workHref = city
-    ? `/search?q=${encodeURIComponent("աշխատանք")}&city=${encodeURIComponent(city)}`
-    : `/search?q=${encodeURIComponent("աշխատանք")}`;
+  const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
 
   return (
     <section className='container pt-6 md:pt-8'>

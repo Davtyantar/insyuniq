@@ -1,17 +1,25 @@
 import {
   Bike,
+  Briefcase,
   Building,
   Car,
   CarFront,
   Construction,
   DoorOpen,
+  Factory,
+  GraduationCap,
+  HardHat,
   Home,
   Hotel,
   House,
   LandPlot,
+  Laptop,
+  Scissors,
+  Shield,
   Store,
   TreePine,
   Truck,
+  Utensils,
   Warehouse,
   Wrench,
   Zap,
@@ -22,6 +30,8 @@ import type {
   CarCondition,
   DealType,
   DriveType,
+  EmploymentType,
+  ExperienceLevel,
   FuelType,
   RealEstateCondition,
   RentalTerm,
@@ -51,7 +61,15 @@ export const CITIES: Option[] = [
 ];
 
 export const DISTRICTS: Record<string, string[]> = {
-  Կապան: ["Կենտրոն", "Վաչագան", "Աճանան", "Շահումյան", "Ձորք", "Կավարտ", "Աղբյուր"],
+  Կապան: [
+    "Կենտրոն",
+    "Վաչագան",
+    "Աճանան",
+    "Շահումյան",
+    "Ձորք",
+    "Կավարտ",
+    "Աղբյուր"
+  ],
   Գորիս: ["Կենտրոն", "Վերին Գորիս", "Աղբյուր", "Դավիթ Բեկ", "Սյունիք"],
   Սիսիան: ["Կենտրոն", "Արևիկ", "Նորաշեն", "Սիսական"],
   Քաջարան: ["Կենտրոն", "Նորաշեն", "Լեռնային"],
@@ -82,7 +100,11 @@ export const CAR_SUBCATEGORIES: Option[] = [
 ];
 
 export const RENTAL_SUBCATEGORIES: Option[] = [
-  { value: "apartments", label: "Բնակարանների վարձակալություն", icon: Building },
+  {
+    value: "apartments",
+    label: "Բնակարանների վարձակալություն",
+    icon: Building
+  },
   { value: "houses", label: "Տների վարձակալություն", icon: Home },
   { value: "commercial", label: "Կոմերցիոն վարձակալություն", icon: Store },
   { value: "garages", label: "Ավտոտնակների վարձակալություն", icon: Warehouse }
@@ -96,9 +118,40 @@ export const HOTEL_SUBCATEGORIES: Option[] = [
   { value: "cottages", label: "Կոթեջներ", icon: TreePine }
 ];
 
+export const WORK_SUBCATEGORIES: Option[] = [
+  { value: "sales", label: "Առևտուր և վաճառք", icon: Store },
+  { value: "construction", label: "Շինարարություն", icon: HardHat },
+  {
+    value: "hospitality",
+    label: "Հանրային սնունդ և հյուրընկալություն",
+    icon: Utensils
+  },
+  { value: "education", label: "Կրթություն", icon: GraduationCap },
+  { value: "driving", label: "Վարորդներ", icon: Truck },
+  { value: "it", label: "Տեղեկատվական տեխնոլոգիաներ", icon: Laptop },
+  { value: "production", label: "Արտադրություն", icon: Factory },
+  { value: "beauty", label: "Գեղեցկություն և խնամք", icon: Scissors },
+  { value: "security", label: "Անվտանգություն", icon: Shield },
+  { value: "other", label: "Այլ ոլորտներ", icon: Briefcase }
+];
+
+export const EMPLOYMENT_TYPES: Option<EmploymentType>[] = [
+  { value: "full-time", label: "Լրիվ դրույք" },
+  { value: "part-time", label: "Կիսադրույք" },
+  { value: "remote", label: "Հեռավար" },
+  { value: "internship", label: "Պրակտիկա" }
+];
+
+export const EXPERIENCE_LEVELS: Option<ExperienceLevel>[] = [
+  { value: "none", label: "Առանց փորձի" },
+  { value: "junior", label: "Սկսնակ" },
+  { value: "mid", label: "Միջին մակարդակ" },
+  { value: "senior", label: "Ավագ մասնագետ" }
+];
+
 export const POOL_OPTIONS: Option[] = [
   { value: "yes", label: "Լողավազանով" },
-  { value: "no", label: "Առանց լողավազանի" }
+  { value: "no", label: "Առանց լող․" }
 ];
 
 export const RENTAL_TERMS: Option<RentalTerm>[] = [
@@ -116,8 +169,7 @@ export const ROOMS_OPTIONS: Option[] = [
   { value: "1", label: "1" },
   { value: "2", label: "2" },
   { value: "3", label: "3" },
-  { value: "4", label: "4" },
-  { value: "5", label: "5+" }
+  { value: "4", label: "4" }
 ];
 
 export const RE_CONDITIONS: Option<RealEstateCondition>[] = [

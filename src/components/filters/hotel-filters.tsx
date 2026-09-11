@@ -3,18 +3,13 @@
 import {
   ChipGroup,
   FilterSection,
+  MultiSelectField,
   RangeFields,
   SelectField,
   ToggleRow,
 } from "@/components/filters/filter-fields";
 import type { HotelFilters } from "@/lib/types";
-import {
-  CITIES,
-  HOTEL_SUBCATEGORIES,
-  POOL_OPTIONS,
-  RENTAL_TERMS,
-  ROOMS_OPTIONS,
-} from "@/mock/taxonomy";
+import { CITIES, HOTEL_SUBCATEGORIES, POOL_OPTIONS } from "@/mock/taxonomy";
 
 interface Props {
   filters: HotelFilters;
@@ -34,17 +29,9 @@ export function HotelFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Վարձակալության ժամկետ">
-        <ChipGroup
-          options={RENTAL_TERMS}
-          values={filters.term ? [filters.term] : []}
-          onChange={(values) => onChange({ term: (values[0] ?? "") as HotelFilters["term"] })}
-        />
-      </FilterSection>
-
       <FilterSection title="Տեղադրություն">
-        <SelectField
-          value={filters.city}
+        <MultiSelectField
+          values={filters.city}
           onChange={(city) => onChange({ city })}
           options={CITIES}
           placeholder="Ողջ Սյունիք"
@@ -61,29 +48,12 @@ export function HotelFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Սենյակներ">
-        <ChipGroup
-          options={ROOMS_OPTIONS}
-          values={filters.rooms}
-          onChange={(rooms) => onChange({ rooms })}
-          multiple
-        />
-      </FilterSection>
-
       <FilterSection title="Լողավազան">
         <ChipGroup
           options={POOL_OPTIONS}
           values={filters.pool ? [filters.pool] : []}
           onChange={(values) => onChange({ pool: (values[0] ?? "") as HotelFilters["pool"] })}
-        />
-      </FilterSection>
-
-      <FilterSection title="Մակերես, մ²" defaultOpen={false}>
-        <RangeFields
-          from={filters.areaMin}
-          to={filters.areaMax}
-          onFrom={(areaMin) => onChange({ areaMin })}
-          onTo={(areaMax) => onChange({ areaMax })}
+          fullWidth
         />
       </FilterSection>
 
@@ -94,8 +64,7 @@ export function HotelFilterFields({ filters, onChange }: Props) {
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Միայն ստուգված հայտարարություններ"
-          hint="Փաստաթղթերն ու հասցեն հաստատված են մոդերատորի կողմից"
+          label="Միայն ստուգված"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

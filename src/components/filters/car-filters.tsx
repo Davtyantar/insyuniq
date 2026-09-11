@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  CheckboxList,
   ChipGroup,
   FieldLabel,
   FilterSection,
+  MultiSelectField,
   RangeFields,
   SelectField,
   ToggleRow,
@@ -96,20 +96,22 @@ export function CarFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Թափքի տեսակ" defaultOpen={false}>
-        <CheckboxList
+        <SelectField
+          value={filters.bodyType[0] ?? ""}
+          onChange={(value) => onChange({ bodyType: value ? [value] : [] })}
           options={BODY_TYPES}
-          values={filters.bodyType}
-          onChange={(bodyType) => onChange({ bodyType })}
-          columns={2}
+          placeholder="Ցանկացած թափք"
+          anyLabel="Ցանկացած թափք"
         />
       </FilterSection>
 
       <FilterSection title="Շարժիչ">
-        <CheckboxList
+        <SelectField
+          value={filters.fuel[0] ?? ""}
+          onChange={(value) => onChange({ fuel: value ? [value] : [] })}
           options={FUEL_TYPES}
-          values={filters.fuel}
-          onChange={(fuel) => onChange({ fuel })}
-          columns={2}
+          placeholder="Ցանկացած շարժիչ"
+          anyLabel="Ցանկացած շարժիչ"
         />
         <div>
           <FieldLabel>Ծավալ, լ</FieldLabel>
@@ -123,11 +125,12 @@ export function CarFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Փոխանցումատուփ" defaultOpen={false}>
-        <CheckboxList
+        <SelectField
+          value={filters.transmission[0] ?? ""}
+          onChange={(value) => onChange({ transmission: value ? [value] : [] })}
           options={TRANSMISSIONS}
-          values={filters.transmission}
-          onChange={(transmission) => onChange({ transmission })}
-          columns={2}
+          placeholder="Ցանկացած փոխանցումատուփ"
+          anyLabel="Ցանկացած փոխանցումատուփ"
         />
       </FilterSection>
 
@@ -182,8 +185,8 @@ export function CarFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Տեղադրություն" defaultOpen={false}>
-        <SelectField
-          value={filters.city}
+        <MultiSelectField
+          values={filters.city}
           onChange={(city) => onChange({ city })}
           options={CITIES}
           placeholder="Ողջ Սյունիք"
@@ -198,8 +201,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Միայն ստուգված հայտարարություններ"
-          hint="Վաճառողն ու փաստաթղթերը հաստատված են"
+          label="Միայն ստուգված"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

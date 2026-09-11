@@ -3,6 +3,12 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -137,6 +143,63 @@ export function SelectField({
   );
 }
 
+/** Compact dropdown that lets more than one option be checked at once. */
+export function MultiSelectField({
+  values,
+  onChange,
+  options,
+  placeholder,
+  anyLabel = "Ցանկացած",
+}: {
+  values: string[];
+  onChange: (values: string[]) => void;
+  options: Option[];
+  placeholder?: string;
+  anyLabel?: string;
+}) {
+  function toggle(value: string) {
+    onChange(values.includes(value) ? values.filter((v) => v !== value) : [...values, value]);
+  }
+
+  const label =
+    values.length === 0
+      ? placeholder ?? anyLabel
+      : values.length === 1
+        ? (options.find((o) => o.value === values[0])?.label ?? values[0])
+        : `Ընտրված է ${values.length}`;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-card px-3 text-[13px] text-foreground transition-colors hover:bg-secondary"
+        >
+          <span className={cn("truncate", values.length === 0 && "text-muted-foreground")}>
+            {label}
+          </span>
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="max-h-64 w-[var(--radix-dropdown-menu-trigger-width)] overflow-y-auto thin-scrollbar"
+      >
+        {options.map((option) => (
+          <DropdownMenuCheckboxItem
+            key={option.value}
+            checked={values.includes(option.value)}
+            onSelect={(event) => event.preventDefault()}
+            onCheckedChange={() => toggle(option.value)}
+          >
+            {option.label}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function CheckboxList({
   options,
   values,
@@ -175,11 +238,14 @@ export function ChipGroup({
   values,
   onChange,
   multiple = false,
+  fullWidth = false,
 }: {
   options: Option[];
   values: string[];
   onChange: (values: string[]) => void;
   multiple?: boolean;
+  /** Options share the row equally instead of wrapping at their natural width. */
+  fullWidth?: boolean;
 }) {
   function toggle(value: string) {
     if (!multiple) {
@@ -189,7 +255,7 @@ export function ChipGroup({
     onChange(values.includes(value) ? values.filter((v) => v !== value) : [...values, value]);
   }
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className={cn("flex gap-1.5", fullWidth ? "flex-nowrap" : "flex-wrap")}>
       {options.map((option) => {
         const active = values.includes(option.value);
         return (
@@ -200,6 +266,7 @@ export function ChipGroup({
             aria-pressed={active}
             className={cn(
               "h-9 rounded-md border px-3 text-[13px] font-medium transition-colors",
+              fullWidth && "flex-1",
               active
                 ? "border-accent bg-accent text-accent-foreground"
                 : "border-input bg-card text-foreground hover:bg-secondary",

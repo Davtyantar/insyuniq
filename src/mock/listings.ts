@@ -1,14 +1,23 @@
-import type { CarListing, HotelListing, Listing, RealEstateListing, RentalListing } from "@/lib/types";
+import type {
+  CarListing,
+  HotelListing,
+  Listing,
+  RealEstateListing,
+  RentalListing,
+  WorkListing,
+} from "@/lib/types";
 import { CAR_LISTINGS } from "./cars";
 import { HOTEL_LISTINGS } from "./hotels";
 import { REAL_ESTATE_LISTINGS } from "./real-estate";
 import { RENTAL_LISTINGS } from "./rentals";
+import { WORK_LISTINGS } from "./work";
 
 export const ALL_LISTINGS: Listing[] = [
   ...REAL_ESTATE_LISTINGS,
   ...CAR_LISTINGS,
   ...RENTAL_LISTINGS,
   ...HOTEL_LISTINGS,
+  ...WORK_LISTINGS,
 ];
 
 const BY_ID = new Map<string, Listing>(ALL_LISTINGS.map((l) => [l.id, l]));
@@ -39,6 +48,11 @@ export function getRental(id: string): RentalListing | undefined {
 export function getHotel(id: string): HotelListing | undefined {
   const listing = BY_ID.get(id);
   return listing?.category === "hotels" ? listing : undefined;
+}
+
+export function getWork(id: string): WorkListing | undefined {
+  const listing = BY_ID.get(id);
+  return listing?.category === "work" ? listing : undefined;
 }
 
 /** Newest listings across every category, for the home page "recently added" showcase. */

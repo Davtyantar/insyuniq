@@ -3,6 +3,7 @@
 import {
   ChipGroup,
   FilterSection,
+  MultiSelectField,
   RangeFields,
   SelectField,
   ToggleRow,
@@ -37,8 +38,8 @@ export function RentalFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Տեղադրություն">
-        <SelectField
-          value={filters.city}
+        <MultiSelectField
+          values={filters.city}
           onChange={(city) => onChange({ city })}
           options={CITIES}
           placeholder="Ողջ Սյունիք"
@@ -80,8 +81,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Միայն ստուգված հայտարարություններ"
-          hint="Փաստաթղթերն ու հասցեն հաստատված են մոդերատորի կողմից"
+          label="Միայն ստուգված"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

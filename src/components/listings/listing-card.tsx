@@ -9,6 +9,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { listingHref } from "@/lib/categories";
 import { formatPrice, formatRelativeDate } from "@/lib/format";
+import { label } from "@/lib/labels";
 import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing, ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,8 @@ function accentBadges(listing: Listing): string[] {
     if (listing.deal === "rent") badges.push("Վարձակալություն");
   } else if (listing.category === "rentals" || listing.category === "hotels") {
     badges.push(listing.term === "daily" ? "Օրավարձով" : "Երկարաժամկետ");
+  } else if (listing.category === "work") {
+    badges.push(label("employmentType", listing.employmentType));
   } else {
     if (listing.fuel === "electric") badges.push("Էլեկտրական");
     if (listing.condition === "new") badges.push("Նոր");
@@ -163,7 +166,7 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
             isList ? "text-[17px]" : "text-[15px] line-clamp-2",
           )}
         >
-          {listingSummary(listing)}
+          {listing.category === "work" ? listing.title : listingSummary(listing)}
         </h3>
 
         <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">

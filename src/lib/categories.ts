@@ -1,4 +1,4 @@
-import { BedDouble, Building2, Car, KeyRound, type LucideIcon } from "lucide-react";
+import { BedDouble, Briefcase, Building2, Car, KeyRound, type LucideIcon } from "lucide-react";
 import { CAR_LISTINGS } from "@/mock/cars";
 import { HOTEL_LISTINGS } from "@/mock/hotels";
 import { REAL_ESTATE_LISTINGS } from "@/mock/real-estate";
@@ -8,8 +8,10 @@ import {
   HOTEL_SUBCATEGORIES,
   REAL_ESTATE_SUBCATEGORIES,
   RENTAL_SUBCATEGORIES,
+  WORK_SUBCATEGORIES,
   type Option,
 } from "@/mock/taxonomy";
+import { WORK_LISTINGS } from "@/mock/work";
 import type { CategorySlug, Listing } from "./types";
 
 export interface CategoryConfig {
@@ -76,13 +78,29 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     cover: HOTEL_LISTINGS[0].images[0],
     tagline: "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով",
   },
+  work: {
+    slug: "work",
+    label: "Աշխատանք",
+    labelPrepositional: "աշխատանքի",
+    href: "/work",
+    icon: Briefcase,
+    searchPlaceholder: "Պաշտոն, մասնագիտություն, աշխատավայր…",
+    subcategories: WORK_SUBCATEGORIES,
+    listings: WORK_LISTINGS,
+    cover: WORK_LISTINGS[0].images[0],
+    tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից",
+  },
 };
 
 export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export function isCategorySlug(value: string): value is CategorySlug {
   return (
-    value === "real-estate" || value === "cars" || value === "rentals" || value === "hotels"
+    value === "real-estate" ||
+    value === "cars" ||
+    value === "rentals" ||
+    value === "hotels" ||
+    value === "work"
   );
 }
 

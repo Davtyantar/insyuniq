@@ -30,6 +30,8 @@ type HeaderMenu = "search" | "categories" | "location" | "language" | null;
 
 function applyThemeClass(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  meta?.setAttribute("content", theme === "dark" ? "#141a24" : "#ffffff");
 }
 
 interface AppState {

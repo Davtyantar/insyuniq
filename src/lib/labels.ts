@@ -5,6 +5,8 @@ import {
   CAR_SUBCATEGORIES,
   DEAL_TYPES,
   DRIVE_TYPES,
+  EMPLOYMENT_TYPES,
+  EXPERIENCE_LEVELS,
   FUEL_TYPES,
   HOTEL_SUBCATEGORIES,
   REAL_ESTATE_SUBCATEGORIES,
@@ -13,6 +15,7 @@ import {
   RENTAL_TERMS,
   STEERING_TYPES,
   TRANSMISSIONS,
+  WORK_SUBCATEGORIES,
   type Option,
 } from "@/mock/taxonomy";
 
@@ -35,6 +38,9 @@ const MAPS: Record<string, Record<string, string>> = {
   drive: toMap(DRIVE_TYPES),
   carCondition: toMap(CAR_CONDITIONS),
   steering: toMap(STEERING_TYPES),
+  workSubcategory: toMap(WORK_SUBCATEGORIES),
+  employmentType: toMap(EMPLOYMENT_TYPES),
+  experience: toMap(EXPERIENCE_LEVELS),
 };
 
 /** Resolves an enum value to its Armenian label, falling back to the raw value. */
@@ -47,5 +53,6 @@ export function subcategoryLabel(category: string, value: string): string {
   if (category === "cars") return label("carSubcategory", value);
   if (category === "rentals") return label("rentalSubcategory", value);
   if (category === "hotels") return label("hotelSubcategory", value);
+  if (category === "work") return label("workSubcategory", value);
   return label("reSubcategory", value);
 }

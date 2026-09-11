@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  CheckboxList,
   ChipGroup,
   FieldLabel,
   FilterSection,
+  MultiSelectField,
   RangeFields,
   SelectField,
   ToggleRow,
@@ -26,7 +26,9 @@ interface Props {
 }
 
 export function RealEstateFilterFields({ filters, onChange }: Props) {
-  const districts = (DISTRICTS[filters.city] ?? []).map((d) => ({ value: d, label: d }));
+  const districts = Array.from(
+    new Set(filters.city.flatMap((city) => DISTRICTS[city] ?? [])),
+  ).map((d) => ({ value: d, label: d }));
 
   return (
     <>
@@ -51,8 +53,8 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
       <FilterSection title="Տեղադրություն">
         <div>
           <FieldLabel>Քաղաք</FieldLabel>
-          <SelectField
-            value={filters.city}
+          <MultiSelectField
+            values={filters.city}
             onChange={(city) => onChange({ city, district: "" })}
             options={CITIES}
             placeholder="Ողջ Սյունիք"
@@ -65,9 +67,9 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
             value={filters.district}
             onChange={(district) => onChange({ district })}
             options={districts}
-            placeholder={filters.city ? "Ցանկացած թաղամաս" : "Նախ ընտրեք քաղաքը"}
+            placeholder={filters.city.length ? "Ցանկացած թաղամաս" : "Նախ ընտրեք քաղաքը"}
             anyLabel="Ցանկացած թաղամաս"
-            disabled={!filters.city}
+            disabled={!filters.city.length}
           />
         </div>
       </FilterSection>
@@ -123,10 +125,12 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Վիճակ" defaultOpen={false}>
-        <CheckboxList
+        <SelectField
+          value={filters.condition[0] ?? ""}
+          onChange={(value) => onChange({ condition: value ? [value] : [] })}
           options={RE_CONDITIONS}
-          values={filters.condition}
-          onChange={(condition) => onChange({ condition })}
+          placeholder="Ցանկացած վիճակ"
+          anyLabel="Ցանկացած վիճակ"
         />
       </FilterSection>
 
@@ -165,8 +169,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
           onChange={(withPhoto) => onChange({ withPhoto })}
         />
         <ToggleRow
-          label="Միայն ստուգված հայտարարություններ"
-          hint="Փաստաթղթերն ու հասցեն հաստատված են մոդերատորի կողմից"
+          label="Միայն ստուգված"
           checked={filters.verifiedOnly}
           onChange={(verifiedOnly) => onChange({ verifiedOnly })}
         />

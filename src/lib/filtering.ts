@@ -10,11 +10,13 @@ import type {
   RentalFilters,
   RentalListing,
   SortKey,
+  WorkFilters,
+  WorkListing,
 } from "./types";
 
 export const DEFAULT_RE_FILTERS: RealEstateFilters = {
   q: "",
-  city: "",
+  city: [],
   priceMin: "",
   priceMax: "",
   withPhoto: false,
@@ -37,7 +39,7 @@ export const DEFAULT_RE_FILTERS: RealEstateFilters = {
 
 export const DEFAULT_CAR_FILTERS: CarFilters = {
   q: "",
-  city: "",
+  city: [],
   priceMin: "",
   priceMax: "",
   withPhoto: false,
@@ -64,7 +66,7 @@ export const DEFAULT_CAR_FILTERS: CarFilters = {
 
 export const DEFAULT_RENTAL_FILTERS: RentalFilters = {
   q: "",
-  city: "",
+  city: [],
   priceMin: "",
   priceMax: "",
   withPhoto: false,
@@ -78,7 +80,7 @@ export const DEFAULT_RENTAL_FILTERS: RentalFilters = {
 
 export const DEFAULT_HOTEL_FILTERS: HotelFilters = {
   q: "",
-  city: "",
+  city: [],
   priceMin: "",
   priceMax: "",
   withPhoto: false,
@@ -91,10 +93,23 @@ export const DEFAULT_HOTEL_FILTERS: HotelFilters = {
   pool: "",
 };
 
+export const DEFAULT_WORK_FILTERS: WorkFilters = {
+  q: "",
+  city: [],
+  priceMin: "",
+  priceMax: "",
+  withPhoto: false,
+  verifiedOnly: false,
+  subcategory: "",
+  employmentType: [],
+  experience: "",
+};
+
 export function defaultFilters(category: CategorySlug) {
   if (category === "cars") return { ...DEFAULT_CAR_FILTERS };
   if (category === "rentals") return { ...DEFAULT_RENTAL_FILTERS };
   if (category === "hotels") return { ...DEFAULT_HOTEL_FILTERS };
+  if (category === "work") return { ...DEFAULT_WORK_FILTERS };
   return { ...DEFAULT_RE_FILTERS };
 }
 
@@ -188,9 +203,9 @@ function matchesText(listing: Listing, q: string) {
     .every((term) => haystack.includes(term));
 }
 
-function matchesCommon(listing: Listing, filters: { city: string; priceMin: string; priceMax: string; withPhoto: boolean; verifiedOnly: boolean; q: string }) {
+function matchesCommon(listing: Listing, filters: { city: string[]; priceMin: string; priceMax: string; withPhoto: boolean; verifiedOnly: boolean; q: string }) {
   if (!matchesText(listing, filters.q)) return false;
-  if (filters.city && listing.city !== filters.city) return false;
+  if (filters.city.length && !filters.city.includes(listing.city)) return false;
   if (!inRange(listing.price, num(filters.priceMin), num(filters.priceMax))) return false;
   if (filters.withPhoto && listing.images.length === 0) return false;
   if (filters.verifiedOnly && !listing.verified) return false;
@@ -277,6 +292,18 @@ export function filterHotels(listings: HotelListing[], filters: HotelFilters): H
   });
 }
 
+export function filterWork(listings: WorkListing[], filters: WorkFilters): WorkListing[] {
+  return listings.filter((l) => {
+    if (!matchesCommon(l, filters)) return false;
+    if (filters.subcategory && l.subcategory !== filters.subcategory) return false;
+    if (filters.employmentType.length && !filters.employmentType.includes(l.employmentType)) {
+      return false;
+    }
+    if (filters.experience && l.experience !== filters.experience) return false;
+    return true;
+  });
+}
+
 export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string }[]> = {
   "real-estate": [
     { value: "relevant", label: "Ըստ համապատասխանության" },
@@ -306,6 +333,12 @@ export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string 
     { value: "price-asc", label: "Նախ էժանները" },
     { value: "price-desc", label: "Նախ թանկերը" },
     { value: "area-desc", label: "Ավելի մեծ մակերես" },
+  ],
+  work: [
+    { value: "relevant", label: "Ըստ համապատասխանության" },
+    { value: "date-desc", label: "Նախ նորերը" },
+    { value: "price-desc", label: "Նախ բարձր աշխատավարձը" },
+    { value: "price-asc", label: "Նախ ցածր աշխատավարձը" },
   ],
 };
 

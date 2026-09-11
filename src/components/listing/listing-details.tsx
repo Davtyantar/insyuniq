@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, ChevronRight, Eye, MapPin } from "lucide-react";
 import { ImageGallery } from "@/components/listing/image-gallery";
@@ -52,7 +53,21 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
         <div className="mt-4 grid gap-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-10">
           <div className="min-w-0 space-y-8">
-            <ImageGallery images={listing.images} alt={listing.title} listingId={listing.id} />
+            {listing.category === "work" ? (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border bg-secondary">
+                <Image
+                  src={listing.images[0]}
+                  alt={listing.title}
+                  fill
+                  sizes="(max-width: 1280px) 100vw, 760px"
+                  priority
+                  className="object-cover"
+                />
+                <FavoriteButton listingId={listing.id} className="absolute right-3 top-3" />
+              </div>
+            ) : (
+              <ImageGallery images={listing.images} alt={listing.title} listingId={listing.id} />
+            )}
 
             <section>
               <h2 className="text-lg font-semibold tracking-tight">Նկարագրություն</h2>
@@ -77,14 +92,21 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold tracking-tight">Գտնվելու վայրը</h2>
+              <h2 className="text-lg font-semibold tracking-tight">
+                {listing.category === "work" ? "Աշխատավայր" : "Գտնվելու վայրը"}
+              </h2>
               <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 {locationLine(listing)}, {listing.address}
               </p>
-              <div className="mt-3">
-                <MapPlaceholder address={`${locationLine(listing)}, ${listing.address}`} coords={listing.coords} />
-              </div>
+              {listing.category !== "work" && (
+                <div className="mt-3">
+                  <MapPlaceholder
+                    address={`${locationLine(listing)}, ${listing.address}`}
+                    coords={listing.coords}
+                  />
+                </div>
+              )}
             </section>
           </div>
 
