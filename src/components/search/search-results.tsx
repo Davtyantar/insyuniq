@@ -6,7 +6,7 @@ import { CityAccent } from "@/components/city-accent";
 import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { SortSelect, ViewToggle } from "@/components/listings/results-toolbar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { sortListings } from "@/lib/filtering";
 import { plural } from "@/lib/format";
 import type { SortKey, ViewMode } from "@/lib/types";
@@ -72,15 +72,7 @@ export function SearchResults() {
       </p>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList>
-            {TABS.map((item) => (
-              <TabsTrigger key={item.value} value={item.value}>
-                {item.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <FloatingTabs items={TABS} value={tab} onChange={setTab} />
         <div className="flex items-center gap-2">
           <SortSelect
             category={

@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { Pagination } from "@/components/listings/pagination";
 import { ResultsToolbar } from "@/components/listings/results-toolbar";
+import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { CATEGORIES } from "@/lib/categories";
 import { PAGE_SIZE } from "@/lib/constants";
 import {
@@ -39,7 +40,6 @@ import type {
   SortKey,
   ViewMode,
 } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 function runFilters(category: CategorySlug, listings: Listing[], filters: AnyFilters): Listing[] {
   if (category === "cars") return filterCars(listings as CarListing[], filters as CarFilters);
@@ -157,35 +157,12 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
         {applied.city && <span className="text-muted-foreground">· {applied.city}</span>}
       </h1>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-        <button
-          type="button"
-          onClick={() => selectSubcategory("")}
-          className={cn(
-            "h-9 shrink-0 rounded-md border px-3.5 text-[13px] font-medium transition-colors",
-            !subcategory
-              ? "border-primary bg-primary text-primary-foreground"
-              : "border-input bg-card hover:bg-secondary",
-          )}
-        >
-          Բոլորը
-        </button>
-        {config.subcategories.map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            onClick={() => selectSubcategory(item.value)}
-            className={cn(
-              "h-9 shrink-0 rounded-md border px-3.5 text-[13px] font-medium transition-colors",
-              subcategory === item.value
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-input bg-card hover:bg-secondary",
-            )}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <FloatingTabs
+        className="mt-4"
+        items={[{ value: "", label: "Բոլորը" }, ...config.subcategories]}
+        value={subcategory ?? ""}
+        onChange={selectSubcategory}
+      />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="hidden lg:block">

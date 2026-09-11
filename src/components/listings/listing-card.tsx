@@ -98,6 +98,7 @@ export function ListingCard({ listing, view = "grid", priority, className }: Lis
         />
 
         <div className="absolute left-3 top-3 z-20 flex flex-wrap gap-1.5">
+          {listing.urgent && <Badge variant="destructive">Հրատապ</Badge>}
           {badges.map((badge) => (
             <Badge key={badge} variant="outline">
               {badge}

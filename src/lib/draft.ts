@@ -84,6 +84,7 @@ export interface ListingDraft {
   photos: DraftPhoto[];
   contactName: string;
   phone: string;
+  urgent: boolean;
 }
 
 export const EMPTY_DRAFT: ListingDraft = {
@@ -129,6 +130,7 @@ export const EMPTY_DRAFT: ListingDraft = {
   photos: [],
   contactName: "",
   phone: "",
+  urgent: false,
 };
 
 export const WIZARD_STEPS = [
@@ -229,6 +231,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     publishedAt: new Date(MOCK_NOW).toISOString(),
     sellerId: "me",
     verified: false,
+    urgent: draft.urgent,
     views: 0,
     status: "active" as const,
     coords: { lat: 40.1792, lng: 44.4991 },

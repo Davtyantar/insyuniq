@@ -1,6 +1,7 @@
 "use client";
 
 import { Field, StepHeader } from "@/components/create/field";
+import { ToggleRow } from "@/components/filters/filter-fields";
 import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
@@ -44,6 +45,15 @@ export function StepPrice({ draft, patch }: StepProps) {
           onChange={(event) => patch({ price: event.target.value.replace(/\D/g, "") })}
           placeholder="125000"
           className="h-12 text-lg"
+        />
+      </Field>
+
+      <Field label="Հրատապ">
+        <ToggleRow
+          label="Նշել որպես հրատապ (Срочно)"
+          hint="Հայտարարության վրա կցուցադրվի կարմիր «Հրատապ» կպչիկ"
+          checked={draft.urgent}
+          onChange={(urgent) => patch({ urgent })}
         />
       </Field>
 

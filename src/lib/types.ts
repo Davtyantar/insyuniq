@@ -30,6 +30,7 @@ export interface BaseListing {
   publishedAt: string;
   sellerId: string;
   verified: boolean;
+  urgent: boolean;
   views: number;
   status: "active" | "archived";
   coords: { lat: number; lng: number };
