@@ -50,8 +50,8 @@ export function PromoBanner() {
                 <span className='text-accent'>Սյունիքի մարզի</span>
               </h1>
               <p className='max-w-[300px] text-balance text-[13px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px]'>
-                Անշարժ գույք, ավտոմեքենաներ, վարձակալություն և հյուրանոցներ՝ մեկ
-                տեղում
+                Անշարժ գույք, տրանսպորտ, վարձակալություն և կացություն՝ հեշտ ու
+                արագ մեկ հարթակում։ Ձեր բոլոր կարիքները՝ մեկ հարթակում։
               </p>
               <div className='mt-1 flex w-full flex-nowrap items-center justify-center gap-2 sm:w-auto md:justify-start'>
                 <CtaButton
