@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart, Plus, User } from "lucide-react";
+import { CategoriesMenu } from "@/components/layout/categories-menu";
 import { LanguagePicker } from "@/components/layout/language-picker";
 import { LocationPicker } from "@/components/layout/location-picker";
 import { Logo } from "@/components/layout/logo";
@@ -51,6 +52,7 @@ export function Header() {
       >
         <div className="container flex h-16 items-center gap-2 lg:gap-4">
           <Logo />
+          <CategoriesMenu />
 
           <div className="min-w-0 flex-1">
             <SearchBar />
