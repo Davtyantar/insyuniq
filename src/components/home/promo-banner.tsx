@@ -9,12 +9,21 @@ import { CtaButton } from "@/components/ui/cta-button";
 import { APP_NAME } from "@/lib/constants";
 import { cityInPrepositional } from "@/lib/format";
 
+/** City-specific clips for the work banner; falls back to the generic one. */
+const CITY_WORK_VIDEOS: Record<string, string> = {
+  Գորիս: "/goris-work.mp4",
+  Սիսիան: "/sisian-work.mp4",
+  Քաջարան: "/kajaran-work.mp4",
+  Մեղրի: "/megri-work.mp4",
+};
+
 /** Promo banner above the category grid — the site's own "advertisement". */
 export function PromoBanner() {
   const { city, hydrated } = useApp();
   const locationLabel =
     hydrated && city ? cityInPrepositional(city) : "Ողջ մարզում";
   const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
+  const workVideoSrc = (hydrated && city && CITY_WORK_VIDEOS[city]) || "/work.mp4";
 
   return (
     <section className='container pt-6 md:pt-8'>
@@ -84,7 +93,8 @@ export function PromoBanner() {
 
         <div className='relative aspect-[3/2] overflow-hidden rounded-3xl shadow-lift ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
           <video
-            src='/work.mp4'
+            key={workVideoSrc}
+            src={workVideoSrc}
             poster='/work.jpg'
             aria-hidden
             autoPlay
@@ -97,18 +107,14 @@ export function PromoBanner() {
 
           <Link
             href={workHref}
-            className='absolute right-4 top-4 z-20 inline-flex items-center gap-3 rounded-2xl bg-white/95 py-2.5 pl-2.5 pr-4 text-left shadow-xl ring-1 ring-black/5 backdrop-blur dark:bg-slate-900/90 dark:ring-white/10'
+            className='absolute bottom-3 right-3 z-20 inline-flex items-center gap-2 rounded-xl bg-orange-500 py-1.5 pl-1.5 pr-3 text-left shadow-xl ring-1 ring-black/10 transition-transform hover:scale-[1.04]'
           >
-            <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground shadow-sm'>
-              <Briefcase className='h-5 w-5' />
+            <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-orange-500 shadow-sm'>
+              <Briefcase className='h-3.5 w-3.5' />
             </span>
             <span className='flex items-center whitespace-nowrap leading-tight'>
-              <span className='text-[14px] font-medium text-slate-900 dark:text-white'>
-                Աշխատանք
-              </span>
-              <span className='ml-1.5 text-[14px] font-bold text-slate-900 dark:text-slate-300'>
-                {locationLabel}
-              </span>
+              <span className='text-[13px] font-semibold text-white'>Աշխատանք</span>
+              <span className='ml-1 text-[13px] font-bold text-white/90'>{locationLabel}</span>
             </span>
           </Link>
         </div>
