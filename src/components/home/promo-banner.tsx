@@ -21,7 +21,7 @@ export function PromoBanner() {
   return (
     <section className='container pt-6 md:pt-8'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-[3fr_2fr]'>
-        <div className='relative overflow-hidden rounded-3xl bg-card px-6 pb-[calc(1.5rem+25px)] pt-6 shadow-lift ring-1 ring-black/5 dark:ring-white/10 sm:px-8 sm:pb-[calc(2rem+25px)] sm:pt-8 md:px-10 md:pb-[calc(2.5rem+25px)] md:pt-10'>
+        <div className='relative overflow-hidden rounded-3xl bg-card px-6 pb-[calc(1.5rem+25px)] pt-6 ring-1 ring-black/5 dark:ring-white/10 sm:px-8 sm:pb-[calc(2rem+25px)] sm:pt-8 md:px-10 md:pb-[calc(2.5rem+25px)] md:pt-10'>
           <div
             aria-hidden
             className='pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-gradient-to-br from-brand-300/50 to-brand-500/20 blur-3xl'
@@ -85,14 +85,16 @@ export function PromoBanner() {
         </div>
 
         <div className='relative aspect-[3/2] overflow-hidden rounded-3xl shadow-lift ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
-          <Image
-            src='/work.jpg'
-            alt=''
+          <video
+            src='/work.mp4'
+            poster='/work.jpg'
             aria-hidden
-            fill
-            priority
-            sizes='(max-width: 768px) 100vw, 40vw'
-            className='object-cover'
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload='auto'
+            className='absolute inset-0 h-full w-full object-cover'
           />
 
           <Link
