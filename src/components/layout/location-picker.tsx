@@ -10,6 +10,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { CITIES } from "@/mock/taxonomy";
 
 const PLACEHOLDER = "Ընտրել քաղաքը";
@@ -46,7 +47,12 @@ export function LocationPicker() {
         >
           <MapPin className="h-4 w-4 text-accent" />
           <span className="max-w-[8rem] truncate">{label}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
+              open && "rotate-180",
+            )}
+          />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">

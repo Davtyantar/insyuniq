@@ -56,7 +56,12 @@ export function LanguagePicker() {
         >
           <FlagIcon locale={locale} />
           <span className="font-semibold">{activeCurrency.symbol}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
+              open && "rotate-180",
+            )}
+          />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[280px] p-0">
