@@ -4,10 +4,10 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Clock, Search } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
-import { listingHref } from "@/lib/categories";
+import { CATEGORY_LIST, listingHref } from "@/lib/categories";
 import { formatPrice } from "@/lib/format";
 import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
 import type { Listing } from "@/lib/types";
@@ -45,15 +45,22 @@ function matchListings(query: string): Listing[] {
 export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { currency } = useApp();
+  const {
+    currency,
+    searchOpen: open,
+    setSearchOpen: setOpen,
+    recentSearches,
+    addRecentSearch,
+    clearRecentSearches,
+  } = useApp();
   const [query, setQuery] = React.useState(defaultQuery);
-  const [open, setOpen] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const isFirstRender = React.useRef(true);
 
   const suggestions = React.useMemo(() => matchListings(query), [query]);
   const showDropdown = open && query.trim().length > 0;
+  const showEmptyPanel = open && query.trim().length === 0;
 
   // Navigating anywhere — a nav link, the logo, a suggestion — clears the field
   // instead of leaving a stale query sitting in the header.
@@ -64,7 +71,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
     }
     setQuery("");
     setOpen(false);
-  }, [pathname]);
+  }, [pathname, setOpen]);
 
   React.useEffect(() => {
     setActiveIndex(-1);
@@ -76,11 +83,24 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
     }
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, []);
+  }, [setOpen]);
+
+  // Scrolling away from the search field should drop the spotlight/overlay, same as clicking out.
+  React.useEffect(() => {
+    if (!open) return;
+    function handleScroll() {
+      setOpen(false);
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && containerRef.current?.contains(active)) active.blur();
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [open, setOpen]);
 
   function goToResults(value: string) {
     const trimmed = value.trim();
     setOpen(false);
+    if (trimmed) addRecentSearch(trimmed);
     router.push(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : "/search");
   }
 
@@ -124,13 +144,71 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
             placeholder="Որոնել հայտարարությունների մեջ"
             aria-label="Որոնել հայտարարությունների մեջ"
             role="combobox"
-            aria-expanded={showDropdown}
+            aria-expanded={showDropdown || showEmptyPanel}
             aria-autocomplete="list"
             aria-controls="search-suggestions"
             className="h-11 rounded-xl pl-11 pr-4 text-[15px]"
           />
         </div>
       </form>
+
+      {showEmptyPanel && (
+        <div
+          id="search-suggestions"
+          className="thin-scrollbar absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-pop animate-fade-in"
+        >
+          {recentSearches.length > 0 && (
+            <div className="p-1.5 pb-1">
+              <p className="px-1.5 pb-1 text-[12px] font-semibold text-muted-foreground">
+                Վերջին որոնումները
+              </p>
+              {recentSearches.map((term) => (
+                <button
+                  key={term}
+                  type="button"
+                  onClick={() => {
+                    setQuery(term);
+                    goToResults(term);
+                  }}
+                  className="flex w-full items-center gap-2.5 rounded-lg p-2 text-left text-[13.5px] text-foreground transition-colors hover:bg-secondary/70"
+                >
+                  <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{term}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="p-1.5 pt-1">
+            <p className="px-1.5 pb-1 text-[12px] font-semibold text-muted-foreground">
+              Հանրաճանաչ բաժիններ
+            </p>
+            {CATEGORY_LIST.map((category) => (
+              <Link
+                key={category.slug}
+                href={category.href}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 rounded-lg p-2 text-[13.5px] text-foreground transition-colors hover:bg-secondary/70"
+              >
+                <category.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                {category.label}
+              </Link>
+            ))}
+          </div>
+
+          {recentSearches.length > 0 && (
+            <div className="flex justify-end border-t border-border p-1.5 pt-2">
+              <button
+                type="button"
+                onClick={clearRecentSearches}
+                className="rounded-md px-2 py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Մաքրել ցանկը
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {showDropdown && (
         <div

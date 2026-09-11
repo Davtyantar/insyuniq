@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { SearchOverlay } from "@/components/layout/search-overlay";
 import { AppProvider } from "@/components/providers/app-provider";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import "./globals.css";
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-screen flex-col pb-14 md:pb-0">
         <AppProvider>
           <Header />
+          <SearchOverlay />
           <main className="flex-1">{children}</main>
           <Footer />
           <BottomNav />

@@ -10,6 +10,8 @@ const CITY_KEY = "syuniq:city";
 const LOCALE_KEY = "syuniq:locale";
 const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
+const RECENT_SEARCHES_KEY = "syuniq:recentSearches";
+const MAX_RECENT_SEARCHES = 8;
 
 export type Theme = "light" | "dark";
 
@@ -38,6 +40,13 @@ interface AppState {
   toggleTheme: () => void;
   /** False until localStorage has been read, so SSR and first paint agree. */
   hydrated: boolean;
+  /** Whether the header search field is focused/open; dims the rest of the page to spotlight it. */
+  searchOpen: boolean;
+  setSearchOpen: (open: boolean) => void;
+  /** Most recent search queries, newest first; shown in the search dropdown before the user types. */
+  recentSearches: string[];
+  addRecentSearch: (query: string) => void;
+  clearRecentSearches: () => void;
 }
 
 const AppContext = React.createContext<AppState | null>(null);
@@ -50,6 +59,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = React.useState<Currency>("USD");
   const [theme, setThemeState] = React.useState<Theme>("light");
   const [hydrated, setHydrated] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     try {
@@ -83,6 +94,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // The blocking inline script in <head> already set the "dark" class before paint;
     // just mirror that into state so React and the DOM agree.
     setThemeState(document.documentElement.classList.contains("dark") ? "dark" : "light");
+    try {
+      const savedSearches = window.localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (savedSearches) setRecentSearches(JSON.parse(savedSearches) as string[]);
+    } catch {
+      // Ignore unavailable or corrupted storage — recent searches simply start empty.
+    }
     setHydrated(true);
   }, []);
 
@@ -132,6 +149,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const addRecentSearch = React.useCallback((query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setRecentSearches((prev) => {
+      const next = [trimmed, ...prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase())].slice(
+        0,
+        MAX_RECENT_SEARCHES,
+      );
+      try {
+        window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+      } catch {
+        // Storage can be full or blocked; recent searches stay in memory for this session.
+      }
+      return next;
+    });
+  }, []);
+
+  const clearRecentSearches = React.useCallback(() => {
+    setRecentSearches([]);
+    try {
+      window.localStorage.removeItem(RECENT_SEARCHES_KEY);
+    } catch {
+      // Storage can be full or blocked; clearing in-memory state is still enough.
+    }
+  }, []);
+
   const toggleTheme = React.useCallback(() => {
     setThemeState((prev) => {
       const next: Theme = prev === "dark" ? "light" : "dark";
@@ -161,6 +204,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       theme,
       toggleTheme,
       hydrated,
+      searchOpen,
+      setSearchOpen,
+      recentSearches,
+      addRecentSearch,
+      clearRecentSearches,
     }),
     [
       favorites,
@@ -177,6 +225,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       theme,
       toggleTheme,
       hydrated,
+      searchOpen,
+      setSearchOpen,
+      recentSearches,
+      addRecentSearch,
+      clearRecentSearches,
     ],
   );
 
