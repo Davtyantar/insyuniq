@@ -67,18 +67,18 @@ export function PromoBanner() {
                   variant='outline'
                   className='flex-1 whitespace-nowrap border-border bg-card px-4 text-foreground hover:bg-secondary sm:flex-none'
                 >
-                  <Link href='/search'>Դիտել բոլորը</Link>
+                  <Link href='/search'>Դիտել հայտարարությունները</Link>
                 </Button>
               </div>
             </div>
 
-            <div className='relative hidden h-[220px] w-[177px] shrink-0 sm:block md:h-[250px] md:w-[201px] lg:h-[280px] lg:w-[225px]'>
+            <div className='relative hidden h-[235px] w-[189px] shrink-0 [perspective:700px] sm:block md:h-[265px] md:w-[213px] lg:h-[295px] lg:w-[237px]'>
               <Image
                 src='/syunik-map.png'
                 alt=''
                 aria-hidden
                 fill
-                className='object-contain'
+                className='animate-float-3d object-contain [transform-style:preserve-3d] will-change-transform'
               />
             </div>
           </div>

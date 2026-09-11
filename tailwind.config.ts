@@ -86,12 +86,23 @@ const config: Config = {
           from: { transform: "translateY(8px)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
+        "float-3d": {
+          "0%, 100%": {
+            transform:
+              "perspective(700px) rotateY(-10deg) rotateX(4deg) translateY(0px)",
+          },
+          "50%": {
+            transform:
+              "perspective(700px) rotateY(10deg) rotateX(-4deg) translateY(-10px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down .2s ease-out",
         "accordion-up": "accordion-up .2s ease-out",
         "fade-in": "fade-in .2s ease-out",
         "slide-up": "slide-up .25s cubic-bezier(.16,1,.3,1)",
+        "float-3d": "float-3d 6s ease-in-out infinite",
       },
     },
   },
