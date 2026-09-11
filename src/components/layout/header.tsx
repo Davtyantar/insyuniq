@@ -109,7 +109,12 @@ export function Header() {
           })}
           <Link
             href="/search"
-            className="py-2.5 text-muted-foreground transition-colors hover:text-foreground"
+            className={cn(
+              "-mb-px border-b-2 py-2.5 font-medium transition-colors",
+              pathname === "/search"
+                ? "border-accent text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
           >
             Բոլոր հայտարարությունները
           </Link>
