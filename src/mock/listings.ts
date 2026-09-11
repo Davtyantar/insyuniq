@@ -41,6 +41,11 @@ export function getHotel(id: string): HotelListing | undefined {
   return listing?.category === "hotels" ? listing : undefined;
 }
 
+/** Newest listings across every category, for the home page "recently added" showcase. */
+export const RECENT_LISTINGS = [...ALL_LISTINGS]
+  .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
+  .slice(0, 12);
+
 /** Hand-picked highlights for the home page. */
 export const FEATURED_IDS = [
   "re-1",

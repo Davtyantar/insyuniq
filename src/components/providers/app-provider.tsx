@@ -11,9 +11,19 @@ const LOCALE_KEY = "syuniq:locale";
 const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
 const RECENT_SEARCHES_KEY = "syuniq:recentSearches";
+const USER_KEY = "syuniq:user";
 const MAX_RECENT_SEARCHES = 8;
 
 export type Theme = "light" | "dark";
+
+/** Prototype-only account — created and stored entirely client-side, no backend involved. */
+export interface AuthUser {
+  name: string;
+  phone: string;
+  email?: string;
+  avatar?: string;
+  registeredAt: string;
+}
 
 /** Only one header dropdown (search, categories menu, city, language/currency) can be open at a time. */
 type HeaderMenu = "search" | "categories" | "location" | "language" | null;
@@ -60,6 +70,12 @@ interface AppState {
   recentSearches: string[];
   addRecentSearch: (query: string) => void;
   clearRecentSearches: () => void;
+  /** Signed-in account for this prototype; null until sign-in/sign-up, persisted to localStorage only. */
+  user: AuthUser | null;
+  signIn: (user: AuthUser) => void;
+  signUp: (user: AuthUser) => void;
+  updateUser: (patch: Partial<AuthUser>) => void;
+  signOut: () => void;
 }
 
 const AppContext = React.createContext<AppState | null>(null);
@@ -74,6 +90,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = React.useState(false);
   const [activeHeaderMenu, setActiveHeaderMenu] = React.useState<HeaderMenu>(null);
   const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
+  const [user, setUser] = React.useState<AuthUser | null>(null);
 
   const searchOpen = activeHeaderMenu === "search";
   const categoriesMenuOpen = activeHeaderMenu === "categories";
@@ -130,6 +147,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (savedSearches) setRecentSearches(JSON.parse(savedSearches) as string[]);
     } catch {
       // Ignore unavailable or corrupted storage — recent searches simply start empty.
+    }
+    try {
+      const savedUser = window.localStorage.getItem(USER_KEY);
+      if (savedUser) setUser(JSON.parse(savedUser) as AuthUser);
+    } catch {
+      // Ignore unavailable or corrupted storage — user simply starts signed out.
     }
     setHydrated(true);
   }, []);
@@ -206,6 +229,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const persistUser = React.useCallback((next: AuthUser | null) => {
+    setUser(next);
+    try {
+      if (next) window.localStorage.setItem(USER_KEY, JSON.stringify(next));
+      else window.localStorage.removeItem(USER_KEY);
+    } catch {
+      // Storage can be full or blocked; the session stays signed in only in memory.
+    }
+  }, []);
+
+  const signIn = React.useCallback((next: AuthUser) => persistUser(next), [persistUser]);
+  const signUp = React.useCallback((next: AuthUser) => persistUser(next), [persistUser]);
+  const signOut = React.useCallback(() => persistUser(null), [persistUser]);
+  const updateUser = React.useCallback(
+    (patch: Partial<AuthUser>) => {
+      setUser((prev) => {
+        if (!prev) return prev;
+        const next = { ...prev, ...patch };
+        try {
+          window.localStorage.setItem(USER_KEY, JSON.stringify(next));
+        } catch {
+          // Storage can be full or blocked; the update stays in memory for this session.
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
   const toggleTheme = React.useCallback(() => {
     setThemeState((prev) => {
       const next: Theme = prev === "dark" ? "light" : "dark";
@@ -246,6 +298,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       recentSearches,
       addRecentSearch,
       clearRecentSearches,
+      user,
+      signIn,
+      signUp,
+      updateUser,
+      signOut,
     }),
     [
       favorites,
@@ -273,6 +330,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       recentSearches,
       addRecentSearch,
       clearRecentSearches,
+      user,
+      signIn,
+      signUp,
+      updateUser,
+      signOut,
     ],
   );
 

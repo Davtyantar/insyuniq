@@ -14,10 +14,12 @@ import {
 import { CategoryBanners } from "@/components/home/category-banners";
 import { Categories } from "@/components/home/categories";
 import { HitsSection } from "@/components/home/hits-section";
+import { NewArrivals } from "@/components/home/new-arrivals";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { CtaButton } from "@/components/ui/cta-button";
 import { APP_NAME } from "@/lib/constants";
 import {
+  RECENT_LISTINGS,
   TOP_CARS,
   TOP_DAILY_HOUSES,
   TOP_HOTELS,
@@ -73,6 +75,8 @@ export default function HomePage() {
         href='/real-estate'
         listings={TOP_REAL_ESTATE}
       />
+
+      <NewArrivals listings={RECENT_LISTINGS} />
 
       <HitsSection
         title='Ավտոմեքենաների հիթեր'

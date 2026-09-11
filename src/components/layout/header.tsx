@@ -14,11 +14,6 @@ import { Button } from "@/components/ui/button";
 import { CATEGORY_LIST } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
-const ACTIONS = [
-  { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
-  { href: "/profile", label: "Մուտք", icon: User, badge: null },
-];
-
 function CountBadge({ count }: { count: number }) {
   if (!count) return null;
   return (
@@ -30,8 +25,13 @@ function CountBadge({ count }: { count: number }) {
 
 export function Header() {
   const pathname = usePathname();
-  const { favorites, hydrated, searchOpen, categoriesMenuOpen } = useApp();
+  const { favorites, hydrated, searchOpen, categoriesMenuOpen, user } = useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
+  const profileLabel = hydrated && user ? user.name.split(" ")[0] : "Մուտք";
+  const actions = [
+    { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
+    { href: "/profile", label: profileLabel, icon: User, badge: null },
+  ];
   // The home page already lists every category as tiles, so the nav row would repeat it.
   const showCategoryNav = pathname !== "/";
   // Both the search field and the categories menu spotlight the top bar the same way.
@@ -65,7 +65,7 @@ export function Header() {
 
           {/* Phones reach these from the bottom navigation, so the header keeps only search. */}
           <nav className="hidden items-center gap-0.5 md:flex">
-            {ACTIONS.map((action) => (
+            {actions.map((action) => (
               <Button key={action.href} variant="ghost" size="icon" asChild className="relative">
                 <Link href={action.href} title={action.label} aria-label={action.label}>
                   <action.icon className="h-5 w-5" />
