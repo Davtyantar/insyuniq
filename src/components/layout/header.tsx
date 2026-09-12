@@ -13,6 +13,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { SearchBar } from "@/components/search/search-bar";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_LIST } from "@/lib/categories";
+import { stripLocalePrefix } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 function CountBadge({ count }: { count: number }) {
@@ -27,6 +28,7 @@ function CountBadge({ count }: { count: number }) {
 export function Header() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const localPathname = stripLocalePrefix(pathname);
   const { favorites, hydrated, searchOpen, categoriesMenuOpen, user } = useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
   const profileLabel = hydrated && user ? user.name.split(" ")[0] : t("common.signIn");
@@ -35,7 +37,7 @@ export function Header() {
     { href: "/profile", label: profileLabel, icon: User, badge: null },
   ];
   // The home page already lists every category as tiles, so the nav row would repeat it.
-  const showCategoryNav = pathname !== "/";
+  const showCategoryNav = localPathname !== "/";
   // Both the search field and the categories menu spotlight the top bar the same way.
   const spotlight = searchOpen || categoriesMenuOpen;
 
@@ -96,7 +98,7 @@ export function Header() {
       >
         <div className="container hidden h-11 items-center gap-6 text-sm md:flex">
           {CATEGORY_LIST.map((category) => {
-            const active = pathname.startsWith(category.href);
+            const active = localPathname.startsWith(category.href);
             return (
               <Link
                 key={category.slug}
@@ -117,7 +119,7 @@ export function Header() {
             href="/search"
             className={cn(
               "-mb-px border-b-2 py-2.5 font-medium transition-colors",
-              pathname === "/search"
+              localPathname === "/search"
                 ? "border-accent text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground",
             )}
