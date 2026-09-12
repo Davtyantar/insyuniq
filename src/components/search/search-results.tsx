@@ -6,6 +6,7 @@ import { CityAccent } from "@/components/city-accent";
 import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { SortSelect, ViewToggle } from "@/components/listings/results-toolbar";
+import { useApp } from "@/components/providers/app-provider";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { sortListings } from "@/lib/filtering";
 import { plural } from "@/lib/format";
@@ -24,6 +25,7 @@ const TABS = [
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
 export function SearchResults() {
   const router = useRouter();
+  const { localizeHref } = useApp();
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
   const city = searchParams.get("city") ?? "";
@@ -93,7 +95,7 @@ export function SearchResults() {
           <EmptyState
             title="Ոչինչ չի գտնվել"
             description="Փորձեք այլ հարցում կամ դիտեք հայտարարությունները ըստ կատեգորիաների։"
-            action={{ label: "Մաքրել որոնումը", onClick: () => router.push("/search") }}
+            action={{ label: "Մաքրել որոնումը", onClick: () => router.push(localizeHref("/search")) }}
             secondaryAction={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
           />
         ) : (

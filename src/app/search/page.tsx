@@ -5,6 +5,12 @@ import { SearchResults } from "@/components/search/search-results";
 
 export const metadata: Metadata = {
   title: "Հայտարարությունների որոնում",
+  // Free-text search results are a different page per query string — thin,
+  // near-duplicate content that shouldn't compete with the category hubs.
+  robots: { index: false, follow: true },
+  // Self-referencing (not query-specific) so this doesn't inherit the root
+  // layout's "/" canonical, which would wrongly claim the homepage here.
+  alternates: { canonical: "/search" },
 };
 
 function SearchSkeleton() {

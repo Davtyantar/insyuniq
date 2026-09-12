@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { Briefcase } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { CtaButton } from "@/components/ui/cta-button";
+import { CITY_SLUG } from "@/lib/cities";
 import { APP_NAME } from "@/lib/constants";
-import { cityInPrepositional } from "@/lib/format";
 
 /** City-specific clips for the work banner; falls back to the generic one. */
 const CITY_WORK_VIDEOS: Record<string, string> = {
@@ -19,9 +20,10 @@ const CITY_WORK_VIDEOS: Record<string, string> = {
 
 /** Promo banner above the category grid — the site's own "advertisement". */
 export function PromoBanner() {
+  const { t } = useTranslation();
   const { city, hydrated } = useApp();
   const locationLabel =
-    hydrated && city ? cityInPrepositional(city) : "Ողջ մարզում";
+    hydrated && city ? t(`cities.${CITY_SLUG[city]}.in`) : t("common.acrossTheRegion");
   const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
   const workVideoSrc = (hydrated && city && CITY_WORK_VIDEOS[city]) || "/work.mp4";
 
@@ -53,12 +55,11 @@ export function PromoBanner() {
                 className='h-9 w-auto rounded-lg sm:h-10 dark:bg-white/95 dark:px-2 dark:py-1.5'
               />
               <h1 className='max-w-[280px] text-balance text-[22px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[28px] lg:text-[28px]'>
-                Անվճար հայտարարությունների տախտակ{" "}
-                <span className='text-accent'>Սյունիքի մարզի</span>
+                {t("home.promo.heading")}{" "}
+                <span className='text-accent'>{t("home.promo.headingHighlight")}</span>
               </h1>
               <p className='max-w-[300px] text-balance text-[13px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px]'>
-                Անշարժ գույք, տրանսպորտ, վարձակալություն և կացություն՝ հեշտ ու
-                արագ մեկ հարթակում։ Ձեր բոլոր կարիքները՝ մեկ հարթակում։
+                {t("home.promo.text")}
               </p>
               <div className='mt-1 flex w-full flex-nowrap items-center justify-center gap-2 sm:w-auto md:justify-start'>
                 <CtaButton
@@ -66,7 +67,7 @@ export function PromoBanner() {
                   size='default'
                   className='flex-1 whitespace-nowrap px-4 sm:flex-none'
                 >
-                  Հրապարակել
+                  {t("common.publish")}
                 </CtaButton>
                 <Button
                   asChild
@@ -74,7 +75,7 @@ export function PromoBanner() {
                   variant='outline'
                   className='flex-1 whitespace-nowrap border-border bg-card px-4 text-foreground hover:bg-secondary sm:flex-none'
                 >
-                  <Link href='/search'>Դիտել հայտարարությունները</Link>
+                  <Link href='/search'>{t("home.promo.viewListings")}</Link>
                 </Button>
               </div>
             </div>
@@ -113,7 +114,7 @@ export function PromoBanner() {
               <Briefcase className='h-3.5 w-3.5' />
             </span>
             <span className='flex items-center whitespace-nowrap leading-tight'>
-              <span className='text-[13px] font-semibold text-white'>Աշխատանք</span>
+              <span className='text-[13px] font-semibold text-white'>{t("home.promo.work")}</span>
               <span className='ml-1 text-[13px] font-bold text-white/90'>{locationLabel}</span>
             </span>
           </Link>

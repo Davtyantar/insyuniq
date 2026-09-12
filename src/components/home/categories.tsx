@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
 import { CATEGORY_LIST } from "@/lib/categories";
 

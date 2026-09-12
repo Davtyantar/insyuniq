@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { i18next } from "@/i18n/config";
 import type { Currency } from "@/lib/currency";
-import type { Locale } from "@/lib/i18n";
+import { LOCALE_HTML_LANG, localeFromPathname, stripLocalePrefix, withLocalePrefix, type Locale } from "@/lib/i18n";
 import type { Listing } from "@/lib/types";
 
 const FAVORITES_KEY = "syuniq:favorites";
 const CITY_KEY = "syuniq:city";
-const LOCALE_KEY = "syuniq:locale";
 const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
 const RECENT_SEARCHES_KEY = "syuniq:recentSearches";
@@ -44,9 +45,12 @@ interface AppState {
   /** Selected city, shown next to search; null until the user picks one. */
   city: string | null;
   setCity: (city: string) => void;
-  /** Interface language; defaults to Russian until the user picks one. */
+  /** Interface language — derived from the URL ("/", "/ru", "/en"), never stored; the URL is the single source of truth. */
   locale: Locale;
+  /** Navigates to the same page under the given locale's URL prefix. */
   setLocale: (locale: Locale) => void;
+  /** Prefixes an internal href ("/cars") with the current locale's URL prefix; passes external/anchor hrefs through untouched. */
+  localizeHref: (href: string) => string;
   /** Currency prices are displayed in; listing prices are stored in USD and converted for display. */
   currency: Currency;
   setCurrency: (currency: Currency) => void;
@@ -83,10 +87,15 @@ interface AppState {
 const AppContext = React.createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  // Derived, not stored — identical on the server and on first client render,
+  // since it comes straight from the URL Next.js already resolved.
+  const locale = React.useMemo(() => localeFromPathname(pathname), [pathname]);
+
   const [favorites, setFavorites] = React.useState<string[]>([]);
   const [published, setPublished] = React.useState<Listing[]>([]);
   const [city, setCityState] = React.useState<string | null>(null);
-  const [locale, setLocaleState] = React.useState<Locale>("am");
   const [currency, setCurrencyState] = React.useState<Currency>("USD");
   const [theme, setThemeState] = React.useState<Theme>("light");
   const [hydrated, setHydrated] = React.useState(false);
@@ -126,14 +135,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // Ignore unavailable storage — city picker simply starts unset.
     }
     try {
-      const savedLocale = window.localStorage.getItem(LOCALE_KEY);
-      if (savedLocale === "ru" || savedLocale === "am" || savedLocale === "en") {
-        setLocaleState(savedLocale);
-      }
-    } catch {
-      // Ignore unavailable storage — locale simply starts at the default.
-    }
-    try {
       const savedCurrency = window.localStorage.getItem(CURRENCY_KEY);
       if (savedCurrency === "USD" || savedCurrency === "AMD" || savedCurrency === "EUR" || savedCurrency === "RUB") {
         setCurrencyState(savedCurrency);
@@ -158,6 +159,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     setHydrated(true);
   }, []);
+
+  // Keeps i18next and <html lang> in sync with the URL-derived locale. Runs
+  // client-side only (after first paint), so a direct visit to /ru or /en
+  // briefly shows Armenian chrome text before this fires — the same
+  // hydration-flash tradeoff any client-only i18n setup makes, since the
+  // server always renders the Armenian default.
+  React.useEffect(() => {
+    i18next.changeLanguage(locale);
+    document.documentElement.lang = LOCALE_HTML_LANG[locale];
+  }, [locale]);
 
   React.useEffect(() => {
     if (!hydrated) return;
@@ -187,14 +198,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setLocale = React.useCallback((next: Locale) => {
-    setLocaleState(next);
-    try {
-      window.localStorage.setItem(LOCALE_KEY, next);
-    } catch {
-      // Storage can be full or blocked; locale stays in memory for this session.
-    }
-  }, []);
+  const setLocale = React.useCallback(
+    (next: Locale) => {
+      const search = typeof window !== "undefined" ? window.location.search : "";
+      const target = withLocalePrefix(stripLocalePrefix(pathname), next) + search;
+      router.push(target);
+    },
+    [pathname, router],
+  );
+
+  const localizeHref = React.useCallback(
+    (href: string) => (href.startsWith("/") ? withLocalePrefix(href, locale) : href),
+    [locale],
+  );
 
   const setCurrency = React.useCallback((next: Currency) => {
     setCurrencyState(next);
@@ -284,6 +300,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      localizeHref,
       currency,
       setCurrency,
       theme,
@@ -316,6 +333,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setCity,
       locale,
       setLocale,
+      localizeHref,
       currency,
       setCurrency,
       theme,

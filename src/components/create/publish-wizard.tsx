@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ArrowLeft, ArrowRight, Check, CircleAlert, PartyPopper } from "lucide-react";
 import { StepCategory } from "@/components/create/steps/step-category";
 import { StepDescription } from "@/components/create/steps/step-description";

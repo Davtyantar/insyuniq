@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

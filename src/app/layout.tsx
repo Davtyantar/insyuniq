@@ -5,8 +5,14 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SearchOverlay } from "@/components/layout/search-overlay";
 import { AppProvider } from "@/components/providers/app-provider";
+import { JsonLd } from "@/components/seo/json-ld";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import { SITE_URL } from "@/lib/seo";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import "./globals.css";
+
+const SITE_DESCRIPTION =
+  "Անշարժ գույքի և ավտոմեքենաների առք ու վաճառքի ու վարձակալության հայտարարություններ. բնակարաններ, տներ, հողատարածքներ, մարդատար և էլեկտրական մեքենաներ։";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -15,12 +21,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: `${APP_NAME} — ${APP_TAGLINE}`,
     template: `%s · ${APP_NAME}`,
   },
-  description:
-    "Անշարժ գույքի և ավտոմեքենաների առք ու վաճառքի ու վարձակալության հայտարարություններ. բնակարաններ, տներ, հողատարածքներ, մարդատար և էլեկտրական մեքենաներ։",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "hy_AM",
+    siteName: APP_NAME,
+    url: "/",
+    title: `${APP_NAME} — ${APP_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [{ url: "/logo.png", width: 916, height: 272, alt: APP_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${APP_NAME} — ${APP_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: ["/logo.png"],
+  },
 };
 
 export const viewport: Viewport = {
@@ -52,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="hy" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>
       <body className="flex min-h-screen flex-col pb-14 md:pb-0">
         <AppProvider>

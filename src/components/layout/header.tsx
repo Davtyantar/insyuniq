@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { usePathname } from "next/navigation";
 import { Heart, Plus, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { CategoriesMenu } from "@/components/layout/categories-menu";
 import { LanguagePicker } from "@/components/layout/language-picker";
 import { LocationPicker } from "@/components/layout/location-picker";
@@ -24,12 +25,13 @@ function CountBadge({ count }: { count: number }) {
 }
 
 export function Header() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { favorites, hydrated, searchOpen, categoriesMenuOpen, user } = useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
-  const profileLabel = hydrated && user ? user.name.split(" ")[0] : "Մուտք";
+  const profileLabel = hydrated && user ? user.name.split(" ")[0] : t("common.signIn");
   const actions = [
-    { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
+    { href: "/favorites", label: t("common.favorites"), icon: Heart, badge: "favorites" as const },
     { href: "/profile", label: profileLabel, icon: User, badge: null },
   ];
   // The home page already lists every category as tiles, so the nav row would repeat it.
@@ -77,9 +79,9 @@ export function Header() {
           </nav>
 
           <Button variant="accent" asChild className="shrink-0 gap-2">
-            <Link href="/create" title="Հրապարակել հայտարարություն">
+            <Link href="/create" title={t("common.publishListing")}>
               <Plus className="h-[18px] w-[18px]" />
-              <span className="hidden sm:inline">Հրապարակել հայտարարություն</span>
+              <span className="hidden sm:inline">{t("common.publishListing")}</span>
             </Link>
           </Button>
         </div>
@@ -120,7 +122,7 @@ export function Header() {
                 : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
-            Բոլոր հայտարարությունները
+            {t("common.allListings")}
           </Link>
         </div>
 

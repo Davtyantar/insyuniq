@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { BadgeCheck, Clock, ImageIcon, MapPin } from "lucide-react";
 import { FavoriteButton } from "@/components/listings/favorite-button";
 import { useApp } from "@/components/providers/app-provider";

@@ -137,21 +137,3 @@ export function roomsLabel(rooms: number) {
   if (rooms === 0) return "Ստուդիո";
   return `${rooms}-սենյականոց`;
 }
-
-const CITY_LOCATIVE: Record<string, string> = {
-  "Կապան": "Կապանում",
-  "Գորիս": "Գորիսում",
-  "Սիսիան": "Սիսիանում",
-  "Քաջարան": "Քաջարանում",
-  "Մեղրի": "Մեղրիում",
-  "Ագարակ": "Ագարակում",
-  "Դաստակերտ": "Դաստակերտում",
-  "Տաթև": "Տաթևում",
-  "Խնձորեսկ": "Խնձորեսկում",
-  "Շինուհայր": "Շինուհայրում",
-};
-
-/** "Կապան" -> "Կապանում", for phrases like "բնակարաններ Կապանում". */
-export function cityInPrepositional(city: string): string {
-  return CITY_LOCATIVE[city] ?? city;
-}

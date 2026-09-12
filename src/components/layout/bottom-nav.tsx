@@ -1,22 +1,24 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { usePathname } from "next/navigation";
 import { Heart, Home, Plus, Search, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { cn } from "@/lib/utils";
 
-const ITEMS = [
-  { href: "/", label: "Գլխավոր", icon: Home },
-  { href: "/search", label: "Որոնում", icon: Search },
-  { href: "/create", label: "Հրապարակել", icon: Plus, primary: true },
-  { href: "/favorites", label: "Հավանածներ", icon: Heart, badge: "favorites" as const },
-  { href: "/profile", label: "Պրոֆիլ", icon: User },
-];
-
 export function BottomNav() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { favorites, hydrated } = useApp();
+
+  const ITEMS = [
+    { href: "/", label: t("common.home"), icon: Home },
+    { href: "/search", label: t("common.search"), icon: Search },
+    { href: "/create", label: t("common.publish"), icon: Plus, primary: true },
+    { href: "/favorites", label: t("common.favorites"), icon: Heart, badge: "favorites" as const },
+    { href: "/profile", label: t("common.profile"), icon: User },
+  ];
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">

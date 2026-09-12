@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ChevronRight, Menu } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CATEGORY_LIST } from "@/lib/categories";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 /** Burger menu next to the logo: hover a category on the left, jump straight to a subcategory on the right. */
 export function CategoriesMenu() {
+  const { t } = useTranslation();
   const { categoriesMenuOpen: open, setCategoriesMenuOpen: setOpen } = useApp();
   const [active, setActive] = React.useState(CATEGORY_LIST[0].slug);
 
@@ -33,10 +35,10 @@ export function CategoriesMenu() {
         <button
           type="button"
           className="hidden shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:flex"
-          title="Բոլոր բաժինները"
+          title={t("common.allSections")}
         >
           <Menu className="h-[18px] w-[18px]" />
-          <span className="hidden lg:inline">Բաժիններ</span>
+          <span className="hidden lg:inline">{t("common.sections")}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="flex w-[660px] max-w-[92vw] gap-0 p-0">

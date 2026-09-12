@@ -1,28 +1,26 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const BANNERS = [
   {
     href: "/real-estate?subcategory=apartments",
-    title: "Փնտրում եք",
-    highlight: "բնակարան",
-    text: "Փնտրո՞ւմ եք բնակարան։ Նոր և հին կառույցների բնակարաններ՝ վաճառքով և վարձով, ողջ Սյունիքում",
-    cta: "Դիտել բնակարանները",
-    map: "/syunik-map-red.png"
+    key: "apartments",
+    map: "/syunik-map-red.png",
   },
   {
     href: "/hotels?subcategory=guesthouses",
-    title: "Հանգստի եք",
-    highlight: "գնում",
-    text: "Հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձով, հարմարավետ պայմաններով և ստուգված առաջարկներով ողջ Սյունիքում։",
-    cta: "Դիտել հյուրատները",
-    map: "/syunik-map-orange.png"
-  }
+    key: "guesthouses",
+    map: "/syunik-map-orange.png",
+  },
 ] as const;
 
 /** Two spotlight banners under the category grid, styled like the hero PromoBanner above. */
 export function CategoryBanners() {
+  const { t } = useTranslation();
   return (
     <section className='container pt-6 md:pt-8'>
       <div className='grid grid-cols-1 gap-5 sm:grid-cols-2'>
@@ -55,16 +53,16 @@ export function CategoryBanners() {
 
             <div className='relative z-10 max-w-[80%]'>
               <h3 className='text-[19px] font-bold leading-snug tracking-tight text-foreground sm:text-[21px]'>
-                {banner.title}{" "}
-                <span className='text-accent'>{banner.highlight}</span>
+                {t(`home.banners.${banner.key}.title`)}{" "}
+                <span className='text-accent'>{t(`home.banners.${banner.key}.highlight`)}</span>
               </h3>
               <p className='mt-1.5 text-[13px] leading-relaxed text-muted-foreground'>
-                {banner.text}
+                {t(`home.banners.${banner.key}.text`)}
               </p>
             </div>
 
             <span className='relative z-10 inline-flex w-fit items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-[13px] font-semibold text-accent-foreground shadow-sm transition-colors group-hover:bg-brand-700'>
-              {banner.cta}
+              {t(`home.banners.${banner.key}.cta`)}
               <ArrowRight className='h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1' />
             </span>
           </Link>

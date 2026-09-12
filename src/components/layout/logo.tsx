@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { usePathname } from "next/navigation";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";

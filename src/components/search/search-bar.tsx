@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { usePathname, useRouter } from "next/navigation";
 import { Clock, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
 import { CATEGORY_LIST, listingHref } from "@/lib/categories";
@@ -43,6 +44,7 @@ function matchListings(query: string): Listing[] {
 
 /** Single search field for the whole app: live suggestions as you type, submits on Enter, routes to /search. */
 export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const {
@@ -52,6 +54,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
     recentSearches,
     addRecentSearch,
     clearRecentSearches,
+    localizeHref,
   } = useApp();
   const [query, setQuery] = React.useState(defaultQuery);
   const [activeIndex, setActiveIndex] = React.useState(-1);
@@ -101,14 +104,14 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
     const trimmed = value.trim();
     setOpen(false);
     if (trimmed) addRecentSearch(trimmed);
-    router.push(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : "/search");
+    router.push(localizeHref(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : "/search"));
   }
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
     if (activeIndex >= 0 && suggestions[activeIndex]) {
       setOpen(false);
-      router.push(listingHref(suggestions[activeIndex]));
+      router.push(localizeHref(listingHref(suggestions[activeIndex])));
       return;
     }
     goToResults(query);
@@ -141,8 +144,8 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
             }}
             onFocus={() => setOpen(true)}
             onKeyDown={handleKeyDown}
-            placeholder="Որոնել հայտարարությունների մեջ"
-            aria-label="Որոնել հայտարարությունների մեջ"
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.placeholder")}
             role="combobox"
             aria-expanded={showDropdown || showEmptyPanel}
             aria-autocomplete="list"
@@ -160,7 +163,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
           {recentSearches.length > 0 && (
             <div className="p-1.5 pb-1">
               <p className="px-1.5 pb-1 text-[12px] font-semibold text-muted-foreground">
-                Վերջին որոնումները
+                {t("search.recent")}
               </p>
               {recentSearches.map((term) => (
                 <button
@@ -181,7 +184,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
 
           <div className="p-1.5 pt-1">
             <p className="px-1.5 pb-1 text-[12px] font-semibold text-muted-foreground">
-              Հանրաճանաչ բաժիններ
+              {t("search.popular")}
             </p>
             {CATEGORY_LIST.map((category) => (
               <Link
@@ -203,7 +206,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
                 onClick={clearRecentSearches}
                 className="rounded-md px-2 py-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                Մաքրել ցանկը
+                {t("search.clear")}
               </button>
             </div>
           )}
@@ -218,7 +221,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
         >
           {suggestions.length === 0 ? (
             <p className="px-3 py-4 text-center text-sm text-muted-foreground">
-              Ոչինչ չի գտնվել «{query.trim()}» հարցման համար
+              {t("search.noResults", { query: query.trim() })}
             </p>
           ) : (
             <>
@@ -270,7 +273,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
                 className="mt-0.5 flex w-full items-center justify-center gap-1.5 rounded-lg p-2.5 text-sm font-medium text-accent transition-colors hover:bg-secondary/70"
               >
                 <Search className="h-3.5 w-3.5" />
-                Բոլոր արդյունքները «{query.trim()}» հարցման համար
+                {t("search.allResultsFor", { query: query.trim() })}
               </button>
             </>
           )}

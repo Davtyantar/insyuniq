@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { BadgeCheck, ChevronRight, Eye, MapPin } from "lucide-react";
 import { ImageGallery } from "@/components/listing/image-gallery";
 import { MapPlaceholder } from "@/components/listing/map-placeholder";

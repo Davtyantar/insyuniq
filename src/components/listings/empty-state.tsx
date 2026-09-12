@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import type { LucideIcon } from "lucide-react";
 import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";

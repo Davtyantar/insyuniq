@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { CityAccent } from "@/components/city-accent";
 import { FavoriteButton } from "@/components/listings/favorite-button";

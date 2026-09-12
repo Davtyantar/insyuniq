@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { FlagIcon } from "@/components/layout/flag-icon";
 import { useApp } from "@/components/providers/app-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -14,6 +15,7 @@ type Tab = "language" | "currency";
 
 /** Combined language + currency switcher — persists both choices to localStorage. */
 export function LanguagePicker() {
+  const { t } = useTranslation();
   const {
     locale,
     setLocale,
@@ -58,7 +60,7 @@ export function LanguagePicker() {
         <button
           type="button"
           className="hidden shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:flex"
-          title="Լեզու և արժույթ"
+          title={t("common.languageAndCurrency")}
         >
           <FlagIcon locale={locale} />
           <span className="font-semibold">{activeCurrency.symbol}</span>
