@@ -29,14 +29,18 @@ export function LanguagePicker() {
   const activeCurrency = currencyOption(currency);
 
   // Radix's default "modal" behavior locks page scroll while open — this menu should stay
-  // over a normally-scrollable page, closing itself the moment the user scrolls instead.
+  // over a normally-scrollable page, closing itself once the user actually scrolls instead.
+  // Threshold (not a bare scroll listener) because opening this on a touch device can itself
+  // trigger a few px of scroll — from the mobile browser's chrome animating, or focus scrolling
+  // the tapped element into view — which would otherwise close the menu the instant it opens.
   React.useEffect(() => {
     if (!open) return;
-    function close() {
-      setOpen(false);
+    const startY = window.scrollY;
+    function handleScroll() {
+      if (Math.abs(window.scrollY - startY) > 4) setOpen(false);
     }
-    window.addEventListener("scroll", close, { passive: true, capture: true });
-    return () => window.removeEventListener("scroll", close, { capture: true });
+    window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", handleScroll, { capture: true });
   }, [open, setOpen]);
 
   function handleOpenChange(next: boolean) {

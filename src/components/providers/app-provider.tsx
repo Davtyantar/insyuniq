@@ -26,8 +26,8 @@ export interface AuthUser {
   registeredAt: string;
 }
 
-/** Only one header dropdown (search, categories menu, city, language/currency) can be open at a time. */
-type HeaderMenu = "search" | "categories" | "location" | "language" | null;
+/** Only one header dropdown (search, categories menu, city, language/currency, mobile nav) can be open at a time. */
+type HeaderMenu = "search" | "categories" | "location" | "language" | "mobile" | null;
 
 function applyThemeClass(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
@@ -72,6 +72,9 @@ interface AppState {
   /** Whether the language/currency picker dropdown is open. */
   languageMenuOpen: boolean;
   setLanguageMenuOpen: (open: boolean) => void;
+  /** Whether the phone burger-menu panel is open. */
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
   /** Most recent search queries, newest first; shown in the search dropdown before the user types. */
   recentSearches: string[];
   addRecentSearch: (query: string) => void;
@@ -107,6 +110,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const categoriesMenuOpen = activeHeaderMenu === "categories";
   const locationMenuOpen = activeHeaderMenu === "location";
   const languageMenuOpen = activeHeaderMenu === "language";
+  const mobileMenuOpen = activeHeaderMenu === "mobile";
 
   const setSearchOpen = React.useCallback((open: boolean) => {
     setActiveHeaderMenu((prev) => (open ? "search" : prev === "search" ? null : prev));
@@ -119,6 +123,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const setLanguageMenuOpen = React.useCallback((open: boolean) => {
     setActiveHeaderMenu((prev) => (open ? "language" : prev === "language" ? null : prev));
+  }, []);
+  const setMobileMenuOpen = React.useCallback((open: boolean) => {
+    setActiveHeaderMenu((prev) => (open ? "mobile" : prev === "mobile" ? null : prev));
   }, []);
 
   React.useEffect(() => {
@@ -314,6 +321,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLocationMenuOpen,
       languageMenuOpen,
       setLanguageMenuOpen,
+      mobileMenuOpen,
+      setMobileMenuOpen,
       recentSearches,
       addRecentSearch,
       clearRecentSearches,
@@ -347,6 +356,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLocationMenuOpen,
       languageMenuOpen,
       setLanguageMenuOpen,
+      mobileMenuOpen,
+      setMobileMenuOpen,
       recentSearches,
       addRecentSearch,
       clearRecentSearches,

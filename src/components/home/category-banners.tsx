@@ -40,7 +40,7 @@ export function CategoryBanners() {
             />
             <div
               aria-hidden
-              className='pointer-events-none absolute right-3 top-4 h-32 w-32 sm:h-36 sm:w-36'
+              className='pointer-events-none absolute right-2 top-3 h-16 w-16 sm:right-3 sm:top-4 sm:h-32 sm:w-32'
             >
               <Image
                 src={banner.map}
@@ -51,12 +51,14 @@ export function CategoryBanners() {
               />
             </div>
 
-            <div className='relative z-10 max-w-[80%]'>
-              <h3 className='text-[19px] font-bold leading-snug tracking-tight text-foreground sm:text-[21px]'>
+            <div className='relative z-10'>
+              {/* Only the heading sits level with the (now much smaller) map graphic, so only it
+                  needs to leave room for it — the paragraph below is free to use the full width. */}
+              <h3 className='max-w-[65%] text-[16px] font-bold leading-snug tracking-tight text-foreground sm:max-w-[80%] sm:text-[19px] md:text-[21px]'>
                 {t(`home.banners.${banner.key}.title`)}{" "}
                 <span className='text-accent'>{t(`home.banners.${banner.key}.highlight`)}</span>
               </h3>
-              <p className='mt-1.5 text-[13px] leading-relaxed text-muted-foreground'>
+              <p className='mt-1.5 text-[12px] leading-relaxed text-muted-foreground sm:text-[13px]'>
                 {t(`home.banners.${banner.key}.text`)}
               </p>
             </div>

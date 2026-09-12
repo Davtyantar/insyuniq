@@ -45,7 +45,7 @@ export function FloatingTabs({ items, value, onChange, className, tabClassName }
   return (
     <div
       className={cn(
-        "relative inline-flex items-center gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 no-scrollbar",
+        "relative flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 no-scrollbar",
         className,
       )}
     >
@@ -72,7 +72,7 @@ export function FloatingTabs({ items, value, onChange, className, tabClassName }
           type="button"
           onClick={() => onChange(item.value)}
           className={cn(
-            "relative z-10 inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "relative z-10 inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3.5 sm:text-sm",
             value === item.value
               ? "text-primary-foreground"
               : "text-muted-foreground hover:text-foreground",

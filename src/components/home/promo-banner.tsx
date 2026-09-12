@@ -54,18 +54,18 @@ export function PromoBanner() {
                 priority
                 className='h-9 w-auto rounded-lg sm:h-10 dark:bg-white/95 dark:px-2 dark:py-1.5'
               />
-              <h1 className='max-w-[280px] text-balance text-[22px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[28px] lg:text-[28px]'>
+              <h1 className='max-w-[280px] text-balance text-[18px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[28px] lg:text-[28px]'>
                 {t("home.promo.heading")}{" "}
                 <span className='text-accent'>{t("home.promo.headingHighlight")}</span>
               </h1>
-              <p className='max-w-[300px] text-balance text-[13px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px]'>
+              <p className='max-w-[300px] text-balance text-[12px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px]'>
                 {t("home.promo.text")}
               </p>
-              <div className='mt-1 flex w-full flex-nowrap items-center justify-center gap-2 sm:w-auto md:justify-start'>
+              <div className='mt-1 flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-center md:justify-start'>
                 <CtaButton
                   href='/create'
                   size='default'
-                  className='flex-1 whitespace-nowrap px-4 sm:flex-none'
+                  className='w-full whitespace-nowrap px-4 sm:w-auto'
                 >
                   {t("common.publish")}
                 </CtaButton>
@@ -73,7 +73,7 @@ export function PromoBanner() {
                   asChild
                   size='default'
                   variant='outline'
-                  className='flex-1 whitespace-nowrap border-border bg-card px-4 text-foreground hover:bg-secondary sm:flex-none'
+                  className='w-full whitespace-nowrap border-border bg-card px-4 text-foreground hover:bg-secondary sm:w-auto'
                 >
                   <Link href='/search'>{t("home.promo.viewListings")}</Link>
                 </Button>
@@ -108,14 +108,14 @@ export function PromoBanner() {
 
           <Link
             href={workHref}
-            className='absolute bottom-3 right-3 z-20 inline-flex items-center gap-2 rounded-xl bg-orange-500 py-1.5 pl-1.5 pr-3 text-left shadow-xl ring-1 ring-black/10 transition-transform hover:scale-[1.04]'
+            className='absolute right-2 top-2 z-20 inline-flex items-center gap-1.5 rounded-xl bg-orange-500 py-1 pl-1 pr-2 text-left shadow-xl ring-1 ring-black/10 transition-transform hover:scale-[1.04] sm:bottom-3 sm:right-3 sm:top-auto sm:gap-2 sm:py-1.5 sm:pl-1.5 sm:pr-3'
           >
-            <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-orange-500 shadow-sm'>
-              <Briefcase className='h-3.5 w-3.5' />
+            <span className='flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-white text-orange-500 shadow-sm sm:h-7 sm:w-7'>
+              <Briefcase className='h-3 w-3 sm:h-3.5 sm:w-3.5' />
             </span>
             <span className='flex items-center whitespace-nowrap leading-tight'>
-              <span className='text-[13px] font-semibold text-white'>{t("home.promo.work")}</span>
-              <span className='ml-1 text-[13px] font-bold text-white/90'>{locationLabel}</span>
+              <span className='text-[10px] font-semibold text-white sm:text-[13px]'>{t("home.promo.work")}</span>
+              <span className='ml-1 text-[10px] font-bold text-white/90 sm:text-[13px]'>{locationLabel}</span>
             </span>
           </Link>
         </div>

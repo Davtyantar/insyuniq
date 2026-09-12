@@ -17,8 +17,8 @@ interface FilterDrawerProps extends Omit<FilterPanelProps, "variant"> {
 export function FilterDrawer({ open, onOpenChange, ...panelProps }: FilterDrawerProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent variant="sheet" className="flex max-h-[92vh] flex-col p-0">
-        <DialogHeader className="border-b border-border px-4 py-4">
+      <DialogContent variant="sheet" className="flex max-h-[92vh] flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 border-b border-border px-4 py-4">
           <DialogTitle>Ֆիլտրեր</DialogTitle>
         </DialogHeader>
         <FilterPanel

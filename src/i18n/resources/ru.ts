@@ -17,6 +17,8 @@ export const ru = {
     next: "Следующие",
     allSections: "Все разделы",
     sections: "Разделы",
+    menu: "Меню",
+    close: "Закрыть",
     selectCity: "Выберите город",
     lightTheme: "Светлая тема",
     darkTheme: "Тёмная тема",

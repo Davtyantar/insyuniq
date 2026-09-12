@@ -25,17 +25,18 @@ export function Categories() {
                   href={category.href}
                   className='inline-flex shrink-0 items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-brand-700'
                 >
-                  Բոլոր հայտարարությունները
+                  <span className='sm:hidden'>Տեսնել</span>
+                  <span className='hidden sm:inline'>Բոլոր հայտարարությունները</span>
                   <ArrowRight className='h-4 w-4' />
                 </Link>
               </div>
 
-              <nav className='mt-4 flex flex-wrap gap-2'>
+              <nav className='mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap'>
                 {category.subcategories.map((sub) => (
                   <Link
                     key={sub.value}
                     href={`${category.href}?subcategory=${sub.value}`}
-                    className='group flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5 text-[13px] font-medium leading-snug text-secondary-foreground/80 ring-1 ring-transparent transition-all hover:bg-accent/10 hover:text-accent hover:ring-accent/25 hover:shadow-sm'
+                    className='group flex w-full items-center gap-2 rounded-xl bg-secondary px-3 py-2.5 text-[13px] font-medium leading-snug text-secondary-foreground/80 ring-1 ring-transparent transition-all hover:bg-accent/10 hover:text-accent hover:ring-accent/25 hover:shadow-sm sm:w-auto'
                   >
                     {sub.icon && (
                       <sub.icon className='h-4 w-4 shrink-0 text-accent transition-transform group-hover:scale-110' />

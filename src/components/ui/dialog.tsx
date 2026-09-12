@@ -47,7 +47,16 @@ const DialogContent = React.forwardRef<
         variant === "center" &&
           "left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl p-6 data-[state=open]:animate-slide-up",
         variant === "sheet" &&
-          "inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl data-[state=open]:animate-slide-up sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:w-[560px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl",
+          cn(
+            "inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl",
+            // Phones: a real bottom-sheet reveal/dismiss (slides the whole sheet off/onto screen).
+            "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-300 data-[state=open]:ease-out",
+            "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:duration-200 data-[state=closed]:ease-in",
+            // sm+: it's a centered modal instead, so it keeps the original subtle fade/nudge —
+            // sliding "to the bottom" would fly off center, which looks wrong for a modal.
+            "sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:w-[560px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl",
+            "sm:data-[state=open]:animate-slide-up sm:data-[state=closed]:animate-fade-out",
+          ),
         variant === "full" && "inset-0 rounded-none border-0 bg-slate-950 p-0",
         variant === "blur" &&
           "inset-0 flex items-center justify-center rounded-none border-0 bg-transparent p-0 shadow-none data-[state=open]:animate-fade-in",

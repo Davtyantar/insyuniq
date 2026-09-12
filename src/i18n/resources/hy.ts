@@ -16,6 +16,8 @@ export const hy = {
     next: "Հաջորդները",
     allSections: "Բոլոր բաժինները",
     sections: "Բաժիններ",
+    menu: "Ընտրացանկ",
+    close: "Փակել",
     selectCity: "Ընտրել քաղաքը",
     lightTheme: "Լուսավոր թեմա",
     darkTheme: "Մուգ թեմա",

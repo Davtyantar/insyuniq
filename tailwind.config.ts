@@ -82,6 +82,7 @@ const config: Config = {
           to: { height: "0" },
         },
         "fade-in": { from: { opacity: "0" }, to: { opacity: "1" } },
+        "fade-out": { from: { opacity: "1" }, to: { opacity: "0" } },
         "slide-up": {
           from: { transform: "translateY(8px)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
@@ -101,6 +102,7 @@ const config: Config = {
         "accordion-down": "accordion-down .2s ease-out",
         "accordion-up": "accordion-up .2s ease-out",
         "fade-in": "fade-in .2s ease-out",
+        "fade-out": "fade-out .15s ease-in",
         "slide-up": "slide-up .25s cubic-bezier(.16,1,.3,1)",
         "float-3d": "float-3d 6s ease-in-out infinite",
       },

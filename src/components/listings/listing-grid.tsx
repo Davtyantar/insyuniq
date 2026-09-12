@@ -11,6 +11,8 @@ interface ListingGridProps {
   className?: string;
   /** Number of grid columns on large screens. */
   columns?: 2 | 3 | 4;
+  /** Compact mobile list row — see ListingCard. Off by default for editorial/highlight grids. */
+  dense?: boolean;
 }
 
 export function ListingGrid({
@@ -20,6 +22,7 @@ export function ListingGrid({
   skeletonCount = 6,
   className,
   columns = 3,
+  dense = false,
 }: ListingGridProps) {
   const layout =
     view === "list"
@@ -35,7 +38,7 @@ export function ListingGrid({
     return (
       <div className={cn(layout, className)}>
         {Array.from({ length: skeletonCount }).map((_, index) => (
-          <ListingCardSkeleton key={index} view={view} />
+          <ListingCardSkeleton key={index} view={view} dense={dense} />
         ))}
       </div>
     );
@@ -44,7 +47,7 @@ export function ListingGrid({
   return (
     <div className={cn(layout, className)}>
       {listings.map((listing, index) => (
-        <ListingCard key={listing.id} listing={listing} view={view} priority={index < 3} />
+        <ListingCard key={listing.id} listing={listing} view={view} priority={index < 3} dense={dense} />
       ))}
     </div>
   );

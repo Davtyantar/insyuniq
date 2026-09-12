@@ -2,26 +2,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export function ListingCardSkeleton({ view = "grid" }: { view?: ViewMode }) {
+export function ListingCardSkeleton({ view = "grid", dense = false }: { view?: ViewMode; dense?: boolean }) {
   const isList = view === "list";
   return (
     <div
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card",
-        isList && "sm:flex-row",
+        "flex h-full overflow-hidden rounded-xl border border-border/70 bg-card",
+        dense ? "flex-row" : "flex-col",
+        isList ? "sm:flex-row" : "sm:flex-col",
       )}
     >
       <Skeleton
         className={cn(
-          "rounded-none",
-          isList ? "aspect-[4/3] sm:aspect-auto sm:h-[212px] sm:w-[300px]" : "aspect-[4/3]",
+          "shrink-0 rounded-none",
+          dense ? "aspect-square w-28" : "aspect-[4/3]",
+          isList ? "sm:aspect-auto sm:h-[212px] sm:w-[300px]" : "sm:aspect-[4/3] sm:w-full",
         )}
       />
-      <div className="flex flex-1 flex-col gap-2.5 p-4">
-        <Skeleton className="h-6 w-28" />
-        <Skeleton className="h-4 w-3/4" />
+      <div className={cn("flex flex-1 flex-col gap-2.5 p-4", dense && "gap-1.5 p-2 sm:gap-2.5 sm:p-4")}>
+        <Skeleton className={cn("h-6 w-28", dense && "h-5 w-24 sm:h-6 sm:w-28")} />
+        <Skeleton className={cn("h-4 w-3/4", dense && "h-3.5 sm:h-4")} />
         <Skeleton className="h-3 w-1/2" />
-        <div className="space-y-1.5 pt-1">
+        <div className={cn("space-y-1.5 pt-1", dense && "hidden sm:block")}>
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-2/3" />

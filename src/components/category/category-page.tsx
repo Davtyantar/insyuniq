@@ -137,15 +137,15 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
 
   return (
     <div className="container py-5 lg:py-8">
-      <nav className="flex items-center gap-1.5 text-[13px] text-foreground/70">
+      <nav className="flex flex-wrap items-center gap-1 text-xs text-foreground/70 sm:gap-1.5 sm:text-[13px]">
         <Link href="/" className="transition-colors hover:text-foreground">
           Գլխավոր
         </Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
         <span className="font-medium text-foreground">{config.label}</span>
         {subcategory && (
           <>
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
             <span className="font-medium text-foreground">
               {config.subcategories.find((s) => s.value === subcategory)?.label}
             </span>
@@ -153,7 +153,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
         )}
       </nav>
 
-      <h1 className="mt-3 text-2xl font-semibold tracking-tight lg:text-[28px]">
+      <h1 className="mt-3 text-base font-semibold tracking-tight sm:text-2xl lg:text-[28px]">
         {subcategory
           ? config.subcategories.find((s) => s.value === subcategory)?.label
           : config.label}
@@ -211,6 +211,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
               loading={isPending}
               skeletonCount={Math.min(PAGE_SIZE, Math.max(pageItems.length, 6))}
               columns={3}
+              dense
             />
           )}
 

@@ -17,6 +17,8 @@ export const en = {
     next: "Next",
     allSections: "All categories",
     sections: "Categories",
+    menu: "Menu",
+    close: "Close",
     selectCity: "Select city",
     lightTheme: "Light theme",
     darkTheme: "Dark theme",

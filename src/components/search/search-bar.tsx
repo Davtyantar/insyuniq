@@ -80,9 +80,15 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
     setActiveIndex(-1);
   }, [query]);
 
+  // The header mounts a desktop and a mobile SearchBar at once (CSS hides whichever doesn't
+  // apply), both sharing the same `searchOpen` state. Checking only *this* instance's own
+  // containerRef would make each one treat clicks inside the *other* instance's dropdown as
+  // "outside" and close the shared state on mousedown — before the click on a suggestion could
+  // ever fire. The data attribute below lets the check recognize either instance as "inside".
   React.useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest("[data-search-bar]")) setOpen(false);
     }
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
@@ -131,7 +137,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
   }
 
   return (
-    <div ref={containerRef} className={cn("relative w-full", className)}>
+    <div ref={containerRef} data-search-bar className={cn("relative w-full", className)}>
       <form onSubmit={submit} className="w-full" role="search" autoComplete="off">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground" />

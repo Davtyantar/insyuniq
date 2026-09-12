@@ -45,7 +45,7 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{t(`home.hits.${titleKey}.subtitle`)}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-normal">
           <Link
             href={href}
             className="inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-brand-700"
@@ -81,7 +81,9 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
         {listings.map((listing, index) => (
           <div
             key={listing.id}
-            className="w-[calc(50%-6px)] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
+            // Mobile shows a deliberate peek of the next card (~1.5 visible) to hint there's more
+            // to scroll to; sm+ switches to evenly-divided columns with no partial card showing.
+            className="w-[68%] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
           >
             <ListingCard listing={listing} priority={index < 4} />
           </div>

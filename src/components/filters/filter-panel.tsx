@@ -90,7 +90,7 @@ export function FilterPanel({
   const isDrawer = variant === "drawer";
 
   return (
-    <div className={cn("flex h-full flex-col", className)}>
+    <div className={cn("flex flex-col", isDrawer ? "min-h-0 flex-1" : "h-full", className)}>
       {!isDrawer && (
         <div className="flex items-center justify-between pb-4">
           <h2 className="text-base font-semibold tracking-tight">Ֆիլտրեր</h2>

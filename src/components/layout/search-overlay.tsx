@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 
 /** Dims everything below the header while the search field or categories menu is open, spotlighting it. */
 export function SearchOverlay() {
-  const { searchOpen, categoriesMenuOpen } = useApp();
-  const open = searchOpen || categoriesMenuOpen;
+  const { searchOpen, categoriesMenuOpen, mobileMenuOpen } = useApp();
+  const open = searchOpen || categoriesMenuOpen || mobileMenuOpen;
 
   return (
     <div
