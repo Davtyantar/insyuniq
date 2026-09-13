@@ -16,8 +16,8 @@ interface NewArrivalsProps {
   listings: Listing[];
 }
 
-/** Gap between cards (Tailwind gap-3.5 = 0.875rem), used to compute the one-card scroll step. */
-const GAP_PX = 14;
+/** Gap between cards (Tailwind gap-4 = 1rem), used to compute the one-card scroll step. */
+const GAP_PX = 16;
 
 /**
  * Editorial, photo-first showcase of the newest listings across every category — sits right
@@ -82,7 +82,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
 
         <div
           ref={scrollerRef}
-          className='no-scrollbar snap-x-mandatory mt-5 flex gap-3.5 overflow-x-auto pb-1'
+          className='no-scrollbar snap-x-mandatory mt-5 flex gap-4 overflow-x-auto pb-1'
         >
           {listings.map((listing, index) => {
             const category = categoryOf(listing);

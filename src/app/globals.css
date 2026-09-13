@@ -55,7 +55,7 @@
     --muted-foreground: 215 15% 62%;
 
     --accent: 218 90% 62%;
-    --accent-foreground: 222 28% 10%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 350 72% 56%;
     --destructive-foreground: 0 0% 100%;
@@ -74,6 +74,17 @@
     -webkit-text-size-adjust: 100%;
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--accent) / 0.55) transparent;
+  }
+  /* iOS Safari auto-zooms the whole page in on focus for any input/textarea/select whose
+     computed font-size is under 16px — the field "jumps closer" and the layout looks broken
+     until the user manually pinches back out. Below the sm breakpoint (phones), force every
+     form field to render at exactly the zoom-safe size regardless of its own text-size class. */
+  @media (max-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
   }
   ::-webkit-scrollbar {
     width: 8px;

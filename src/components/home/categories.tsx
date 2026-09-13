@@ -6,7 +6,7 @@ import { CATEGORY_LIST } from "@/lib/categories";
 export function Categories() {
   return (
     <section className='container space-y-5 pt-6 md:pt-8'>
-      <h2 className='text-xl font-bold tracking-tight text-foreground md:text-2xl'>
+      <h2 className='hidden text-xl font-bold tracking-tight text-foreground sm:block md:text-2xl'>
         Կատեգորիաներ
       </h2>
 

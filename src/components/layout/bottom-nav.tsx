@@ -2,54 +2,62 @@
 
 import { Link } from "@/components/i18n/locale-link";
 import { usePathname } from "next/navigation";
-import { Heart, Home, Plus, Search, User } from "lucide-react";
+import { Home, Plus, User, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useApp } from "@/components/providers/app-provider";
+import { LanguagePicker } from "@/components/layout/language-picker";
 import { cn } from "@/lib/utils";
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  primary?: boolean;
+}
+
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      className={cn(
+        "flex h-14 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
+        active ? "text-accent" : "text-muted-foreground",
+      )}
+    >
+      <item.icon className={cn("h-5 w-5", item.primary && "rounded-md bg-accent p-0.5 text-white")} />
+      {item.label}
+    </Link>
+  );
+}
 
 export function BottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { favorites, hydrated } = useApp();
 
-  const ITEMS = [
-    { href: "/", label: t("common.home"), icon: Home },
-    { href: "/search", label: t("common.search"), icon: Search },
-    { href: "/create", label: t("common.publish"), icon: Plus, primary: true },
-    { href: "/favorites", label: t("common.favorites"), icon: Heart, badge: "favorites" as const },
-    { href: "/profile", label: t("common.profile"), icon: User },
-  ];
+  const LEADING_ITEM: NavItem = { href: "/", label: t("common.home"), icon: Home };
+  const CENTER_ITEM: NavItem = { href: "/create", label: t("common.publish"), icon: Plus, primary: true };
+  const TRAILING_ITEM: NavItem = { href: "/profile", label: t("common.profile"), icon: User };
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-      <ul className="grid grid-cols-5">
-        {ITEMS.map((item) => {
-          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          const count = item.badge === "favorites" ? (hydrated ? favorites.length : 0) : 0;
-          return (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex h-14 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors",
-                  active ? "text-accent" : "text-muted-foreground",
-                )}
-              >
-                <span className="relative">
-                  <item.icon
-                    className={cn("h-5 w-5", item.primary && "rounded-md bg-accent p-0.5 text-white")}
-                  />
-                  {count > 0 && (
-                    <span className="absolute -right-2 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-semibold leading-none text-destructive-foreground">
-                      {count > 9 ? "9+" : count}
-                    </span>
-                  )}
-                </span>
-                {item.label}
-              </Link>
-            </li>
-          );
-        })}
+      <ul className="grid grid-cols-4">
+        <li>
+          <NavLink
+            item={LEADING_ITEM}
+            active={pathname === "/"}
+          />
+        </li>
+
+        <li>
+          <LanguagePicker variant="bottomNav" />
+        </li>
+
+        <li>
+          <NavLink item={CENTER_ITEM} active={pathname.startsWith(CENTER_ITEM.href)} />
+        </li>
+
+        <li>
+          <NavLink item={TRAILING_ITEM} active={pathname.startsWith(TRAILING_ITEM.href)} />
+        </li>
       </ul>
     </nav>
   );

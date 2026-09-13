@@ -24,15 +24,7 @@ export function PublishCta() {
       <div className="relative overflow-hidden rounded-3xl bg-card p-6 shadow-lift ring-1 ring-black/5 dark:ring-white/10 sm:p-9 md:p-12">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-gradient-to-br from-brand-300/50 to-brand-500/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-gradient-to-tr from-amber-200/50 to-brand-100/40 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.22)_1.6px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.1)_1.2px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.4)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.22)_1.4px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)] dark:bg-[radial-gradient(circle_at_1px_1px,rgba(147,197,253,0.45)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(226,232,240,0.2)_1.4px,transparent_0)]"
         />
         <div className="pointer-events-none absolute -right-6 top-1/2 z-0 hidden h-[220px] w-[170px] -translate-y-1/2 opacity-90 sm:block md:h-[280px] md:w-[220px] md:right-8">
           <Image src="/syunik-map.png" alt="" aria-hidden fill className="object-contain" />
@@ -53,15 +45,21 @@ export function PublishCta() {
               alt={APP_NAME}
               width={765}
               height={235}
-              className="h-9 w-auto rounded-lg sm:h-12 dark:bg-white/95 dark:px-2 dark:py-1.5"
+              className="hidden h-9 w-auto rounded-lg sm:block sm:h-12 dark:hidden"
+            />
+            <Image
+              src="/logo-white.png"
+              alt={APP_NAME}
+              width={765}
+              height={235}
+              className="hidden h-9 w-auto rounded-lg sm:dark:block sm:h-12"
             />
 
-            <h2 className="flex max-w-[340px] flex-wrap items-center justify-center gap-x-2 gap-y-2 text-balance text-[22px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:justify-start md:text-[30px]">
-              <span>{t("home.cta.heading")}</span>
-              <span className="text-accent">{t("home.cta.headingFree")}</span>
+            <h2 className="max-w-[280px] text-balance text-[18px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[30px] dark:text-white">
+              {t("home.cta.heading")} <span className="text-accent">{t("home.cta.headingFree")}</span>
             </h2>
 
-            <p className="max-w-[320px] text-balance text-[13px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px] md:text-base">
+            <p className="hidden max-w-[320px] text-balance text-[13px] leading-relaxed text-muted-foreground sm:block sm:max-w-none sm:text-[15px] md:text-base">
               {t("home.cta.text")}
             </p>
 

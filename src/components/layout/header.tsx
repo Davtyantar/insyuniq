@@ -133,11 +133,17 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Phone: logo + theme + profile up top, burger + search underneath. */}
+        {/* Phone: logo + favorites/theme/profile up top, burger + search underneath. */}
         <div className="container relative flex flex-col gap-2 py-2.5 md:hidden">
           <div className="flex items-center justify-between gap-2">
             <Logo compact />
             <div className="flex shrink-0 items-center gap-1.5">
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href="/favorites" title={t("common.favorites")} aria-label={t("common.favorites")}>
+                  <Heart className="h-5 w-5" />
+                  <CountBadge count={favoritesCount} />
+                </Link>
+              </Button>
               <ThemeToggle />
               <Button
                 variant={hydrated && user ? "secondary" : "accent"}

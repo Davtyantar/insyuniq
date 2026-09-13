@@ -28,19 +28,15 @@ export function CategoryBanners() {
           <Link
             key={banner.href}
             href={banner.href}
-            className='group relative flex min-h-[192px] flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-brand-100 via-card to-card p-6 shadow-sm ring-1 ring-black/5 dark:ring-white/10 sm:p-7'
+            className='group relative flex flex-col justify-between gap-4 overflow-hidden rounded-2xl bg-card p-6 shadow-sm ring-1 ring-black/5 dark:ring-white/10 sm:min-h-[192px] sm:p-7'
           >
             <div
               aria-hidden
-              className='pointer-events-none absolute -right-10 -top-14 h-52 w-52 rounded-full bg-gradient-to-br from-brand-300/60 to-brand-500/25 blur-3xl'
+              className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.38)_1.6px,transparent_0)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_70%)] dark:bg-[radial-gradient(circle_at_1px_1px,rgba(147,197,253,0.4)_1.6px,transparent_0)]'
             />
             <div
               aria-hidden
-              className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.18)_1.4px,transparent_0)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_70%)]'
-            />
-            <div
-              aria-hidden
-              className='pointer-events-none absolute right-2 top-3 h-16 w-16 sm:right-3 sm:top-4 sm:h-32 sm:w-32'
+              className='pointer-events-none absolute right-3 top-4 hidden h-32 w-32 sm:block'
             >
               <Image
                 src={banner.map}
@@ -52,18 +48,18 @@ export function CategoryBanners() {
             </div>
 
             <div className='relative z-10'>
-              {/* Only the heading sits level with the (now much smaller) map graphic, so only it
-                  needs to leave room for it — the paragraph below is free to use the full width. */}
-              <h3 className='max-w-[65%] text-[16px] font-bold leading-snug tracking-tight text-foreground sm:max-w-[80%] sm:text-[19px] md:text-[21px]'>
+              {/* The map graphic is hidden on mobile, so both lines only need to leave room for it
+                  from sm upward — longer translations (e.g. Russian) otherwise run under it. */}
+              <h3 className='text-[16px] font-bold leading-snug tracking-tight text-foreground sm:max-w-[80%] sm:text-[19px] md:text-[21px]'>
                 {t(`home.banners.${banner.key}.title`)}{" "}
                 <span className='text-accent'>{t(`home.banners.${banner.key}.highlight`)}</span>
               </h3>
-              <p className='mt-1.5 text-[12px] leading-relaxed text-muted-foreground sm:text-[13px]'>
+              <p className='mt-1.5 text-[12px] leading-relaxed text-muted-foreground sm:max-w-[80%] sm:text-[13px]'>
                 {t(`home.banners.${banner.key}.text`)}
               </p>
             </div>
 
-            <span className='relative z-10 inline-flex w-fit items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-[13px] font-semibold text-accent-foreground shadow-sm transition-colors group-hover:bg-brand-700'>
+            <span className='relative z-10 inline-flex w-fit items-center gap-1.5 self-end rounded-lg bg-accent px-3.5 py-2 text-[13px] font-semibold text-accent-foreground shadow-sm transition-colors group-hover:bg-brand-700 sm:self-start'>
               {t(`home.banners.${banner.key}.cta`)}
               <ArrowRight className='h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1' />
             </span>

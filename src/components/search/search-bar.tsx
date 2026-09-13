@@ -95,15 +95,28 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
   }, [setOpen]);
 
   // Scrolling away from the search field should drop the spotlight/overlay, same as clicking out.
+  // Arming is delayed: focusing the input on a phone makes the browser auto-scroll the page to
+  // clear the on-screen keyboard, and that scroll would otherwise fire this handler the instant
+  // the field opens, closing it right as the user taps it.
   React.useEffect(() => {
     if (!open) return;
+    let armed = false;
+    let startY = window.scrollY;
+    const armTimeout = window.setTimeout(() => {
+      startY = window.scrollY;
+      armed = true;
+    }, 400);
     function handleScroll() {
+      if (!armed || Math.abs(window.scrollY - startY) <= 4) return;
       setOpen(false);
       const active = document.activeElement;
       if (active instanceof HTMLElement && containerRef.current?.contains(active)) active.blur();
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.clearTimeout(armTimeout);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [open, setOpen]);
 
   function goToResults(value: string) {

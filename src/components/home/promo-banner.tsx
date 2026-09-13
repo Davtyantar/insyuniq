@@ -33,15 +33,7 @@ export function PromoBanner() {
         <div className='relative overflow-hidden rounded-3xl bg-card px-6 pb-[calc(1.5rem+25px)] pt-6 ring-1 ring-black/5 dark:ring-white/10 sm:px-8 sm:pb-[calc(2rem+25px)] sm:pt-8 md:px-10 md:pb-[calc(2.5rem+25px)] md:pt-10'>
           <div
             aria-hidden
-            className='pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-gradient-to-br from-brand-300/50 to-brand-500/20 blur-3xl'
-          />
-          <div
-            aria-hidden
-            className='pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-gradient-to-tr from-amber-200/50 to-brand-100/40 blur-3xl'
-          />
-          <div
-            aria-hidden
-            className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.22)_1.6px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.1)_1.2px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)]'
+            className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.4)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.22)_1.4px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)] dark:bg-[radial-gradient(circle_at_1px_1px,rgba(147,197,253,0.45)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(226,232,240,0.2)_1.4px,transparent_0)]'
           />
 
           <div className='relative z-10 flex flex-col items-center gap-5 text-center md:h-full md:flex-row md:items-center md:justify-between md:gap-6 md:text-left'>
@@ -52,13 +44,21 @@ export function PromoBanner() {
                 width={765}
                 height={235}
                 priority
-                className='h-9 w-auto rounded-lg sm:h-10 dark:bg-white/95 dark:px-2 dark:py-1.5'
+                className='hidden h-9 w-auto rounded-lg sm:block sm:h-10 dark:hidden'
               />
-              <h1 className='max-w-[280px] text-balance text-[18px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[28px] lg:text-[28px]'>
+              <Image
+                src='/logo-white.png'
+                alt={APP_NAME}
+                width={765}
+                height={235}
+                priority
+                className='hidden h-9 w-auto rounded-lg sm:dark:block sm:h-10'
+              />
+              <h1 className='max-w-[280px] text-balance text-[18px] font-bold leading-tight tracking-tight text-foreground sm:max-w-none sm:text-[26px] md:text-[28px] lg:text-[28px] dark:text-white'>
                 {t("home.promo.heading")}{" "}
                 <span className='text-accent'>{t("home.promo.headingHighlight")}</span>
               </h1>
-              <p className='max-w-[300px] text-balance text-[12px] leading-relaxed text-muted-foreground sm:max-w-none sm:text-[15px]'>
+              <p className='hidden max-w-[300px] text-balance text-[12px] leading-relaxed text-muted-foreground sm:block sm:max-w-none sm:text-[15px]'>
                 {t("home.promo.text")}
               </p>
               <div className='mt-1 flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-center md:justify-start'>
