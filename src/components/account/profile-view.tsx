@@ -11,6 +11,7 @@ import { useApp, type AuthUser } from "@/components/providers/app-provider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatMonthYear } from "@/lib/format";
@@ -58,11 +59,11 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
           />
         </AuthField>
         <AuthField label={t("profile.settings.phoneLabel")} htmlFor="settings-phone">
-          <Input
+          <PhoneInput
             id="settings-phone"
             value={phone}
-            onChange={(event) => {
-              setPhone(event.target.value);
+            onChange={(value) => {
+              setPhone(value);
               setSaved(false);
             }}
           />

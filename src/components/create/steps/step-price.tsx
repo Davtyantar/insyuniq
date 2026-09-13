@@ -3,6 +3,7 @@
 import { Field, StepHeader } from "@/components/create/field";
 import { ToggleRow } from "@/components/filters/filter-fields";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { CURRENCY_OPTIONS, type Currency } from "@/lib/currency";
 import type { ListingDraft } from "@/lib/draft";
 
@@ -96,10 +97,9 @@ export function StepPrice({ draft, patch }: StepProps) {
           />
         </Field>
         <Field label='Հեռախոս' required>
-          <Input
+          <PhoneInput
             value={draft.phone}
-            onChange={(event) => patch({ phone: event.target.value })}
-            placeholder='+374 __ __ __ __'
+            onChange={(phone) => patch({ phone })}
             className='placeholder:text-[12px] sm:placeholder:text-sm'
           />
         </Field>

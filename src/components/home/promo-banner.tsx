@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import { Link } from "@/components/i18n/locale-link";
 import { Briefcase } from "lucide-react";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CtaButton } from "@/components/ui/cta-button";
 import { CITY_SLUG } from "@/lib/cities";
 import { APP_NAME } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 /** City-specific clips for the work banner; falls back to the generic one. */
 const CITY_WORK_VIDEOS: Record<string, string> = {
@@ -26,6 +28,25 @@ export function PromoBanner() {
     hydrated && city ? t(`cities.${CITY_SLUG[city]}.in`) : t("common.acrossTheRegion");
   const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
   const workVideoSrc = (hydrated && city && CITY_WORK_VIDEOS[city]) || "/work.mp4";
+  const [videoReady, setVideoReady] = React.useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  // Switching city swaps `src`, and the `key` below forces a fresh <video> element for it —
+  // reset the reveal so the new clip fades in once it's actually ready instead of popping in
+  // mid-load (or worse, flashing the previous city's last frame).
+  //
+  // The readyState check right after covers navigating away and back: Next.js's router cache
+  // can restore this component (and its already-loaded <video> element) without remounting it,
+  // so the "loadeddata" event below never fires again — leaving `videoReady` stuck at the
+  // `false` this effect just set, and the spinner spinning forever. Checking the element's own
+  // readyState catches that case immediately instead of waiting on an event that isn't coming.
+  React.useEffect(() => {
+    setVideoReady(false);
+    const el = videoRef.current;
+    if (el && el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      setVideoReady(true);
+    }
+  }, [workVideoSrc]);
 
   return (
     <section className='container pt-6 md:pt-8'>
@@ -92,8 +113,9 @@ export function PromoBanner() {
           </div>
         </div>
 
-        <div className='relative aspect-[3/2] overflow-hidden rounded-3xl shadow-lift ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
+        <div className='relative aspect-[3/2] overflow-hidden rounded-3xl bg-secondary shadow-lift ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
           <video
+            ref={videoRef}
             key={workVideoSrc}
             src={workVideoSrc}
             poster='/work.jpg'
@@ -103,8 +125,22 @@ export function PromoBanner() {
             loop
             playsInline
             preload='auto'
-            className='absolute inset-0 h-full w-full object-cover'
+            onLoadedData={() => setVideoReady(true)}
+            className={cn(
+              'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out',
+              videoReady ? 'opacity-100' : 'opacity-0',
+            )}
           />
+
+          <div
+            aria-hidden
+            className={cn(
+              'absolute inset-0 z-[5] flex items-center justify-center bg-secondary transition-opacity duration-500',
+              videoReady ? 'pointer-events-none opacity-0' : 'opacity-100',
+            )}
+          >
+            <span className='h-8 w-8 animate-spin rounded-full border-[3px] border-white/30 border-t-white' />
+          </div>
 
           <Image
             src='/logo-white.png'

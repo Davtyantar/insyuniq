@@ -11,6 +11,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { cn } from "@/lib/utils";
 
 interface FormErrors {
@@ -91,13 +92,10 @@ export function SignUpView() {
           </AuthField>
 
           <AuthField label={t("auth.signUp.phoneLabel")} htmlFor="signup-phone" error={errors.phone}>
-            <Input
+            <PhoneInput
               id="signup-phone"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder={t("auth.signUp.phonePlaceholder")}
-              autoComplete="tel"
-              inputMode="tel"
+              onChange={setPhone}
               aria-invalid={!!errors.phone}
               className={cn(errors.phone && errorInputClass)}
             />
