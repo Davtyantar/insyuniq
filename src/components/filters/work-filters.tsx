@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ChipGroup,
   FilterSection,
   MultiSelectField,
   PriceRangeField,
@@ -55,11 +54,12 @@ export function WorkFilterFields({ filters, onChange }: Props) {
       </FilterSection>
 
       <FilterSection title="Դրույք">
-        <ChipGroup
-          options={EMPLOYMENT_TYPES}
+        <MultiSelectField
           values={filters.employmentType}
-          onChange={(employmentType) => onChange({ employmentType })}
-          multiple
+          onChange={(employmentType) => onChange({ employmentType: employmentType as WorkFilters["employmentType"] })}
+          options={EMPLOYMENT_TYPES}
+          placeholder="Ցանկացած դրույք"
+          anyLabel="Ցանկացած դրույք"
         />
       </FilterSection>
     </>
