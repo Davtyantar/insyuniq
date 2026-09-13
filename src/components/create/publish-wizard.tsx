@@ -26,18 +26,26 @@ import { cn } from "@/lib/utils";
 /** Compact connected-dots progress track for phones — the full labeled list below is a lot of
  * text to cram into a narrow header, and the current step's own title/hint already show in the
  * page header above this, so the dots only need to carry state, not repeat the copy. */
-function MobileStepper({ current, onGoTo }: { current: number; onGoTo: (step: number) => void }) {
+function MobileStepper({
+  current,
+  highestStep,
+  onGoTo,
+}: {
+  current: number;
+  highestStep: number;
+  onGoTo: (step: number) => void;
+}) {
   return (
     <ol className="flex items-center lg:hidden">
       {WIZARD_STEPS.map((step, index) => {
-        const state = step.id === current ? "current" : step.id < current ? "done" : "todo";
+        const state = step.id === current ? "current" : step.id <= highestStep ? "done" : "todo";
         const isLast = index === WIZARD_STEPS.length - 1;
         return (
           <li key={step.id} className={cn("flex items-center", !isLast && "flex-1")}>
             <button
               type="button"
-              onClick={() => step.id < current && onGoTo(step.id)}
-              disabled={step.id > current}
+              onClick={() => step.id <= highestStep && onGoTo(step.id)}
+              disabled={step.id > highestStep}
               aria-current={state === "current" ? "step" : undefined}
               aria-label={step.title}
               title={step.title}
@@ -54,7 +62,7 @@ function MobileStepper({ current, onGoTo }: { current: number; onGoTo: (step: nu
               <span
                 className={cn(
                   "mx-1 h-[3px] flex-1 rounded-full transition-colors",
-                  step.id < current ? "bg-accent" : "bg-secondary",
+                  step.id < highestStep ? "bg-accent" : "bg-secondary",
                 )}
               />
             )}
@@ -66,17 +74,25 @@ function MobileStepper({ current, onGoTo }: { current: number; onGoTo: (step: nu
 }
 
 /** Full labeled step list for the sticky desktop sidebar. */
-function Stepper({ current, onGoTo }: { current: number; onGoTo: (step: number) => void }) {
+function Stepper({
+  current,
+  highestStep,
+  onGoTo,
+}: {
+  current: number;
+  highestStep: number;
+  onGoTo: (step: number) => void;
+}) {
   return (
     <ol className="hidden lg:flex lg:flex-col lg:gap-1.5">
       {WIZARD_STEPS.map((step) => {
-        const state = step.id === current ? "current" : step.id < current ? "done" : "todo";
+        const state = step.id === current ? "current" : step.id <= highestStep ? "done" : "todo";
         return (
           <li key={step.id} className="lg:w-full">
             <button
               type="button"
-              onClick={() => step.id < current && onGoTo(step.id)}
-              disabled={step.id > current}
+              onClick={() => step.id <= highestStep && onGoTo(step.id)}
+              disabled={step.id > highestStep}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-md border px-3 py-2 text-left transition-colors",
                 state === "current" && "border-accent bg-brand-50/60",
@@ -134,9 +150,16 @@ function SuccessState({ listing, onReset }: { listing: Listing; onReset: () => v
 export function PublishWizard() {
   const { publishListing } = useApp();
   const [step, setStep] = React.useState(1);
+  // Highest step ever reached — once a step is passed it stays marked "done" in the stepper
+  // even after navigating back to an earlier one, instead of resetting relative to `step`.
+  const [highestStep, setHighestStep] = React.useState(1);
   const [draft, setDraft] = React.useState<ListingDraft>(EMPTY_DRAFT);
   const [showErrors, setShowErrors] = React.useState(false);
   const [publishedListing, setPublishedListing] = React.useState<Listing | null>(null);
+
+  React.useEffect(() => {
+    setHighestStep((prev) => Math.max(prev, step));
+  }, [step]);
 
   const patch = React.useCallback((update: Partial<ListingDraft>) => {
     setDraft((prev) => ({ ...prev, ...update }));
@@ -175,6 +198,7 @@ export function PublishWizard() {
     setDraft(EMPTY_DRAFT);
     setPublishedListing(null);
     setStep(1);
+    setHighestStep(1);
   }
 
   if (publishedListing) {
@@ -201,13 +225,13 @@ export function PublishWizard() {
           />
         </div>
         <div className="mt-4 lg:hidden">
-          <MobileStepper current={step} onGoTo={setStep} />
+          <MobileStepper current={step} highestStep={highestStep} onGoTo={setStep} />
         </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
         <aside className="hidden lg:sticky lg:top-[124px] lg:block lg:self-start">
-          <Stepper current={step} onGoTo={setStep} />
+          <Stepper current={step} highestStep={highestStep} onGoTo={setStep} />
         </aside>
 
         <div className="min-w-0">
@@ -246,7 +270,7 @@ export function PublishWizard() {
             ) : (
               <Button variant="accent" size="lg" onClick={publish} className="gap-2">
                 <Check className="h-4 w-4" />
-                Հրապարակել հայտարարությունը
+                Հրապարակել
               </Button>
             )}
           </div>

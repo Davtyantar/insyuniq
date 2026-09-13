@@ -72,12 +72,16 @@ export const DISTRICTS: Record<string, string[]> = {
 };
 
 export const REAL_ESTATE_SUBCATEGORIES: Option[] = [
-  { value: "apartments", label: "Բնակարաններ", icon: Building },
-  { value: "houses", label: "Տներ", icon: Home },
-  { value: "garages", label: "Ավտոտնակներ", icon: Warehouse },
-  { value: "new-buildings", label: "Նորակառույցներ", icon: Construction },
-  { value: "commercial", label: "Կոմերցիոն անշարժ գույք", icon: Store },
-  { value: "land", label: "Հողատարածքներ", icon: LandPlot }
+  { value: "apartments", label: "Բնակարանների վաճառք", icon: Building },
+  { value: "houses", label: "Տների վաճառք", icon: Home },
+  { value: "garages", label: "Ավտոտնակների վաճառք", icon: Warehouse },
+  {
+    value: "new-buildings",
+    label: "Նորակառույցների վաճառք",
+    icon: Construction
+  },
+  { value: "commercial", label: "Կոմերցիոն տարածքների վաճառք", icon: Store },
+  { value: "land", label: "Հողատարածքների վաճառք", icon: LandPlot }
 ];
 
 export const CAR_SUBCATEGORIES: Option[] = [
@@ -173,6 +177,14 @@ export const RE_CONDITIONS: Option<RealEstateCondition>[] = [
 export const BUILDING_TYPES: Option[] = [
   { value: "new", label: "Նորակառույց" },
   { value: "secondary", label: "Երկրորդային ֆոնդ" }
+];
+
+export const LAND_TYPES: Option[] = [
+  { value: "residential", label: "Բնակելի" },
+  { value: "agricultural", label: "Գյուղատնտեսական" },
+  { value: "commercial", label: "Կոմերցիոն" },
+  { value: "industrial", label: "Արդյունաբերական" },
+  { value: "recreational", label: "Հանգստի գոտու" }
 ];
 
 export const CAR_BRANDS: Record<string, string[]> = {

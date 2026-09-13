@@ -136,7 +136,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                         {locationLine(listing)}
                       </span>
                       <span className='shrink-0 text-[15px] font-semibold'>
-                        {formatPrice(listing.price, { currency })}
+                        {formatPrice(listing.price, { currency, prices: listing.prices })}
                         {isDaily(listing) && (
                           <span className='ml-0.5 text-[11px] font-normal text-white/80'>
                             /օր

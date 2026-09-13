@@ -97,7 +97,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Թափքի տեսակ" defaultOpen={false}>
+      <FilterSection title="Թափքի տեսակ" defaultOpen={!mobile}>
         <SelectField
           value={filters.bodyType[0] ?? ""}
           onChange={(value) => onChange({ bodyType: value ? [value] : [] })}
@@ -126,7 +126,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         </div>
       </FilterSection>
 
-      <FilterSection title="Փոխանցումատուփ" defaultOpen={false}>
+      <FilterSection title="Փոխանցումատուփ" defaultOpen={!mobile}>
         <SelectField
           value={filters.transmission[0] ?? ""}
           onChange={(value) => onChange({ transmission: value ? [value] : [] })}
@@ -136,7 +136,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Քարշակ" defaultOpen={false}>
+      <FilterSection title="Քարշակ" defaultOpen={!mobile}>
         <ChipGroup
           options={DRIVE_TYPES}
           values={filters.drive}
@@ -145,7 +145,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գույն" defaultOpen={false}>
+      <FilterSection title="Գույն" defaultOpen={!mobile}>
         <SelectField
           value={filters.color}
           onChange={(color) => onChange({ color })}
@@ -155,7 +155,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Վիճակ և սեփականատերեր" defaultOpen={false}>
+      <FilterSection title="Վիճակ և սեփականատերեր" defaultOpen={!mobile}>
         <ChipGroup
           options={CAR_CONDITIONS}
           values={filters.condition ? [filters.condition] : []}
@@ -186,7 +186,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         </div>
       </FilterSection>
 
-      <FilterSection title="Տեղադրություն" defaultOpen={false}>
+      <FilterSection title="Տեղադրություն" defaultOpen={!mobile}>
         <MultiSelectField
           values={filters.city}
           onChange={(city) => onChange({ city })}

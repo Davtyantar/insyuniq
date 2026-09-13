@@ -15,11 +15,11 @@ import { ALL_LISTINGS } from "@/mock/listings";
 
 const TABS = [
   { value: "all", label: "Բոլորը" },
-  { value: "real-estate", label: "Անշարժ գույք" },
+  { value: "real-estate", label: "Անշարժ գույքի վաճառք" },
   { value: "cars", label: "Ավտոմեքենաներ" },
   { value: "rentals", label: "Վարձակալություն" },
   { value: "hotels", label: "Հյուրանոցներ և հանգիստ" },
-  { value: "work", label: "Աշխատանք" },
+  { value: "work", label: "Աշխատանք" }
 ];
 
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
@@ -46,7 +46,7 @@ export function SearchResults() {
         listing.description,
         listing.city,
         listing.district ?? "",
-        "brand" in listing ? `${listing.brand} ${listing.model}` : "",
+        "brand" in listing ? `${listing.brand} ${listing.model}` : ""
       ]
         .join(" ")
         .toLowerCase();
@@ -55,11 +55,12 @@ export function SearchResults() {
     return sortListings(matched, sort);
   }, [q, city, priceMax, sort]);
 
-  const visible = tab === "all" ? results : results.filter((l) => l.category === tab);
+  const visible =
+    tab === "all" ? results : results.filter((l) => l.category === tab);
 
   return (
-    <div className="container py-6 lg:py-8">
-      <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">
+    <div className='container py-6 lg:py-8'>
+      <h1 className='text-2xl font-semibold tracking-tight lg:text-[28px]'>
         {q ? (
           `Արդյունքներ «${q}» հարցման համար`
         ) : (
@@ -69,17 +70,21 @@ export function SearchResults() {
           </>
         )}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {visible.length} {plural(visible.length, "հայտարարություն", "հայտարարություններ")}
+      <p className='mt-1 text-sm text-muted-foreground'>
+        {visible.length}{" "}
+        {plural(visible.length, "հայտարարություն", "հայտարարություններ")}
         {city && ` · ${city}`}
       </p>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+      <div className='mt-5 flex flex-wrap items-center justify-between gap-3'>
         <FloatingTabs items={TABS} value={tab} onChange={setTab} />
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <SortSelect
             category={
-              tab === "cars" || tab === "rentals" || tab === "hotels" || tab === "work"
+              tab === "cars" ||
+              tab === "rentals" ||
+              tab === "hotels" ||
+              tab === "work"
                 ? tab
                 : "real-estate"
             }
@@ -90,13 +95,19 @@ export function SearchResults() {
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className='mt-5'>
         {visible.length === 0 ? (
           <EmptyState
-            title="Ոչինչ չի գտնվել"
-            description="Փորձեք այլ հարցում կամ դիտեք հայտարարությունները ըստ կատեգորիաների։"
-            action={{ label: "Մաքրել որոնումը", onClick: () => router.push(localizeHref("/search")) }}
-            secondaryAction={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
+            title='Ոչինչ չի գտնվել'
+            description='Փորձեք այլ հարցում կամ դիտեք հայտարարությունները ըստ կատեգորիաների։'
+            action={{
+              label: "Մաքրել որոնումը",
+              onClick: () => router.push(localizeHref("/search"))
+            }}
+            secondaryAction={{
+              label: "Հրապարակել հայտարարություն",
+              href: "/create"
+            }}
           />
         ) : (
           <ListingGrid listings={visible} view={view} columns={4} />

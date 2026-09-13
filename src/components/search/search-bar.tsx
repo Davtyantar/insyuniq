@@ -276,7 +276,7 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
                     </p>
                   </div>
                   <span className="shrink-0 text-[13px] font-semibold text-foreground">
-                    {formatPrice(listing.price, { currency })}
+                    {formatPrice(listing.price, { currency, prices: listing.prices })}
                     {isDaily(listing) && (
                       <span className="ml-0.5 text-[11px] font-normal text-accent">օր</span>
                     )}

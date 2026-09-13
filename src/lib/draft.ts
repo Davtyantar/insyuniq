@@ -1,4 +1,5 @@
 import { MOCK_NOW } from "./constants";
+import type { Currency } from "./currency";
 import type {
   BodyType,
   CarCondition,
@@ -43,6 +44,7 @@ export interface ListingDraft {
   rooms: string;
   area: string;
   landArea: string;
+  landType: string;
   floor: string;
   totalFloors: string;
   bathrooms: string;
@@ -53,6 +55,10 @@ export interface ListingDraft {
   furniture: boolean;
   balcony: boolean;
   parking: boolean;
+  water: boolean;
+  gas: boolean;
+  electricity: boolean;
+  pit: boolean;
 
   // Hotels
   pool: boolean;
@@ -81,10 +87,14 @@ export interface ListingDraft {
   title: string;
   description: string;
   price: string;
+  priceEur: string;
+  priceAmd: string;
+  priceRub: string;
   photos: DraftPhoto[];
   contactName: string;
   phone: string;
   urgent: boolean;
+  negotiable: boolean;
 }
 
 export const EMPTY_DRAFT: ListingDraft = {
@@ -95,6 +105,7 @@ export const EMPTY_DRAFT: ListingDraft = {
   rooms: "",
   area: "",
   landArea: "",
+  landType: "",
   floor: "",
   totalFloors: "",
   bathrooms: "1",
@@ -105,6 +116,10 @@ export const EMPTY_DRAFT: ListingDraft = {
   furniture: false,
   balcony: false,
   parking: false,
+  water: false,
+  gas: false,
+  electricity: false,
+  pit: false,
   pool: false,
   brand: "",
   model: "",
@@ -127,10 +142,14 @@ export const EMPTY_DRAFT: ListingDraft = {
   title: "",
   description: "",
   price: "",
+  priceEur: "",
+  priceAmd: "",
+  priceRub: "",
   photos: [],
   contactName: "",
   phone: "",
   urgent: false,
+  negotiable: false,
 };
 
 export const WIZARD_STEPS = [
@@ -148,6 +167,16 @@ const numberOr = (value: string, fallback = 0) => {
   return Number.isFinite(parsed) && value !== "" ? parsed : fallback;
 };
 
+/** Only the currencies the seller actually filled in end up in the listing's `prices` map. */
+function draftPrices(draft: ListingDraft): Partial<Record<Currency, number>> {
+  const prices: Partial<Record<Currency, number>> = {};
+  if (draft.price) prices.USD = numberOr(draft.price);
+  if (draft.priceEur) prices.EUR = numberOr(draft.priceEur);
+  if (draft.priceAmd) prices.AMD = numberOr(draft.priceAmd);
+  if (draft.priceRub) prices.RUB = numberOr(draft.priceRub);
+  return prices;
+}
+
 /** Which fields block the Next button on each step. */
 export function stepErrors(step: number, draft: ListingDraft): string[] {
   const errors: string[] = [];
@@ -160,13 +189,9 @@ export function stepErrors(step: number, draft: ListingDraft): string[] {
       break;
     case 3:
       if (!draft.city) errors.push("Նշեք քաղաքը");
-      if (
-        draft.category === "real-estate" ||
-        draft.category === "rentals" ||
-        draft.category === "hotels"
-      ) {
+      if (draft.category === "rentals" || draft.category === "hotels") {
         if (!draft.area) errors.push("Նշեք մակերեսը");
-      } else {
+      } else if (draft.category !== "real-estate") {
         if (!draft.brand) errors.push("Ընտրեք մակնիշը");
         if (!draft.model) errors.push("Ընտրեք մոդելը");
         if (!draft.year) errors.push("Նշեք թողարկման տարին");
@@ -223,6 +248,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     subcategory: draft.subcategory,
     title: draft.title.trim(),
     price: numberOr(draft.price),
+    prices: draftPrices(draft),
     city: draft.city,
     district: draft.district || undefined,
     address: draft.address || draft.city,
@@ -232,6 +258,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     sellerId: "me",
     verified: false,
     urgent: draft.urgent,
+    negotiable: draft.negotiable,
     views: 0,
     status: "active" as const,
     coords: { lat: 40.1792, lng: 44.4991 },
@@ -307,6 +334,7 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     rooms: numberOr(draft.rooms),
     area: numberOr(draft.area),
     landArea: draft.landArea ? numberOr(draft.landArea) : undefined,
+    landType: draft.landType || undefined,
     floor: draft.floor ? numberOr(draft.floor) : undefined,
     totalFloors: draft.totalFloors ? numberOr(draft.totalFloors) : undefined,
     condition: (draft.reCondition || "good") as RealEstateCondition,
@@ -317,6 +345,10 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     furniture: draft.furniture,
     balcony: draft.balcony,
     parking: draft.parking,
+    water: draft.water,
+    gas: draft.gas,
+    electricity: draft.electricity,
+    pit: draft.pit,
   };
   return realEstate;
 }

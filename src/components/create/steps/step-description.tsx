@@ -29,6 +29,7 @@ export function StepDescription({ draft, patch }: StepProps) {
           value={draft.title}
           maxLength={80}
           onChange={(event) => patch({ title: event.target.value })}
+          className="placeholder:text-[12px] sm:placeholder:text-sm"
           placeholder={
             draft.category === "cars"
               ? "Օրինակ՝ Toyota Camry 2021, մեկ սեփականատեր"
@@ -50,7 +51,7 @@ export function StepDescription({ draft, patch }: StepProps) {
           value={draft.description}
           onChange={(event) => patch({ description: event.target.value })}
           placeholder="Նկարագրեք օբյեկտը այնպես, ինչպես կպատմեիք գնորդին հանդիպման ժամանակ…"
-          className="min-h-[200px]"
+          className="min-h-[200px] placeholder:text-[12px] sm:placeholder:text-sm"
         />
       </Field>
 
@@ -58,7 +59,7 @@ export function StepDescription({ draft, patch }: StepProps) {
         <h3 className="text-sm font-semibold">Ինչի մասին արժե նշել</h3>
         <ul className="mt-2 space-y-1.5">
           {TIPS.map((tip) => (
-            <li key={tip} className="flex gap-2 text-[13px] text-muted-foreground">
+            <li key={tip} className="flex gap-2 text-[12px] text-muted-foreground sm:text-[13px]">
               <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
               {tip}
             </li>

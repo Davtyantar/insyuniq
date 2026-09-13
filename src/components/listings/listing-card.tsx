@@ -187,7 +187,7 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
       >
         <div className="flex items-center justify-between gap-2">
           <span className="text-[15px] font-semibold tracking-tight text-foreground sm:text-[22px]">
-            {formatPrice(listing.price, { currency })}
+            {formatPrice(listing.price, { currency, prices: listing.prices })}
             {isDaily(listing) && <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">օր</span>}
             {isMonthly(listing) && (
               <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">ամիս</span>

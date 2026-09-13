@@ -1,3 +1,5 @@
+import type { Currency } from "./currency";
+
 export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels" | "work";
 
 export type SellerType = "owner" | "agency" | "dealer" | "private";
@@ -22,6 +24,8 @@ export interface BaseListing {
   subcategory: string;
   title: string;
   price: number;
+  /** Exact seller-entered price per currency, when they gave one — see `formatPrice`. */
+  prices?: Partial<Record<Currency, number>>;
   city: string;
   district?: string;
   address: string;
@@ -31,6 +35,7 @@ export interface BaseListing {
   sellerId: string;
   verified: boolean;
   urgent: boolean;
+  negotiable?: boolean;
   views: number;
   status: "active" | "archived";
   coords: { lat: number; lng: number };
@@ -55,6 +60,8 @@ export interface RealEstateListing extends BaseListing {
   rooms: number;
   area: number;
   landArea?: number;
+  /** Land-only: what the plot is zoned/used for — see `LAND_TYPES`. */
+  landType?: string;
   floor?: number;
   totalFloors?: number;
   condition: RealEstateCondition;
@@ -65,6 +72,11 @@ export interface RealEstateListing extends BaseListing {
   furniture: boolean;
   balcony: boolean;
   parking: boolean;
+  /** Garage-only amenities. */
+  water?: boolean;
+  gas?: boolean;
+  electricity?: boolean;
+  pit?: boolean;
 }
 
 export type CarSubcategory =

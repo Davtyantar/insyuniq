@@ -1,9 +1,15 @@
 "use client";
 
 import { Field, StepHeader } from "@/components/create/field";
-import { ChipGroup, SelectField, ToggleRow } from "@/components/filters/filter-fields";
+import {
+  ChipGroup,
+  MultiSelectField,
+  SelectField,
+  ToggleRow
+} from "@/components/filters/filter-fields";
 import { Input } from "@/components/ui/input";
 import type { ListingDraft } from "@/lib/draft";
+import { cn } from "@/lib/utils";
 import {
   BODY_TYPES,
   BUILDING_TYPES,
@@ -14,10 +20,11 @@ import {
   DISTRICTS,
   DRIVE_TYPES,
   FUEL_TYPES,
+  LAND_TYPES,
   RE_CONDITIONS,
   ROOMS_OPTIONS,
   STEERING_TYPES,
-  TRANSMISSIONS,
+  TRANSMISSIONS
 } from "@/mock/taxonomy";
 
 interface StepProps {
@@ -27,34 +34,50 @@ interface StepProps {
 
 const digits = (value: string) => value.replace(/[^\d.]/g, "");
 
+const AMENITY_OPTIONS = [
+  { value: "furniture", label: "Կահույք" },
+  { value: "balcony", label: "Պատշգամբ" },
+  { value: "parking", label: "Կայանատեղի" }
+];
+
+const GARAGE_AMENITY_OPTIONS = [
+  { value: "water", label: "Ջուր" },
+  { value: "gas", label: "Գազ" },
+  { value: "electricity", label: "Էլեկտրաէներգիա" },
+  { value: "pit", label: "Յամա" }
+];
+
 function LocationFields({ draft, patch }: StepProps) {
-  const districts = (DISTRICTS[draft.city] ?? []).map((d) => ({ value: d, label: d }));
+  const districts = (DISTRICTS[draft.city] ?? []).map((d) => ({
+    value: d,
+    label: d
+  }));
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
-      <Field label="Քաղաք" required>
+    <div className='grid gap-4 sm:grid-cols-3'>
+      <Field label='Քաղաք' required>
         <SelectField
           value={draft.city}
           onChange={(city) => patch({ city, district: "" })}
           options={CITIES}
-          placeholder="Ընտրեք քաղաքը"
-          anyLabel="Ընտրված չէ"
+          placeholder='Ընտրեք քաղաքը'
+          anyLabel='Ընտրված չէ'
         />
       </Field>
-      <Field label="Թաղամաս">
+      <Field label='Թաղամաս'>
         <SelectField
           value={draft.district}
           onChange={(district) => patch({ district })}
           options={districts}
           placeholder={draft.city ? "Ընտրեք թաղամասը" : "Նախ ընտրեք քաղաքը"}
-          anyLabel="Ընտրված չէ"
+          anyLabel='Ընտրված չէ'
           disabled={!draft.city}
         />
       </Field>
-      <Field label="Հասցե">
+      <Field label='Հասցե'>
         <Input
           value={draft.address}
           onChange={(event) => patch({ address: event.target.value })}
-          placeholder="Փողոց և տան համար"
+          placeholder='Փողոց և տան համար'
         />
       </Field>
     </div>
@@ -63,141 +86,158 @@ function LocationFields({ draft, patch }: StepProps) {
 
 export function StepSpecs({ draft, patch }: StepProps) {
   if (draft.category === "cars") {
-    const models = (CAR_BRANDS[draft.brand] ?? []).map((m) => ({ value: m, label: m }));
+    const models = (CAR_BRANDS[draft.brand] ?? []).map((m) => ({
+      value: m,
+      label: m
+    }));
     return (
-      <div className="space-y-6">
+      <div className='space-y-6'>
         <StepHeader
-          title="Ավտոմեքենայի բնութագրերը"
-          description="Որքան ճշգրիտ են տվյալները, այնքան բարձր է գնորդների վստահությունը։"
+          title='Ավտոմեքենայի բնութագրերը'
+          description='Որքան ճշգրիտ են տվյալները, այնքան բարձր է գնորդների վստահությունը։'
         />
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Մակնիշ" required>
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <Field label='Մակնիշ' required>
             <SelectField
               value={draft.brand}
               onChange={(brand) => patch({ brand, model: "" })}
               options={CAR_BRAND_OPTIONS}
-              placeholder="Ընտրեք մակնիշը"
-              anyLabel="Ընտրված չէ"
+              placeholder='Ընտրեք մակնիշը'
+              anyLabel='Ընտրված չէ'
             />
           </Field>
-          <Field label="Մոդել" required>
+          <Field label='Մոդել' required>
             <SelectField
               value={draft.model}
               onChange={(model) => patch({ model })}
               options={models}
               placeholder={draft.brand ? "Ընտրեք մոդելը" : "Նախ ընտրեք մակնիշը"}
-              anyLabel="Ընտրված չէ"
+              anyLabel='Ընտրված չէ'
               disabled={!draft.brand}
             />
           </Field>
-          <Field label="Թողարկման տարի" required>
+          <Field label='Թողարկման տարի' required>
             <Input
               value={draft.year}
-              inputMode="numeric"
+              inputMode='numeric'
               onChange={(event) => patch({ year: digits(event.target.value) })}
-              placeholder="Օրինակ՝ 2021"
+              placeholder='Օրինակ՝ 2021'
             />
           </Field>
-          <Field label="Վազք, կմ">
+          <Field label='Վազք, կմ'>
             <Input
               value={draft.mileage}
-              inputMode="numeric"
-              onChange={(event) => patch({ mileage: digits(event.target.value) })}
-              placeholder="Օրինակ՝ 72000"
+              inputMode='numeric'
+              onChange={(event) =>
+                patch({ mileage: digits(event.target.value) })
+              }
+              placeholder='Օրինակ՝ 72000'
             />
           </Field>
         </div>
 
-        <Field label="Թափքի տեսակ">
+        <Field label='Թափքի տեսակ'>
           <SelectField
             value={draft.bodyType}
-            onChange={(bodyType) => patch({ bodyType: bodyType as ListingDraft["bodyType"] })}
+            onChange={(bodyType) =>
+              patch({ bodyType: bodyType as ListingDraft["bodyType"] })
+            }
             options={BODY_TYPES}
-            placeholder="Ընտրեք թափքը"
-            anyLabel="Ընտրված չէ"
+            placeholder='Ընտրեք թափքը'
+            anyLabel='Ընտրված չէ'
           />
         </Field>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Շարժիչ">
+        <div className='grid gap-4 sm:grid-cols-3'>
+          <Field label='Շարժիչ'>
             <SelectField
               value={draft.fuel}
               onChange={(fuel) => patch({ fuel: fuel as ListingDraft["fuel"] })}
               options={FUEL_TYPES}
-              placeholder="Վառելիքի տեսակ"
-              anyLabel="Ընտրված չէ"
+              placeholder='Վառելիքի տեսակ'
+              anyLabel='Ընտրված չէ'
             />
           </Field>
-          <Field label="Ծավալ, լ">
+          <Field label='Ծավալ, լ'>
             <Input
               value={draft.engineVolume}
-              inputMode="decimal"
-              onChange={(event) => patch({ engineVolume: digits(event.target.value) })}
-              placeholder="2.5"
+              inputMode='decimal'
+              onChange={(event) =>
+                patch({ engineVolume: digits(event.target.value) })
+              }
+              placeholder='2.5'
             />
           </Field>
-          <Field label="Հզորություն, ձ.ու.">
+          <Field label='Հզորություն, ձ.ու.'>
             <Input
               value={draft.power}
-              inputMode="numeric"
+              inputMode='numeric'
               onChange={(event) => patch({ power: digits(event.target.value) })}
-              placeholder="200"
+              placeholder='200'
             />
           </Field>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Փոխանցումատուփ">
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <Field label='Փոխանցումատուփ'>
             <SelectField
               value={draft.transmission}
               onChange={(transmission) =>
-                patch({ transmission: transmission as ListingDraft["transmission"] })
+                patch({
+                  transmission: transmission as ListingDraft["transmission"]
+                })
               }
               options={TRANSMISSIONS}
-              placeholder="Ընտրեք փոխանցումատուփը"
-              anyLabel="Ընտրված չէ"
+              placeholder='Ընտրեք փոխանցումատուփը'
+              anyLabel='Ընտրված չէ'
             />
           </Field>
-          <Field label="Քարշակ">
+          <Field label='Քարշակ'>
             <ChipGroup
               options={DRIVE_TYPES}
               values={draft.drive ? [draft.drive] : []}
-              onChange={(values) => patch({ drive: (values[0] ?? "") as ListingDraft["drive"] })}
+              onChange={(values) =>
+                patch({ drive: (values[0] ?? "") as ListingDraft["drive"] })
+              }
             />
           </Field>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Գույն">
+        <div className='grid gap-4 sm:grid-cols-3'>
+          <Field label='Գույն'>
             <SelectField
               value={draft.color}
               onChange={(color) => patch({ color })}
               options={CAR_COLORS}
-              placeholder="Ընտրեք գույնը"
-              anyLabel="Ընտրված չէ"
+              placeholder='Ընտրեք գույնը'
+              anyLabel='Ընտրված չէ'
             />
           </Field>
-          <Field label="Ղեկ">
+          <Field label='Ղեկ'>
             <ChipGroup
               options={STEERING_TYPES}
               values={[draft.steering]}
               onChange={(values) =>
-                patch({ steering: (values[0] ?? "left") as ListingDraft["steering"] })
+                patch({
+                  steering: (values[0] ?? "left") as ListingDraft["steering"]
+                })
               }
             />
           </Field>
-          <Field label="Սեփականատերեր՝ ըստ վկայագրի">
+          <Field label='Սեփականատերեր՝ ըստ վկայագրի'>
             <Input
               value={draft.owners}
-              inputMode="numeric"
-              onChange={(event) => patch({ owners: digits(event.target.value) })}
+              inputMode='numeric'
+              onChange={(event) =>
+                patch({ owners: digits(event.target.value) })
+              }
             />
           </Field>
         </div>
 
         <ToggleRow
-          label="Ավտոմեքենան չի մասնակցել ավարիայի"
+          label='Ավտոմեքենան չի մասնակցել ավարիայի'
           checked={draft.accidentFree}
           onChange={(accidentFree) => patch({ accidentFree })}
         />
@@ -214,14 +254,14 @@ export function StepSpecs({ draft, patch }: StepProps) {
       draft.subcategory === "garages" ||
       draft.subcategory === "commercial";
     return (
-      <div className="space-y-6">
+      <div className='space-y-6'>
         <StepHeader
           title={isHotel ? "Համարի բնութագրերը" : "Բնակատեղիի բնութագրերը"}
-          description="Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։"
+          description='Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։'
         />
 
         {!noRoomCount && (
-          <Field label="Սենյակների քանակը">
+          <Field label='Սենյակների քանակը'>
             <ChipGroup
               options={ROOMS_OPTIONS}
               values={draft.rooms ? [draft.rooms] : []}
@@ -230,61 +270,65 @@ export function StepSpecs({ draft, patch }: StepProps) {
           </Field>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Մակերես, մ²" required>
+        <div className='grid gap-4 sm:grid-cols-3'>
+          <Field label='Մակերես, մ²' required>
             <Input
               value={draft.area}
-              inputMode="numeric"
+              inputMode='numeric'
               onChange={(event) => patch({ area: digits(event.target.value) })}
-              placeholder="45"
+              placeholder='45'
             />
           </Field>
-          <Field label="Հարկ">
+          <Field label='Հարկ'>
             <Input
               value={draft.floor}
-              inputMode="numeric"
+              inputMode='numeric'
               onChange={(event) => patch({ floor: digits(event.target.value) })}
-              placeholder="2"
+              placeholder='2'
             />
           </Field>
-          <Field label="Շենքի հարկայնությունը">
+          <Field label='Շենքի հարկայնությունը'>
             <Input
               value={draft.totalFloors}
-              inputMode="numeric"
-              onChange={(event) => patch({ totalFloors: digits(event.target.value) })}
-              placeholder="4"
+              inputMode='numeric'
+              onChange={(event) =>
+                patch({ totalFloors: digits(event.target.value) })
+              }
+              placeholder='4'
             />
           </Field>
         </div>
 
-        <Field label="Սանհանգույցներ">
+        <Field label='Սանհանգույցներ'>
           <Input
             value={draft.bathrooms}
-            inputMode="numeric"
-            onChange={(event) => patch({ bathrooms: digits(event.target.value) })}
+            inputMode='numeric'
+            onChange={(event) =>
+              patch({ bathrooms: digits(event.target.value) })
+            }
           />
         </Field>
 
-        <Field label="Հարմարություններ">
-          <div className="space-y-2.5">
+        <Field label='Հարմարություններ'>
+          <div className='space-y-2.5'>
             <ToggleRow
-              label="Կահույք"
+              label='Կահույք'
               checked={draft.furniture}
               onChange={(furniture) => patch({ furniture })}
             />
             <ToggleRow
-              label="Պատշգամբ"
+              label='Պատշգամբ'
               checked={draft.balcony}
               onChange={(balcony) => patch({ balcony })}
             />
             <ToggleRow
-              label="Կայանատեղի"
+              label='Կայանատեղի'
               checked={draft.parking}
               onChange={(parking) => patch({ parking })}
             />
             {draft.category === "hotels" && (
               <ToggleRow
-                label="Լողավազան"
+                label='Լողավազան'
                 checked={draft.pool}
                 onChange={(pool) => patch({ pool })}
               />
@@ -298,138 +342,157 @@ export function StepSpecs({ draft, patch }: StepProps) {
   }
 
   const isLand = draft.subcategory === "land";
+  const isGarage = draft.subcategory === "garages";
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <StepHeader
-        title="Օբյեկտի բնութագրերը"
-        description="Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։"
+        title='Օբյեկտի բնութագրերը'
+        description='Նշեք պարամետրերը — դրանք կհայտնվեն քարտում և որոնման ֆիլտրերում։'
       />
 
-      {!isLand && (
-        <Field label="Սենյակների քանակը">
-          <ChipGroup
-            options={ROOMS_OPTIONS}
-            values={draft.rooms ? [draft.rooms] : []}
-            onChange={(values) => patch({ rooms: values[0] ?? "" })}
-          />
-        </Field>
+      <LocationFields draft={draft} patch={patch} />
+
+      {!isLand && !isGarage && (
+        <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
+          <Field label='Սենյակների քանակը'>
+            <SelectField
+              value={draft.rooms}
+              onChange={(rooms) => patch({ rooms })}
+              options={ROOMS_OPTIONS}
+              placeholder='Ընտրեք սենյակների քանակը'
+              anyLabel='Ընտրված չէ'
+            />
+          </Field>
+          <Field label='Վիճակ'>
+            <SelectField
+              value={draft.reCondition}
+              onChange={(reCondition) =>
+                patch({
+                  reCondition: reCondition as ListingDraft["reCondition"]
+                })
+              }
+              options={RE_CONDITIONS}
+              placeholder='Ընտրեք վիճակը'
+              anyLabel='Ընտրված չէ'
+            />
+          </Field>
+          <Field label='Շենքի տեսակ'>
+            <SelectField
+              value={draft.buildingType}
+              onChange={(buildingType) =>
+                patch({
+                  buildingType: (buildingType ||
+                    "secondary") as ListingDraft["buildingType"]
+                })
+              }
+              options={BUILDING_TYPES}
+              placeholder='Ընտրեք շենքի տեսակը'
+              anyLabel='Ընտրված չէ'
+            />
+          </Field>
+          <Field label='Լրացուցիչ'>
+            <MultiSelectField
+              values={[
+                draft.furniture && "furniture",
+                draft.balcony && "balcony",
+                draft.parking && "parking"
+              ].filter((value): value is string => Boolean(value))}
+              onChange={(values) =>
+                patch({
+                  furniture: values.includes("furniture"),
+                  balcony: values.includes("balcony"),
+                  parking: values.includes("parking")
+                })
+              }
+              options={AMENITY_OPTIONS}
+              placeholder='Ընտրեք հարմարությունները'
+              anyLabel='Ընտրված չէ'
+            />
+          </Field>
+        </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Field label={isLand ? "Հողատարածքի մակերես, մ²" : "Ընդհանուր մակերես, մ²"} required>
+      <div
+        className={cn(
+          "grid grid-cols-2 gap-4",
+          isLand || isGarage ? "sm:grid-cols-2" : "sm:grid-cols-4",
+        )}
+      >
+        <Field label={isLand ? "Հողատարածքի մակերես, մ²" : "Ընդ. մակերես, մ²"}>
           <Input
             value={draft.area}
-            inputMode="numeric"
+            inputMode='numeric'
             onChange={(event) => patch({ area: digits(event.target.value) })}
-            placeholder="68"
+            placeholder='68'
           />
         </Field>
         {isLand ? (
-          <Field label="Սոտկա">
-            <Input
-              value={draft.landArea}
-              inputMode="numeric"
-              onChange={(event) => patch({ landArea: digits(event.target.value) })}
-              placeholder="12"
+          <Field label='Հողի տեսակ'>
+            <SelectField
+              value={draft.landType}
+              onChange={(landType) => patch({ landType })}
+              options={LAND_TYPES}
+              placeholder='Ընտրեք հողի տեսակը'
+              anyLabel='Ընտրված չէ'
+            />
+          </Field>
+        ) : isGarage ? (
+          <Field label='Լրացուցիչ'>
+            <MultiSelectField
+              values={[
+                draft.water && "water",
+                draft.gas && "gas",
+                draft.electricity && "electricity",
+                draft.pit && "pit"
+              ].filter((value): value is string => Boolean(value))}
+              onChange={(values) =>
+                patch({
+                  water: values.includes("water"),
+                  gas: values.includes("gas"),
+                  electricity: values.includes("electricity"),
+                  pit: values.includes("pit")
+                })
+              }
+              options={GARAGE_AMENITY_OPTIONS}
+              placeholder='Ընտրեք հարմարությունները'
+              anyLabel='Ընտրված չէ'
             />
           </Field>
         ) : (
           <>
-            <Field label="Հարկ">
+            <Field label='Հարկ'>
               <Input
                 value={draft.floor}
-                inputMode="numeric"
-                onChange={(event) => patch({ floor: digits(event.target.value) })}
-                placeholder="7"
+                inputMode='numeric'
+                onChange={(event) =>
+                  patch({ floor: digits(event.target.value) })
+                }
+                placeholder='7'
               />
             </Field>
-            <Field label="Շենքի հարկայնությունը">
+            <Field label='Սանհանգույցներ'>
               <Input
-                value={draft.totalFloors}
-                inputMode="numeric"
-                onChange={(event) => patch({ totalFloors: digits(event.target.value) })}
-                placeholder="14"
+                value={draft.bathrooms}
+                inputMode='numeric'
+                onChange={(event) =>
+                  patch({ bathrooms: digits(event.target.value) })
+                }
+              />
+            </Field>
+            <Field label='Առաստաղի բարձր'>
+              <Input
+                value={draft.ceilingHeight}
+                inputMode='decimal'
+                onChange={(event) =>
+                  patch({ ceilingHeight: digits(event.target.value) })
+                }
+                placeholder='3'
               />
             </Field>
           </>
         )}
       </div>
-
-      {!isLand && (
-        <>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Սանհանգույցներ">
-              <Input
-                value={draft.bathrooms}
-                inputMode="numeric"
-                onChange={(event) => patch({ bathrooms: digits(event.target.value) })}
-              />
-            </Field>
-            <Field label="Կառուցման տարի">
-              <Input
-                value={draft.buildYear}
-                inputMode="numeric"
-                onChange={(event) => patch({ buildYear: digits(event.target.value) })}
-                placeholder="2022"
-              />
-            </Field>
-            <Field label="Առաստաղի բարձրություն, մ">
-              <Input
-                value={draft.ceilingHeight}
-                inputMode="decimal"
-                onChange={(event) => patch({ ceilingHeight: digits(event.target.value) })}
-                placeholder="3"
-              />
-            </Field>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Վիճակ">
-              <SelectField
-                value={draft.reCondition}
-                onChange={(reCondition) =>
-                  patch({ reCondition: reCondition as ListingDraft["reCondition"] })
-                }
-                options={RE_CONDITIONS}
-                placeholder="Ընտրեք վիճակը"
-                anyLabel="Ընտրված չէ"
-              />
-            </Field>
-            <Field label="Շենքի տեսակ">
-              <ChipGroup
-                options={BUILDING_TYPES}
-                values={[draft.buildingType]}
-                onChange={(values) =>
-                  patch({ buildingType: (values[0] ?? "secondary") as ListingDraft["buildingType"] })
-                }
-              />
-            </Field>
-          </div>
-
-          <Field label="Լրացուցիչ">
-            <div className="space-y-2.5">
-              <ToggleRow
-                label="Կահույք"
-                checked={draft.furniture}
-                onChange={(furniture) => patch({ furniture })}
-              />
-              <ToggleRow
-                label="Պատշգամբ"
-                checked={draft.balcony}
-                onChange={(balcony) => patch({ balcony })}
-              />
-              <ToggleRow
-                label="Կայանատեղի"
-                checked={draft.parking}
-                onChange={(parking) => patch({ parking })}
-              />
-            </div>
-          </Field>
-        </>
-      )}
-
-      <LocationFields draft={draft} patch={patch} />
     </div>
   );
 }

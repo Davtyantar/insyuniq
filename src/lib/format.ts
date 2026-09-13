@@ -74,11 +74,18 @@ function yerevanParts(date: Date) {
 /** Listing prices are stored in USD; pass `currency` to display the user's chosen currency instead. */
 export function formatPrice(
   value: number,
-  opts?: { perMonth?: boolean; perDay?: boolean; currency?: Currency },
+  opts?: {
+    perMonth?: boolean;
+    perDay?: boolean;
+    currency?: Currency;
+    prices?: Partial<Record<Currency, number>>;
+  },
 ) {
   const period = opts?.perDay ? "/օր" : opts?.perMonth ? "/ամիս" : "";
-  const { symbol, rate, suffix } = currencyOption(opts?.currency ?? "USD");
-  const amount = groupDigits(value * rate);
+  const currency = opts?.currency ?? "USD";
+  const { symbol, rate, suffix } = currencyOption(currency);
+  const exact = opts?.prices?.[currency];
+  const amount = groupDigits(exact ?? value * rate);
   return (suffix ? `${amount} ${symbol}` : `${symbol}${amount}`) + period;
 }
 

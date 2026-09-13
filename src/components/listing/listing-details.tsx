@@ -86,7 +86,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
             <section>
               <h2 className="text-lg font-semibold tracking-tight">Նկարագրություն</h2>
-              <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">
+              <p className="mt-3 whitespace-pre-line break-words text-[15px] leading-relaxed text-foreground/90">
                 {listing.description}
               </p>
             </section>
@@ -130,6 +130,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
               <div className="flex items-center justify-between gap-2">
                 <PriceTag
                   price={listing.price}
+                  prices={listing.prices}
                   perMonth={isMonthly(listing)}
                   perDay={isDaily(listing)}
                   className="text-[22px] font-semibold leading-none tracking-tight sm:text-[32px]"
@@ -144,7 +145,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 )}
               </div>
 
-              <h1 className="mt-3 text-[14px] font-medium leading-snug sm:text-[19px]">{listing.title}</h1>
+              <h1 className="mt-3 break-words text-[14px] font-medium leading-snug sm:text-[19px]">{listing.title}</h1>
               <p className="mt-1 text-[12px] text-muted-foreground sm:text-sm">{listingSummary(listing)}</p>
 
               <ul className="mt-4 flex flex-wrap gap-1.5">

@@ -48,7 +48,7 @@ export function listingSummary(listing: Listing): string {
     return `${roomsLabel(listing.rooms)} · ${formatArea(listing.area)}`;
   }
   if (listing.subcategory === "land") {
-    return `Հողատարածք ${listing.landArea} ${plural(listing.landArea ?? 0, "սոտկա", "սոտկա")}`;
+    return `Հողատարածք · ${formatArea(listing.area)}`;
   }
   if (listing.subcategory === "commercial") {
     return `Կոմերցիոն տարածք · ${formatArea(listing.area)}`;
@@ -109,19 +109,20 @@ export function cardSpecs(listing: Listing): string[] {
 
   const specs: string[] = [];
   if (listing.subcategory !== "land") {
-    if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
+    const isGarage = listing.subcategory === "garages";
+    if (listing.subcategory !== "commercial" && !isGarage) {
       specs.push(`${listing.rooms || "—"} ${plural(listing.rooms, "սենյակ", "սենյակ")}`);
     }
     specs.push(formatArea(listing.area));
-    if (listing.floor && listing.totalFloors) {
-      specs.push(`${listing.floor}/${listing.totalFloors} հարկ`);
+    if (!isGarage) {
+      if (listing.floor && listing.totalFloors) {
+        specs.push(`${listing.floor}/${listing.totalFloors} հարկ`);
+      }
+      specs.push(label("buildingType", listing.buildingType));
     }
-    specs.push(label("buildingType", listing.buildingType));
   } else {
-    specs.push(
-      `${listing.landArea} ${plural(listing.landArea ?? 0, "սոտկա", "սոտկա")}`,
-      "Շինարարության համար",
-    );
+    specs.push(formatArea(listing.area));
+    if (listing.landType) specs.push(label("landType", listing.landType));
   }
   return specs;
 }
@@ -211,28 +212,38 @@ export function detailSpecs(listing: Listing): Spec[] {
     { label: "Տեսակ", value: label("reSubcategory", listing.subcategory) },
     { label: "Գործարք", value: label("deal", listing.deal) },
   ];
+  const isGarage = listing.subcategory === "garages";
   if (listing.subcategory !== "land") {
-    if (listing.subcategory !== "commercial" && listing.subcategory !== "garages") {
+    if (listing.subcategory !== "commercial" && !isGarage) {
       specs.push({ label: "Սենյակներ", value: listing.rooms ? String(listing.rooms) : "Ստուդիո" });
     }
     specs.push({ label: "Ընդհանուր մակերես", value: formatArea(listing.area) });
-    if (listing.floor && listing.totalFloors) {
-      specs.push({ label: "Հարկ", value: `${listing.floor}-ը ${listing.totalFloors}-ից` });
+    if (isGarage) {
+      specs.push(
+        { label: "Ջուր", value: listing.water ? "Կա" : "Չկա" },
+        { label: "Գազ", value: listing.gas ? "Կա" : "Չկա" },
+        { label: "Էլեկտրաէներգիա", value: listing.electricity ? "Կա" : "Չկա" },
+        { label: "Յամա", value: listing.pit ? "Կա" : "Չկա" },
+      );
+    } else {
+      if (listing.floor && listing.totalFloors) {
+        specs.push({ label: "Հարկ", value: `${listing.floor}-ը ${listing.totalFloors}-ից` });
+      }
+      specs.push(
+        { label: "Սանհանգույցներ", value: String(listing.bathrooms) },
+        { label: "Վիճակ", value: label("reCondition", listing.condition) },
+        { label: "Շենքի տեսակ", value: label("buildingType", listing.buildingType) },
+      );
+      if (listing.buildYear) specs.push({ label: "Կառուցման տարի", value: String(listing.buildYear) });
+      if (listing.ceilingHeight) {
+        specs.push({ label: "Առաստաղի բարձրություն", value: `${listing.ceilingHeight} մ` });
+      }
+      specs.push(
+        { label: "Կահույք", value: listing.furniture ? "Կա" : "Չկա" },
+        { label: "Պատշգամբ", value: listing.balcony ? "Կա" : "Չկա" },
+        { label: "Կայանատեղի", value: listing.parking ? "Կա" : "Չկա" },
+      );
     }
-    specs.push(
-      { label: "Սանհանգույցներ", value: String(listing.bathrooms) },
-      { label: "Վիճակ", value: label("reCondition", listing.condition) },
-      { label: "Շենքի տեսակ", value: label("buildingType", listing.buildingType) },
-    );
-    if (listing.buildYear) specs.push({ label: "Կառուցման տարի", value: String(listing.buildYear) });
-    if (listing.ceilingHeight) {
-      specs.push({ label: "Առաստաղի բարձրություն", value: `${listing.ceilingHeight} մ` });
-    }
-    specs.push(
-      { label: "Կահույք", value: listing.furniture ? "Կա" : "Չկա" },
-      { label: "Պատշգամբ", value: listing.balcony ? "Կա" : "Չկա" },
-      { label: "Կայանատեղի", value: listing.parking ? "Կա" : "Չկա" },
-    );
   }
   if (listing.landArea) {
     specs.push({
@@ -242,6 +253,9 @@ export function detailSpecs(listing: Listing): Spec[] {
   }
   if (listing.subcategory === "land") {
     specs.push({ label: "Մակերես", value: `${formatNumber(listing.area)} մ²` });
+    if (listing.landType) {
+      specs.push({ label: "Հողի տեսակ", value: label("landType", listing.landType) });
+    }
   }
   return specs;
 }

@@ -28,6 +28,7 @@ interface Props {
 }
 
 export function RealEstateFilterFields({ filters, onChange, mobile = false }: Props) {
+  const isLand = filters.subcategory === "land";
   const districts = Array.from(
     new Set(filters.city.flatMap((city) => DISTRICTS[city] ?? [])),
   ).map((d) => ({ value: d, label: d }));
@@ -87,14 +88,16 @@ export function RealEstateFilterFields({ filters, onChange, mobile = false }: Pr
         />
       </FilterSection>
 
-      <FilterSection title="Սենյակներ" defaultOpen={!mobile}>
-        <ChipGroup
-          options={ROOMS_OPTIONS}
-          values={filters.rooms}
-          onChange={(rooms) => onChange({ rooms })}
-          multiple
-        />
-      </FilterSection>
+      {!isLand && (
+        <FilterSection title="Սենյակներ" defaultOpen={!mobile}>
+          <ChipGroup
+            options={ROOMS_OPTIONS}
+            values={filters.rooms}
+            onChange={(rooms) => onChange({ rooms })}
+            multiple
+          />
+        </FilterSection>
+      )}
 
       <FilterSection title="Մակերես, մ²" defaultOpen={!mobile}>
         <RangeFields
@@ -105,43 +108,70 @@ export function RealEstateFilterFields({ filters, onChange, mobile = false }: Pr
         />
       </FilterSection>
 
-      <FilterSection title="Վիճակ" defaultOpen={false}>
-        <SelectField
-          value={filters.condition[0] ?? ""}
-          onChange={(value) => onChange({ condition: value ? [value] : [] })}
-          options={RE_CONDITIONS}
-          placeholder="Ցանկացած վիճակ"
-          anyLabel="Ցանկացած վիճակ"
-        />
-      </FilterSection>
+      {!isLand && (
+        <>
+          <FilterSection title="Հարկ" defaultOpen={!mobile}>
+            <div>
+              <FieldLabel>Բնակարանի հարկը</FieldLabel>
+              <RangeFields
+                from={filters.floorMin}
+                to={filters.floorMax}
+                onFrom={(floorMin) => onChange({ floorMin })}
+                onTo={(floorMax) => onChange({ floorMax })}
+              />
+            </div>
+            <div>
+              <FieldLabel>Շենքի հարկայնությունը, ոչ պակաս</FieldLabel>
+              <RangeFields
+                from={filters.totalFloorsMin}
+                to=""
+                onFrom={(totalFloorsMin) => onChange({ totalFloorsMin })}
+                onTo={() => undefined}
+                fromPlaceholder="սկսած"
+                toPlaceholder="—"
+              />
+            </div>
+          </FilterSection>
 
-      <FilterSection title="Շենքի տեսակ" defaultOpen={false}>
-        <ChipGroup
-          options={BUILDING_TYPES}
-          values={filters.buildingType ? [filters.buildingType] : []}
-          onChange={(values) =>
-            onChange({ buildingType: (values[0] ?? "") as RealEstateFilters["buildingType"] })
-          }
-        />
-      </FilterSection>
+          <FilterSection title="Վիճակ" defaultOpen={!mobile}>
+            <SelectField
+              value={filters.condition[0] ?? ""}
+              onChange={(value) => onChange({ condition: value ? [value] : [] })}
+              options={RE_CONDITIONS}
+              placeholder="Ցանկացած վիճակ"
+              anyLabel="Ցանկացած վիճակ"
+            />
+          </FilterSection>
 
-      <FilterSection title="Հարմարություններ" defaultOpen={false}>
-        <ToggleRow
-          label="Կահույք"
-          checked={filters.furniture}
-          onChange={(furniture) => onChange({ furniture })}
-        />
-        <ToggleRow
-          label="Պատշգամբ"
-          checked={filters.balcony}
-          onChange={(balcony) => onChange({ balcony })}
-        />
-        <ToggleRow
-          label="Կայանատեղի"
-          checked={filters.parking}
-          onChange={(parking) => onChange({ parking })}
-        />
-      </FilterSection>
+          <FilterSection title="Շենքի տեսակ" defaultOpen={!mobile}>
+            <ChipGroup
+              options={BUILDING_TYPES}
+              values={filters.buildingType ? [filters.buildingType] : []}
+              onChange={(values) =>
+                onChange({ buildingType: (values[0] ?? "") as RealEstateFilters["buildingType"] })
+              }
+            />
+          </FilterSection>
+
+          <FilterSection title="Հարմարություններ" defaultOpen={!mobile}>
+            <ToggleRow
+              label="Կահույք"
+              checked={filters.furniture}
+              onChange={(furniture) => onChange({ furniture })}
+            />
+            <ToggleRow
+              label="Պատշգամբ"
+              checked={filters.balcony}
+              onChange={(balcony) => onChange({ balcony })}
+            />
+            <ToggleRow
+              label="Կայանատեղի"
+              checked={filters.parking}
+              onChange={(parking) => onChange({ parking })}
+            />
+          </FilterSection>
+        </>
+      )}
 
       <FilterSection title="Հայտարարություններ" defaultOpen={!mobile}>
         <ToggleRow

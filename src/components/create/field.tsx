@@ -34,7 +34,7 @@ export function Field({
 export function StepHeader({ title, description }: { title: string; description?: string }) {
   return (
     <header className="mb-6">
-      <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+      <h2 className="text-[18px] font-semibold tracking-tight sm:text-xl">{title}</h2>
       {description && <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>}
     </header>
   );

@@ -65,7 +65,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Մակերես, մ²" defaultOpen={false}>
+      <FilterSection title="Մակերես, մ²">
         <RangeFields
           from={filters.areaMin}
           to={filters.areaMax}

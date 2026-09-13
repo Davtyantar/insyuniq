@@ -1,4 +1,11 @@
-import { BedDouble, Briefcase, Building2, Car, KeyRound, type LucideIcon } from "lucide-react";
+import {
+  BedDouble,
+  Briefcase,
+  Building2,
+  Car,
+  KeyRound,
+  type LucideIcon
+} from "lucide-react";
 import { CAR_LISTINGS } from "@/mock/cars";
 import { HOTEL_LISTINGS } from "@/mock/hotels";
 import { REAL_ESTATE_LISTINGS } from "@/mock/real-estate";
@@ -9,7 +16,7 @@ import {
   REAL_ESTATE_SUBCATEGORIES,
   RENTAL_SUBCATEGORIES,
   WORK_SUBCATEGORIES,
-  type Option,
+  type Option
 } from "@/mock/taxonomy";
 import { WORK_LISTINGS } from "@/mock/work";
 import type { CategorySlug, Listing } from "./types";
@@ -32,7 +39,7 @@ export interface CategoryConfig {
 export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
   "real-estate": {
     slug: "real-estate",
-    label: "Անշարժ գույք",
+    label: "Անշարժ գույքի վաճառք",
     labelPrepositional: "անշարժ գույքի",
     href: "/real-estate",
     icon: Building2,
@@ -40,7 +47,7 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: REAL_ESTATE_SUBCATEGORIES,
     listings: REAL_ESTATE_LISTINGS,
     cover: REAL_ESTATE_LISTINGS[0].images[0],
-    tagline: "Բնակարաններ, տներ և հողատարածքներ ողջ Սյունիքում",
+    tagline: "Բնակարաններ, տներ և հողատարածքներ ողջ Սյունիքում"
   },
   cars: {
     slug: "cars",
@@ -52,7 +59,7 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: CAR_SUBCATEGORIES,
     listings: CAR_LISTINGS,
     cover: CAR_LISTINGS[4].images[0],
-    tagline: "Մարդատար, ամենագնաց և էլեկտրական մեքենաներ Սյունիքում",
+    tagline: "Մարդատար, ամենագնաց և էլեկտրական մեքենաներ Սյունիքում"
   },
   rentals: {
     slug: "rentals",
@@ -64,7 +71,7 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: RENTAL_SUBCATEGORIES,
     listings: RENTAL_LISTINGS,
     cover: RENTAL_LISTINGS[0].images[0],
-    tagline: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով",
+    tagline: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով"
   },
   hotels: {
     slug: "hotels",
@@ -76,7 +83,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: HOTEL_SUBCATEGORIES,
     listings: HOTEL_LISTINGS,
     cover: HOTEL_LISTINGS[0].images[0],
-    tagline: "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով",
+    tagline:
+      "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով"
   },
   work: {
     slug: "work",
@@ -88,8 +96,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: WORK_SUBCATEGORIES,
     listings: WORK_LISTINGS,
     cover: WORK_LISTINGS[0].images[0],
-    tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից",
-  },
+    tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից"
+  }
 };
 
 export const CATEGORY_LIST = Object.values(CATEGORIES);
