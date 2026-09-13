@@ -49,13 +49,19 @@ const DialogContent = React.forwardRef<
         variant === "sheet" &&
           cn(
             "inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl",
-            // Phones: a real bottom-sheet reveal/dismiss (slides the whole sheet off/onto screen).
+            // Phones and tablets: a real bottom-sheet reveal/dismiss (slides the whole sheet
+            // off/onto screen). The only current user of this variant (FilterDrawer) is only
+            // ever triggerable below `lg` — its desktop sidebar takes over at `lg` and up — so
+            // the switch to the centered-modal style below has to happen at that same
+            // breakpoint. Switching it any earlier (e.g. the old `sm`) left a dead zone between
+            // that and `lg` where the trigger was still visible but this showed as a small
+            // floating centered card instead of a bottom sheet.
             "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-300 data-[state=open]:ease-out",
             "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:duration-200 data-[state=closed]:ease-in",
-            // sm+: it's a centered modal instead, so it keeps the original subtle fade/nudge —
+            // lg+: it's a centered modal instead, so it keeps the original subtle fade/nudge —
             // sliding "to the bottom" would fly off center, which looks wrong for a modal.
-            "sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:w-[560px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl",
-            "sm:data-[state=open]:animate-slide-up sm:data-[state=closed]:animate-fade-out",
+            "lg:inset-x-auto lg:left-1/2 lg:top-1/2 lg:max-h-[86vh] lg:w-[560px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-xl",
+            "lg:data-[state=open]:animate-slide-up lg:data-[state=closed]:animate-fade-out",
           ),
         variant === "full" && "inset-0 rounded-none border-0 bg-slate-950 p-0",
         variant === "blur" &&
