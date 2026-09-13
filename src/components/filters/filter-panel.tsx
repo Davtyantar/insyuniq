@@ -35,12 +35,14 @@ export function FilterFields({
   category,
   filters,
   onChange,
-}: Pick<FilterPanelProps, "category" | "filters" | "onChange">) {
+  mobile = false,
+}: Pick<FilterPanelProps, "category" | "filters" | "onChange"> & { mobile?: boolean }) {
   if (category === "cars") {
     return (
       <CarFilterFields
         filters={filters as CarFilters}
         onChange={onChange as (patch: Partial<CarFilters>) => void}
+        mobile={mobile}
       />
     );
   }
@@ -57,6 +59,7 @@ export function FilterFields({
       <HotelFilterFields
         filters={filters as HotelFilters}
         onChange={onChange as (patch: Partial<HotelFilters>) => void}
+        mobile={mobile}
       />
     );
   }
@@ -72,6 +75,7 @@ export function FilterFields({
     <RealEstateFilterFields
       filters={filters as RealEstateFilters}
       onChange={onChange as (patch: Partial<RealEstateFilters>) => void}
+      mobile={mobile}
     />
   );
 }
@@ -110,10 +114,10 @@ export function FilterPanel({
       <div
         className={cn(
           "flex-1",
-          isDrawer && "thin-scrollbar overflow-y-auto px-4 pb-4",
+          isDrawer && "thin-scrollbar overflow-y-auto px-4 pb-4 pt-4",
         )}
       >
-        <FilterFields category={category} filters={filters} onChange={onChange} />
+        <FilterFields category={category} filters={filters} onChange={onChange} mobile={isDrawer} />
       </div>
 
       <div

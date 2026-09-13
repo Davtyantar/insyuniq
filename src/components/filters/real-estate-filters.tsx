@@ -13,7 +13,6 @@ import type { RealEstateFilters } from "@/lib/types";
 import {
   BUILDING_TYPES,
   CITIES,
-  DEAL_TYPES,
   DISTRICTS,
   REAL_ESTATE_SUBCATEGORIES,
   RE_CONDITIONS,
@@ -23,12 +22,43 @@ import {
 interface Props {
   filters: RealEstateFilters;
   onChange: (patch: Partial<RealEstateFilters>) => void;
+  /** Phone drawer: collapses the secondary sections by default and drops the "Location" header
+   * (the "City"/"District" field labels already say what they are). Desktop sidebar is unchanged. */
+  mobile?: boolean;
 }
 
-export function RealEstateFilterFields({ filters, onChange }: Props) {
+export function RealEstateFilterFields({ filters, onChange, mobile = false }: Props) {
   const districts = Array.from(
     new Set(filters.city.flatMap((city) => DISTRICTS[city] ?? [])),
   ).map((d) => ({ value: d, label: d }));
+
+  const locationFields = (
+    <>
+      <div>
+        <FieldLabel>Քաղաք</FieldLabel>
+        <MultiSelectField
+          values={filters.city}
+          onChange={(city) => onChange({ city, district: "" })}
+          options={CITIES}
+          placeholder="Ողջ Սյունիք"
+          anyLabel="Ողջ Սյունիք"
+        />
+      </div>
+      {filters.city.length <= 1 && (
+        <div>
+          <FieldLabel>Թաղամաս</FieldLabel>
+          <SelectField
+            value={filters.district}
+            onChange={(district) => onChange({ district })}
+            options={districts}
+            placeholder={filters.city.length ? "Ցանկացած թաղամաս" : "Նախ ընտրեք քաղաքը"}
+            anyLabel="Ցանկացած թաղամաս"
+            disabled={!filters.city.length}
+          />
+        </div>
+      )}
+    </>
+  );
 
   return (
     <>
@@ -42,39 +72,13 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գործարքի տեսակ">
-        <ChipGroup
-          options={DEAL_TYPES}
-          values={filters.deal ? [filters.deal] : []}
-          onChange={(values) => onChange({ deal: (values[0] ?? "") as RealEstateFilters["deal"] })}
-        />
-      </FilterSection>
+      {mobile ? (
+        <div className="space-y-3 border-b border-border py-4">{locationFields}</div>
+      ) : (
+        <FilterSection title="Տեղադրություն">{locationFields}</FilterSection>
+      )}
 
-      <FilterSection title="Տեղադրություն">
-        <div>
-          <FieldLabel>Քաղաք</FieldLabel>
-          <MultiSelectField
-            values={filters.city}
-            onChange={(city) => onChange({ city, district: "" })}
-            options={CITIES}
-            placeholder="Ողջ Սյունիք"
-            anyLabel="Ողջ Սյունիք"
-          />
-        </div>
-        <div>
-          <FieldLabel>Թաղամաս</FieldLabel>
-          <SelectField
-            value={filters.district}
-            onChange={(district) => onChange({ district })}
-            options={districts}
-            placeholder={filters.city.length ? "Ցանկացած թաղամաս" : "Նախ ընտրեք քաղաքը"}
-            anyLabel="Ցանկացած թաղամաս"
-            disabled={!filters.city.length}
-          />
-        </div>
-      </FilterSection>
-
-      <FilterSection title="Գին, $">
+      <FilterSection title="Գին, $" defaultOpen={!mobile}>
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -83,7 +87,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Սենյակներ">
+      <FilterSection title="Սենյակներ" defaultOpen={!mobile}>
         <ChipGroup
           options={ROOMS_OPTIONS}
           values={filters.rooms}
@@ -92,36 +96,13 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Մակերես, մ²">
+      <FilterSection title="Մակերես, մ²" defaultOpen={!mobile}>
         <RangeFields
           from={filters.areaMin}
           to={filters.areaMax}
           onFrom={(areaMin) => onChange({ areaMin })}
           onTo={(areaMax) => onChange({ areaMax })}
         />
-      </FilterSection>
-
-      <FilterSection title="Հարկ" defaultOpen={false}>
-        <div>
-          <FieldLabel>Բնակարանի հարկը</FieldLabel>
-          <RangeFields
-            from={filters.floorMin}
-            to={filters.floorMax}
-            onFrom={(floorMin) => onChange({ floorMin })}
-            onTo={(floorMax) => onChange({ floorMax })}
-          />
-        </div>
-        <div>
-          <FieldLabel>Շենքի հարկայնությունը, ոչ պակաս</FieldLabel>
-          <RangeFields
-            from={filters.totalFloorsMin}
-            to=""
-            onFrom={(totalFloorsMin) => onChange({ totalFloorsMin })}
-            onTo={() => undefined}
-            fromPlaceholder="սկսած"
-            toPlaceholder="—"
-          />
-        </div>
       </FilterSection>
 
       <FilterSection title="Վիճակ" defaultOpen={false}>
@@ -162,7 +143,7 @@ export function RealEstateFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Հայտարարություններ">
+      <FilterSection title="Հայտարարություններ" defaultOpen={!mobile}>
         <ToggleRow
           label="Միայն նկարով"
           checked={filters.withPhoto}

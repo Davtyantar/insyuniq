@@ -43,11 +43,11 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
       <div className='container py-8 md:py-10'>
         <div className='flex flex-wrap items-end justify-between gap-3'>
           <div>
-            <h2 className='mt-2 text-xl font-semibold tracking-tight md:text-2xl'>
+            <h2 className='mt-2 text-[16px] font-semibold tracking-tight sm:text-xl md:text-2xl'>
               Վերջերս ավելացվածները
               <CityAccent />
             </h2>
-            <p className='mt-1 text-sm text-muted-foreground'>
+            <p className='mt-1 text-[14px] text-muted-foreground sm:text-sm'>
               Ամենաթարմ հայտարարությունները բոլոր կատեգորիաներից՝ մեկ տեղում
             </p>
           </div>

@@ -14,9 +14,11 @@ import { CITIES, HOTEL_SUBCATEGORIES, POOL_OPTIONS } from "@/mock/taxonomy";
 interface Props {
   filters: HotelFilters;
   onChange: (patch: Partial<HotelFilters>) => void;
+  /** Phone drawer: collapses the secondary sections by default. Desktop sidebar is unchanged. */
+  mobile?: boolean;
 }
 
-export function HotelFilterFields({ filters, onChange }: Props) {
+export function HotelFilterFields({ filters, onChange, mobile = false }: Props) {
   return (
     <>
       <FilterSection title="Բնակատեղիի տեսակ">
@@ -39,7 +41,7 @@ export function HotelFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գին, $">
+      <FilterSection title="Գին, $" defaultOpen={!mobile}>
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -48,7 +50,7 @@ export function HotelFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Լողավազան">
+      <FilterSection title="Լողավազան" defaultOpen={!mobile}>
         <ChipGroup
           options={POOL_OPTIONS}
           values={filters.pool ? [filters.pool] : []}
@@ -57,7 +59,7 @@ export function HotelFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Հայտարարություններ">
+      <FilterSection title="Հայտարարություններ" defaultOpen={!mobile}>
         <ToggleRow
           label="Միայն նկարով"
           checked={filters.withPhoto}

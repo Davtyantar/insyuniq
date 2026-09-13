@@ -1,13 +1,16 @@
+"use client";
+
+import * as React from "react";
 import Image from "next/image";
 import { Link } from "@/components/i18n/locale-link";
-import { BadgeCheck, ChevronRight, Eye, MapPin } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Eye, MapPin } from "lucide-react";
 import { ImageGallery } from "@/components/listing/image-gallery";
 import { MapPlaceholder } from "@/components/listing/map-placeholder";
 import { MobileContactBar } from "@/components/listing/mobile-contact-bar";
 import { PriceTag } from "@/components/listing/price-tag";
 import { SellerCard } from "@/components/listing/seller-card";
+import { ListingCard } from "@/components/listings/listing-card";
 import { FavoriteButton } from "@/components/listings/favorite-button";
-import { ListingGrid } from "@/components/listings/listing-grid";
 import { CATEGORIES } from "@/lib/categories";
 import { formatFullDate, formatNumber, formatRelativeDate } from "@/lib/format";
 import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
@@ -19,6 +22,9 @@ interface ListingDetailsProps {
   similar: Listing[];
 }
 
+/** Gap between cards (Tailwind gap-3 = 0.75rem), used to compute the one-card scroll step. */
+const GAP_PX = 12;
+
 export function ListingDetails({ listing, similar }: ListingDetailsProps) {
   const category = CATEGORIES[listing.category];
   const seller = getSeller(listing.sellerId);
@@ -26,6 +32,15 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
   const subcategoryLabel = category.subcategories.find(
     (s) => s.value === listing.subcategory,
   )?.label;
+  const scrollerRef = React.useRef<HTMLDivElement>(null);
+
+  function scrollByCard(direction: 1 | -1) {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = (card?.getBoundingClientRect().width ?? el.clientWidth) + GAP_PX;
+    el.scrollBy({ left: direction * step, behavior: "smooth" });
+  }
 
   return (
     <div className="pb-20 md:pb-0">
@@ -117,7 +132,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                   price={listing.price}
                   perMonth={isMonthly(listing)}
                   perDay={isDaily(listing)}
-                  className="text-[32px] font-semibold leading-none tracking-tight"
+                  className="text-[22px] font-semibold leading-none tracking-tight sm:text-[32px]"
                 />
                 {listing.verified && (
                   <BadgeCheck
@@ -129,8 +144,8 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 )}
               </div>
 
-              <h1 className="mt-3 text-[19px] font-medium leading-snug">{listing.title}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">{listingSummary(listing)}</p>
+              <h1 className="mt-3 text-[14px] font-medium leading-snug sm:text-[19px]">{listing.title}</h1>
+              <p className="mt-1 text-[12px] text-muted-foreground sm:text-sm">{listingSummary(listing)}</p>
 
               <ul className="mt-4 flex flex-wrap gap-1.5">
                 {cardSpecs(listing).map((spec) => (
@@ -143,7 +158,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 ))}
               </ul>
 
-              <p className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+              <p className="mt-4 flex items-center gap-1.5 text-[12px] text-muted-foreground sm:text-sm">
                 <MapPin className="h-4 w-4 shrink-0" />
                 {locationLine(listing)}, {listing.address}
               </p>
@@ -174,16 +189,49 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
       {similar.length > 0 && (
         <section className="container py-10">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-xl font-semibold tracking-tight">Նմանատիպ հայտարարություններ</h2>
-            <Link
-              href={category.href}
-              className="text-sm font-medium text-accent transition-colors hover:text-brand-700"
-            >
-              Բոլորը կատեգորիայում
-            </Link>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-[16px] font-semibold tracking-tight sm:text-xl">Նմանատիպ հայտարարություններ</h2>
+            <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-normal">
+              <Link
+                href={category.href}
+                className="text-sm font-medium text-accent transition-colors hover:text-brand-700"
+              >
+                Բոլորը կատեգորիայում
+              </Link>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  aria-label="Նախորդները"
+                  onClick={() => scrollByCard(-1)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Հաջորդները"
+                  onClick={() => scrollByCard(1)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
-          <ListingGrid listings={similar} columns={4} className="mt-5" />
+
+          <div
+            ref={scrollerRef}
+            className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto"
+          >
+            {similar.map((item, index) => (
+              <div
+                key={item.id}
+                className="w-[calc(50%-6px)] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
+              >
+                <ListingCard listing={item} priority={index < 4} />
+              </div>
+            ))}
+          </div>
         </section>
       )}
 

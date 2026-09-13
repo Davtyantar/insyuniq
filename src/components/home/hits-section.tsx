@@ -39,11 +39,11 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
     <section className="container py-8 md:py-10">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight md:text-2xl">
+          <h2 className="text-[16px] font-semibold tracking-tight sm:text-xl md:text-2xl">
             {t(`home.hits.${titleKey}.title`)}
             <CityAccent />
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t(`home.hits.${titleKey}.subtitle`)}</p>
+          <p className="mt-1 text-[14px] text-muted-foreground sm:text-sm">{t(`home.hits.${titleKey}.subtitle`)}</p>
         </div>
         <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-normal">
           <Link

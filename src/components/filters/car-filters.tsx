@@ -27,9 +27,11 @@ import {
 interface Props {
   filters: CarFilters;
   onChange: (patch: Partial<CarFilters>) => void;
+  /** Phone drawer: collapses the secondary sections by default. Desktop sidebar is unchanged. */
+  mobile?: boolean;
 }
 
-export function CarFilterFields({ filters, onChange }: Props) {
+export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
   const models = (CAR_BRANDS[filters.brand] ?? []).map((m) => ({ value: m, label: m }));
 
   return (
@@ -68,7 +70,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         </div>
       </FilterSection>
 
-      <FilterSection title="Թողարկման տարի">
+      <FilterSection title="Թողարկման տարի" defaultOpen={!mobile}>
         <RangeFields
           from={filters.yearMin}
           to={filters.yearMax}
@@ -77,7 +79,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գին, $">
+      <FilterSection title="Գին, $" defaultOpen={!mobile}>
         <RangeFields
           from={filters.priceMin}
           to={filters.priceMax}
@@ -86,7 +88,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Վազք, կմ">
+      <FilterSection title="Վազք, կմ" defaultOpen={!mobile}>
         <RangeFields
           from={filters.mileageMin}
           to={filters.mileageMax}
@@ -105,7 +107,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Շարժիչ">
+      <FilterSection title="Շարժիչ" defaultOpen={!mobile}>
         <SelectField
           value={filters.fuel[0] ?? ""}
           onChange={(value) => onChange({ fuel: value ? [value] : [] })}
@@ -194,7 +196,7 @@ export function CarFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Հայտարարություններ">
+      <FilterSection title="Հայտարարություններ" defaultOpen={!mobile}>
         <ToggleRow
           label="Միայն նկարով"
           checked={filters.withPhoto}

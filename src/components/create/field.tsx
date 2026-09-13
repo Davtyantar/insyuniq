@@ -55,9 +55,9 @@ export function OptionCard({ title, description, icon: Icon, selected, onSelect 
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "relative flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-all",
+        "relative flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all",
         selected
-          ? "border-accent bg-brand-50/60 shadow-card"
+          ? "border-accent bg-brand-50/60 shadow-card dark:bg-emerald-500/15"
           : "border-border bg-card hover:border-slate-300 hover:shadow-card",
       )}
     >
@@ -74,7 +74,7 @@ export function OptionCard({ title, description, icon: Icon, selected, onSelect 
       <span className="min-w-0 flex-1">
         <span className="block text-[15px] font-medium">{title}</span>
         {description && (
-          <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
+          <span className="mt-0.5 hidden text-[13px] leading-relaxed text-muted-foreground sm:block">
             {description}
           </span>
         )}

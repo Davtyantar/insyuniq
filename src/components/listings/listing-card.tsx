@@ -227,12 +227,7 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
           )}
         </div>
 
-        <p
-          className={cn(
-            "line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]",
-            dense && "hidden sm:block",
-          )}
-        >
+        <p className="line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
           {listing.description}
         </p>
 

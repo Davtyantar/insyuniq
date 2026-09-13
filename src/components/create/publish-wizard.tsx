@@ -23,13 +23,56 @@ import {
 import type { Listing } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+/** Compact connected-dots progress track for phones — the full labeled list below is a lot of
+ * text to cram into a narrow header, and the current step's own title/hint already show in the
+ * page header above this, so the dots only need to carry state, not repeat the copy. */
+function MobileStepper({ current, onGoTo }: { current: number; onGoTo: (step: number) => void }) {
+  return (
+    <ol className="flex items-center lg:hidden">
+      {WIZARD_STEPS.map((step, index) => {
+        const state = step.id === current ? "current" : step.id < current ? "done" : "todo";
+        const isLast = index === WIZARD_STEPS.length - 1;
+        return (
+          <li key={step.id} className={cn("flex items-center", !isLast && "flex-1")}>
+            <button
+              type="button"
+              onClick={() => step.id < current && onGoTo(step.id)}
+              disabled={step.id > current}
+              aria-current={state === "current" ? "step" : undefined}
+              aria-label={step.title}
+              title={step.title}
+              className={cn(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold transition-all",
+                state === "current" && "bg-accent text-accent-foreground ring-4 ring-accent/20",
+                state === "done" && "bg-accent/15 text-accent",
+                state === "todo" && "bg-secondary text-muted-foreground",
+              )}
+            >
+              {state === "done" ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : step.id}
+            </button>
+            {!isLast && (
+              <span
+                className={cn(
+                  "mx-1 h-[3px] flex-1 rounded-full transition-colors",
+                  step.id < current ? "bg-accent" : "bg-secondary",
+                )}
+              />
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** Full labeled step list for the sticky desktop sidebar. */
 function Stepper({ current, onGoTo }: { current: number; onGoTo: (step: number) => void }) {
   return (
-    <ol className="flex gap-1 overflow-x-auto pb-1 no-scrollbar lg:flex-col lg:gap-1.5 lg:overflow-visible">
+    <ol className="hidden lg:flex lg:flex-col lg:gap-1.5">
       {WIZARD_STEPS.map((step) => {
         const state = step.id === current ? "current" : step.id < current ? "done" : "todo";
         return (
-          <li key={step.id} className="shrink-0 lg:w-full">
+          <li key={step.id} className="lg:w-full">
             <button
               type="button"
               onClick={() => step.id < current && onGoTo(step.id)}
@@ -52,12 +95,8 @@ function Stepper({ current, onGoTo }: { current: number; onGoTo: (step: number) 
                 {state === "done" ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : step.id}
               </span>
               <span className="min-w-0">
-                <span className="block whitespace-nowrap text-[13px] font-medium lg:whitespace-normal">
-                  {step.title}
-                </span>
-                <span className="hidden text-[12px] text-muted-foreground lg:block">
-                  {step.hint}
-                </span>
+                <span className="block text-[13px] font-medium">{step.title}</span>
+                <span className="block text-[12px] text-muted-foreground">{step.hint}</span>
               </span>
             </button>
           </li>
@@ -149,22 +188,25 @@ export function PublishWizard() {
   return (
     <div className="container py-6 lg:py-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">
+        <h1 className="text-[18px] font-semibold tracking-tight lg:text-[28px]">
           Հրապարակել հայտարարություն
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Քայլ {step}-ը {WIZARD_STEPS.length}-ից · {WIZARD_STEPS[step - 1].title}
         </p>
-        <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-secondary">
+        <div className="mt-4 hidden h-1 w-full overflow-hidden rounded-full bg-secondary lg:block">
           <div
             className="h-full rounded-full bg-accent transition-all duration-300"
             style={{ width: `${(step / WIZARD_STEPS.length) * 100}%` }}
           />
         </div>
+        <div className="mt-4 lg:hidden">
+          <MobileStepper current={step} onGoTo={setStep} />
+        </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-        <aside className="lg:sticky lg:top-[124px] lg:self-start">
+        <aside className="hidden lg:sticky lg:top-[124px] lg:block lg:self-start">
           <Stepper current={step} onGoTo={setStep} />
         </aside>
 

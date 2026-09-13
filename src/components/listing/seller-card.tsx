@@ -20,7 +20,7 @@ export function SellerCard({ seller }: { seller: Seller }) {
         </div>
       </div>
 
-      <Button variant='accent' size='lg' className='shrink-0 gap-2' asChild>
+      <Button variant='accent' size='lg' className='hidden shrink-0 gap-2 md:inline-flex' asChild>
         <a href={`tel:${seller.phone}`}>
           <Phone className='h-4 w-4' />
           {seller.phone}
