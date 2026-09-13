@@ -2,6 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 import { CarFilterFields } from "@/components/filters/car-filters";
+import { SingleOpenAccordion } from "@/components/filters/filter-fields";
 import { HotelFilterFields } from "@/components/filters/hotel-filters";
 import { RealEstateFilterFields } from "@/components/filters/real-estate-filters";
 import { RentalFilterFields } from "@/components/filters/rental-filters";
@@ -37,47 +38,54 @@ export function FilterFields({
   onChange,
   mobile = false,
 }: Pick<FilterPanelProps, "category" | "filters" | "onChange"> & { mobile?: boolean }) {
-  if (category === "cars") {
+  const fields = (() => {
+    if (category === "cars") {
+      return (
+        <CarFilterFields
+          filters={filters as CarFilters}
+          onChange={onChange as (patch: Partial<CarFilters>) => void}
+          mobile={mobile}
+        />
+      );
+    }
+    if (category === "rentals") {
+      return (
+        <RentalFilterFields
+          filters={filters as RentalFilters}
+          onChange={onChange as (patch: Partial<RentalFilters>) => void}
+          mobile={mobile}
+        />
+      );
+    }
+    if (category === "hotels") {
+      return (
+        <HotelFilterFields
+          filters={filters as HotelFilters}
+          onChange={onChange as (patch: Partial<HotelFilters>) => void}
+          mobile={mobile}
+        />
+      );
+    }
+    if (category === "work") {
+      return (
+        <WorkFilterFields
+          filters={filters as WorkFilters}
+          onChange={onChange as (patch: Partial<WorkFilters>) => void}
+          mobile={mobile}
+        />
+      );
+    }
     return (
-      <CarFilterFields
-        filters={filters as CarFilters}
-        onChange={onChange as (patch: Partial<CarFilters>) => void}
+      <RealEstateFilterFields
+        filters={filters as RealEstateFilters}
+        onChange={onChange as (patch: Partial<RealEstateFilters>) => void}
         mobile={mobile}
       />
     );
-  }
-  if (category === "rentals") {
-    return (
-      <RentalFilterFields
-        filters={filters as RentalFilters}
-        onChange={onChange as (patch: Partial<RentalFilters>) => void}
-      />
-    );
-  }
-  if (category === "hotels") {
-    return (
-      <HotelFilterFields
-        filters={filters as HotelFilters}
-        onChange={onChange as (patch: Partial<HotelFilters>) => void}
-        mobile={mobile}
-      />
-    );
-  }
-  if (category === "work") {
-    return (
-      <WorkFilterFields
-        filters={filters as WorkFilters}
-        onChange={onChange as (patch: Partial<WorkFilters>) => void}
-      />
-    );
-  }
-  return (
-    <RealEstateFilterFields
-      filters={filters as RealEstateFilters}
-      onChange={onChange as (patch: Partial<RealEstateFilters>) => void}
-      mobile={mobile}
-    />
-  );
+  })();
+
+  // On the phone drawer only one section should be open at a time so the list stays short.
+  return mobile ? <SingleOpenAccordion>{fields}</SingleOpenAccordion> : fields;
 }
 
 export function FilterPanel({

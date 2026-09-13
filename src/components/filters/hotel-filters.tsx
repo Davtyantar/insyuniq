@@ -26,7 +26,7 @@ interface Props {
 export function HotelFilterFields({ filters, onChange, mobile = false }: Props) {
   return (
     <>
-      <FilterSection title="Բնակատեղիի տեսակ">
+      <FilterSection title="Բնակատեղիի տեսակ" defaultOpen={!mobile}>
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
@@ -36,7 +36,7 @@ export function HotelFilterFields({ filters, onChange, mobile = false }: Props) 
         />
       </FilterSection>
 
-      <FilterSection title="Տեղադրություն">
+      <FilterSection title="Տեղադրություն" defaultOpen={!mobile}>
         <MultiSelectField
           values={filters.city}
           onChange={(city) => onChange({ city })}

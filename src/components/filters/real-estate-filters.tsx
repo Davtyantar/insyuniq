@@ -27,8 +27,9 @@ const PRICE_BOUNDS: PriceBounds = { min: 0, max: 300000, step: 1000 };
 interface Props {
   filters: RealEstateFilters;
   onChange: (patch: Partial<RealEstateFilters>) => void;
-  /** Phone drawer: collapses the secondary sections by default and drops the "Location" header
-   * (the "City"/"District" field labels already say what they are). Desktop sidebar is unchanged. */
+  /** Phone drawer: every section starts collapsed so the sheet opens as a compact,
+   * tap-to-expand list instead of a long scroll of always-open fields. Desktop sidebar
+   * keeps everything expanded. */
   mobile?: boolean;
 }
 
@@ -69,7 +70,7 @@ export function RealEstateFilterFields({ filters, onChange, mobile = false }: Pr
 
   return (
     <>
-      <FilterSection title="Անշարժ գույքի տեսակ">
+      <FilterSection title="Անշարժ գույքի տեսակ" defaultOpen={!mobile}>
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
@@ -79,11 +80,9 @@ export function RealEstateFilterFields({ filters, onChange, mobile = false }: Pr
         />
       </FilterSection>
 
-      {mobile ? (
-        <div className="space-y-3 border-b border-border py-4">{locationFields}</div>
-      ) : (
-        <FilterSection title="Տեղադրություն">{locationFields}</FilterSection>
-      )}
+      <FilterSection title="Տեղադրություն" defaultOpen={!mobile}>
+        {locationFields}
+      </FilterSection>
 
       <FilterSection title="Գին" defaultOpen={!mobile}>
         <PriceRangeField

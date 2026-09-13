@@ -41,7 +41,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
 
   return (
     <>
-      <FilterSection title="Տրանսպորտի տեսակ">
+      <FilterSection title="Տրանսպորտի տեսակ" defaultOpen={!mobile}>
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
@@ -51,7 +51,7 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Մակնիշ և մոդել">
+      <FilterSection title="Մակնիշ և մոդել" defaultOpen={!mobile}>
         <div>
           <FieldLabel>Մակնիշ</FieldLabel>
           <SelectField

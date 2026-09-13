@@ -16,12 +16,16 @@ const PRICE_BOUNDS: PriceBounds = { min: 0, max: 5000, step: 50 };
 interface Props {
   filters: WorkFilters;
   onChange: (patch: Partial<WorkFilters>) => void;
+  /** Phone drawer: every section starts collapsed so the sheet opens as a compact,
+   * tap-to-expand list instead of a long scroll of always-open fields. Desktop sidebar
+   * keeps everything expanded. */
+  mobile?: boolean;
 }
 
-export function WorkFilterFields({ filters, onChange }: Props) {
+export function WorkFilterFields({ filters, onChange, mobile = false }: Props) {
   return (
     <>
-      <FilterSection title="Ոլորտ">
+      <FilterSection title="Ոլորտ" defaultOpen={!mobile}>
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
@@ -31,7 +35,7 @@ export function WorkFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Տեղադրություն">
+      <FilterSection title="Տեղադրություն" defaultOpen={!mobile}>
         <MultiSelectField
           values={filters.city}
           onChange={(city) => onChange({ city })}
@@ -41,7 +45,7 @@ export function WorkFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Աշխատավարձ, ամսական">
+      <FilterSection title="Աշխատավարձ, ամսական" defaultOpen={!mobile}>
         <PriceRangeField
           currency={filters.priceCurrency}
           onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
@@ -53,7 +57,7 @@ export function WorkFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Դրույք">
+      <FilterSection title="Դրույք" defaultOpen={!mobile}>
         <MultiSelectField
           values={filters.employmentType}
           onChange={(employmentType) => onChange({ employmentType: employmentType as WorkFilters["employmentType"] })}

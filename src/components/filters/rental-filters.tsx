@@ -19,12 +19,16 @@ const PRICE_BOUNDS: PriceBounds = { min: 0, max: 3000, step: 25 };
 interface Props {
   filters: RentalFilters;
   onChange: (patch: Partial<RentalFilters>) => void;
+  /** Phone drawer: every section starts collapsed so the sheet opens as a compact,
+   * tap-to-expand list instead of a long scroll of always-open fields. Desktop sidebar
+   * keeps everything expanded. */
+  mobile?: boolean;
 }
 
-export function RentalFilterFields({ filters, onChange }: Props) {
+export function RentalFilterFields({ filters, onChange, mobile = false }: Props) {
   return (
     <>
-      <FilterSection title="Բնակարանի տեսակ">
+      <FilterSection title="Բնակարանի տեսակ" defaultOpen={!mobile}>
         <SelectField
           value={filters.subcategory}
           onChange={(subcategory) => onChange({ subcategory })}
@@ -34,7 +38,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Վարձակալության ժամկետ">
+      <FilterSection title="Վարձակալության ժամկետ" defaultOpen={!mobile}>
         <ChipGroup
           options={RENTAL_TERMS}
           values={filters.term ? [filters.term] : []}
@@ -42,7 +46,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Տեղադրություն">
+      <FilterSection title="Տեղադրություն" defaultOpen={!mobile}>
         <MultiSelectField
           values={filters.city}
           onChange={(city) => onChange({ city })}
@@ -52,7 +56,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գին">
+      <FilterSection title="Գին" defaultOpen={!mobile}>
         <PriceRangeField
           currency={filters.priceCurrency}
           onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
@@ -64,7 +68,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Սենյակներ">
+      <FilterSection title="Սենյակներ" defaultOpen={!mobile}>
         <ChipGroup
           options={ROOMS_OPTIONS}
           values={filters.rooms}
@@ -73,7 +77,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Մակերես, մ²">
+      <FilterSection title="Մակերես, մ²" defaultOpen={!mobile}>
         <RangeFields
           from={filters.areaMin}
           to={filters.areaMax}
@@ -82,7 +86,7 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Հայտարարություններ">
+      <FilterSection title="Հայտարարություններ" defaultOpen={!mobile}>
         <ToggleRow
           label="Միայն նկարով"
           checked={filters.withPhoto}

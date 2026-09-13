@@ -25,6 +25,26 @@ import type { Option } from "@/mock/taxonomy";
 
 const ANY = "any";
 
+/**
+ * When a FilterSection renders inside a SingleOpenAccordion (phone drawer), opening one
+ * section closes whichever other one was open — otherwise each section just tracks its
+ * own open/closed state independently (desktop sidebar).
+ */
+const AccordionContext = React.createContext<{
+  openTitle: string | null;
+  setOpenTitle: React.Dispatch<React.SetStateAction<string | null>>;
+} | null>(null);
+
+/** Wrap a mobile drawer's filter fields in this so only one section can be open at a time. */
+export function SingleOpenAccordion({ children }: { children: React.ReactNode }) {
+  const [openTitle, setOpenTitle] = React.useState<string | null>(null);
+  return (
+    <AccordionContext.Provider value={{ openTitle, setOpenTitle }}>
+      {children}
+    </AccordionContext.Provider>
+  );
+}
+
 export function FilterSection({
   title,
   children,
@@ -34,12 +54,23 @@ export function FilterSection({
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = React.useState(defaultOpen);
+  const accordion = React.useContext(AccordionContext);
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
+  const open = accordion ? accordion.openTitle === title : internalOpen;
+
+  function toggle() {
+    if (accordion) {
+      accordion.setOpenTitle((prev) => (prev === title ? null : title));
+    } else {
+      setInternalOpen((prev) => !prev);
+    }
+  }
+
   return (
     <div className="border-b border-border py-4 first:pt-0 last:border-b-0">
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={toggle}
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-2 text-left text-sm font-medium"
       >
