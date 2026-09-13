@@ -18,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { CURRENCY_OPTIONS, currencyOption, type Currency } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 import type { Option } from "@/mock/taxonomy";
 
@@ -102,6 +104,133 @@ export function RangeFields({
             {suffix}
           </span>
         )}
+      </div>
+    </div>
+  );
+}
+
+export interface PriceBounds {
+  /** Always in USD, regardless of the currently selected display currency — converted below. */
+  min: number;
+  max: number;
+  step: number;
+}
+
+/**
+ * Price range control shared by every category's filters: small currency-symbol chips (default
+ * to whichever currency the filters started with — see `defaultFilters` — but freely
+ * switchable), a two-thumb slider, and the from/to number inputs, all kept in sync off the same
+ * `from`/`to` strings so dragging the slider updates the inputs and vice versa.
+ */
+export function PriceRangeField({
+  currency,
+  onCurrencyChange,
+  from,
+  to,
+  onFrom,
+  onTo,
+  bounds,
+}: {
+  currency: Currency;
+  onCurrencyChange: (currency: Currency) => void;
+  from: string;
+  to: string;
+  onFrom: (value: string) => void;
+  onTo: (value: string) => void;
+  bounds: PriceBounds;
+}) {
+  const digits = (value: string) => value.replace(/[^\d.]/g, "");
+  const parsed = (value: string, fallback: number) => {
+    const n = Number(value.replace(/\s/g, ""));
+    return Number.isFinite(n) && value !== "" ? n : fallback;
+  };
+
+  const rate = currencyOption(currency).rate;
+  const rangeMin = 0;
+  const rangeMax = Math.round(bounds.max * rate);
+  const step = Math.max(1, Math.round(bounds.step * rate));
+
+  // Clamp only what the slider itself renders — Radix requires the value to sit inside
+  // [min, max] — the actual typed/stored string is left exactly as entered either way.
+  const sliderFrom = Math.min(Math.max(parsed(from, rangeMin), rangeMin), rangeMax);
+  const sliderTo = Math.min(Math.max(parsed(to, rangeMax), rangeMin), rangeMax);
+  const sliderValue: [number, number] =
+    sliderFrom <= sliderTo ? [sliderFrom, sliderTo] : [sliderTo, sliderFrom];
+
+  function handleCurrencyChange(next: Currency) {
+    if (next === currency) return;
+    // Re-express whatever the seller/buyer already typed in the new currency instead of
+    // reinterpreting the same digits as a completely different amount.
+    const nextRate = currencyOption(next).rate;
+    const convert = (value: string) => {
+      if (!value) return value;
+      const n = Number(value.replace(/\s/g, ""));
+      return Number.isFinite(n) ? String(Math.round((n / rate) * nextRate)) : value;
+    };
+    onFrom(convert(from));
+    onTo(convert(to));
+    onCurrencyChange(next);
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-1.5">
+        {CURRENCY_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => handleCurrencyChange(option.value)}
+            aria-pressed={currency === option.value}
+            title={option.value}
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-md border text-[13px] font-semibold transition-colors",
+              currency === option.value
+                ? "border-accent bg-accent text-accent-foreground"
+                : "border-input bg-card text-foreground hover:bg-secondary",
+            )}
+          >
+            {option.symbol}
+          </button>
+        ))}
+      </div>
+
+      <Slider
+        min={rangeMin}
+        max={rangeMax}
+        step={step}
+        value={sliderValue}
+        onValueChange={([nextFrom, nextTo]) => {
+          onFrom(String(nextFrom));
+          onTo(String(nextTo));
+        }}
+      />
+
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Input
+            value={from}
+            inputMode="numeric"
+            onChange={(e) => onFrom(digits(e.target.value))}
+            placeholder="սկսած"
+            className="h-9 pr-8 text-[13px]"
+          />
+          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">
+            {currencyOption(currency).symbol}
+          </span>
+        </div>
+        <span className="text-muted-foreground">—</span>
+        <div className="relative flex-1">
+          <Input
+            value={to}
+            inputMode="numeric"
+            onChange={(e) => onTo(digits(e.target.value))}
+            placeholder="մինչև"
+            className="h-9 pr-8 text-[13px]"
+          />
+          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">
+            {currencyOption(currency).symbol}
+          </span>
+        </div>
       </div>
     </div>
   );

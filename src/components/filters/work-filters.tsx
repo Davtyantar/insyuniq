@@ -4,11 +4,15 @@ import {
   ChipGroup,
   FilterSection,
   MultiSelectField,
-  RangeFields,
+  PriceRangeField,
   SelectField,
+  type PriceBounds,
 } from "@/components/filters/filter-fields";
 import type { WorkFilters } from "@/lib/types";
 import { CITIES, EMPLOYMENT_TYPES, WORK_SUBCATEGORIES } from "@/mock/taxonomy";
+
+/** In USD/month. */
+const PRICE_BOUNDS: PriceBounds = { min: 0, max: 5000, step: 50 };
 
 interface Props {
   filters: WorkFilters;
@@ -38,12 +42,15 @@ export function WorkFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Աշխատավարձ, $/ամիս">
-        <RangeFields
+      <FilterSection title="Աշխատավարձ, ամսական">
+        <PriceRangeField
+          currency={filters.priceCurrency}
+          onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
           from={filters.priceMin}
           to={filters.priceMax}
           onFrom={(priceMin) => onChange({ priceMin })}
           onTo={(priceMax) => onChange({ priceMax })}
+          bounds={PRICE_BOUNDS}
         />
       </FilterSection>
 

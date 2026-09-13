@@ -4,12 +4,17 @@ import {
   ChipGroup,
   FilterSection,
   MultiSelectField,
+  PriceRangeField,
   RangeFields,
   SelectField,
   ToggleRow,
+  type PriceBounds,
 } from "@/components/filters/filter-fields";
 import type { RentalFilters } from "@/lib/types";
 import { CITIES, RENTAL_SUBCATEGORIES, RENTAL_TERMS, ROOMS_OPTIONS } from "@/mock/taxonomy";
+
+/** In USD — covers both daily and long-term monthly rent. */
+const PRICE_BOUNDS: PriceBounds = { min: 0, max: 3000, step: 25 };
 
 interface Props {
   filters: RentalFilters;
@@ -47,12 +52,15 @@ export function RentalFilterFields({ filters, onChange }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գին, $">
-        <RangeFields
+      <FilterSection title="Գին">
+        <PriceRangeField
+          currency={filters.priceCurrency}
+          onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
           from={filters.priceMin}
           to={filters.priceMax}
           onFrom={(priceMin) => onChange({ priceMin })}
           onTo={(priceMax) => onChange({ priceMax })}
+          bounds={PRICE_BOUNDS}
         />
       </FilterSection>
 

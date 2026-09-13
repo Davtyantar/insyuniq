@@ -5,11 +5,16 @@ import {
   FieldLabel,
   FilterSection,
   MultiSelectField,
+  PriceRangeField,
   RangeFields,
   SelectField,
   ToggleRow,
+  type PriceBounds,
 } from "@/components/filters/filter-fields";
 import type { CarFilters } from "@/lib/types";
+
+/** In USD. */
+const PRICE_BOUNDS: PriceBounds = { min: 0, max: 100000, step: 500 };
 import {
   BODY_TYPES,
   CAR_BRANDS,
@@ -79,12 +84,15 @@ export function CarFilterFields({ filters, onChange, mobile = false }: Props) {
         />
       </FilterSection>
 
-      <FilterSection title="Գին, $" defaultOpen={!mobile}>
-        <RangeFields
+      <FilterSection title="Գին" defaultOpen={!mobile}>
+        <PriceRangeField
+          currency={filters.priceCurrency}
+          onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
           from={filters.priceMin}
           to={filters.priceMax}
           onFrom={(priceMin) => onChange({ priceMin })}
           onTo={(priceMax) => onChange({ priceMax })}
+          bounds={PRICE_BOUNDS}
         />
       </FilterSection>
 

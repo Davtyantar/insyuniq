@@ -86,7 +86,8 @@ export function formatPrice(
   const { symbol, rate, suffix } = currencyOption(currency);
   const exact = opts?.prices?.[currency];
   const amount = groupDigits(exact ?? value * rate);
-  return (suffix ? `${amount} ${symbol}` : `${symbol}${amount}`) + period;
+  const symbolGap = " ";
+  return (suffix ? `${amount} ${symbol}` : `${symbol}${symbolGap}${amount}`) + period;
 }
 
 export function formatNumber(value: number) {

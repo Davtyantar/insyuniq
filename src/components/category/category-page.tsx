@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { Pagination } from "@/components/listings/pagination";
 import { ResultsToolbar } from "@/components/listings/results-toolbar";
+import { useApp } from "@/components/providers/app-provider";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { CATEGORIES } from "@/lib/categories";
 import { PAGE_SIZE } from "@/lib/constants";
@@ -57,8 +58,9 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { currency } = useApp();
 
-  const defaults = React.useMemo(() => defaultFilters(category), [category]);
+  const defaults = React.useMemo(() => defaultFilters(category, currency), [category, currency]);
   const applied = React.useMemo(
     () => parseFilters(defaults, new URLSearchParams(searchParams.toString())),
     [defaults, searchParams],

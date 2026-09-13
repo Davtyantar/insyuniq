@@ -225,6 +225,9 @@ export interface CommonFilters {
   city: string[];
   priceMin: string;
   priceMax: string;
+  /** Which currency `priceMin`/`priceMax` were entered in — defaults to the viewer's active
+   * display currency, but can be switched independently of it. */
+  priceCurrency: Currency;
   withPhoto: boolean;
   verifiedOnly: boolean;
 }

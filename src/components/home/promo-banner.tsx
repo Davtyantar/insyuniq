@@ -139,7 +139,11 @@ export function PromoBanner() {
               videoReady ? 'pointer-events-none opacity-0' : 'opacity-100',
             )}
           >
-            <span className='h-8 w-8 animate-spin rounded-full border-[3px] border-white/30 border-t-white' />
+            <span className='flex items-center gap-1.5'>
+              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]' />
+              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]' />
+              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent' />
+            </span>
           </div>
 
           <Image

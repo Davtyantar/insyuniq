@@ -4,12 +4,17 @@ import {
   ChipGroup,
   FilterSection,
   MultiSelectField,
+  PriceRangeField,
   RangeFields,
   SelectField,
   ToggleRow,
+  type PriceBounds,
 } from "@/components/filters/filter-fields";
 import type { HotelFilters } from "@/lib/types";
 import { CITIES, HOTEL_SUBCATEGORIES, POOL_OPTIONS } from "@/mock/taxonomy";
+
+/** In USD — nightly/term rates run much lower than a real-estate sale price. */
+const PRICE_BOUNDS: PriceBounds = { min: 0, max: 500, step: 5 };
 
 interface Props {
   filters: HotelFilters;
@@ -41,12 +46,15 @@ export function HotelFilterFields({ filters, onChange, mobile = false }: Props) 
         />
       </FilterSection>
 
-      <FilterSection title="Գին, $" defaultOpen={!mobile}>
-        <RangeFields
+      <FilterSection title="Գին" defaultOpen={!mobile}>
+        <PriceRangeField
+          currency={filters.priceCurrency}
+          onCurrencyChange={(priceCurrency) => onChange({ priceCurrency })}
           from={filters.priceMin}
           to={filters.priceMax}
           onFrom={(priceMin) => onChange({ priceMin })}
           onTo={(priceMax) => onChange({ priceMax })}
+          bounds={PRICE_BOUNDS}
         />
       </FilterSection>
 

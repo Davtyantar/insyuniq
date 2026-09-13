@@ -1,3 +1,4 @@
+import { currencyOption, type Currency } from "./currency";
 import type {
   CarFilters,
   CarListing,
@@ -19,6 +20,7 @@ export const DEFAULT_RE_FILTERS: RealEstateFilters = {
   city: [],
   priceMin: "",
   priceMax: "",
+  priceCurrency: "USD",
   withPhoto: false,
   verifiedOnly: false,
   subcategory: "",
@@ -42,6 +44,7 @@ export const DEFAULT_CAR_FILTERS: CarFilters = {
   city: [],
   priceMin: "",
   priceMax: "",
+  priceCurrency: "USD",
   withPhoto: false,
   verifiedOnly: false,
   subcategory: "",
@@ -69,6 +72,7 @@ export const DEFAULT_RENTAL_FILTERS: RentalFilters = {
   city: [],
   priceMin: "",
   priceMax: "",
+  priceCurrency: "USD",
   withPhoto: false,
   verifiedOnly: false,
   subcategory: "",
@@ -83,6 +87,7 @@ export const DEFAULT_HOTEL_FILTERS: HotelFilters = {
   city: [],
   priceMin: "",
   priceMax: "",
+  priceCurrency: "USD",
   withPhoto: false,
   verifiedOnly: false,
   subcategory: "",
@@ -98,6 +103,7 @@ export const DEFAULT_WORK_FILTERS: WorkFilters = {
   city: [],
   priceMin: "",
   priceMax: "",
+  priceCurrency: "USD",
   withPhoto: false,
   verifiedOnly: false,
   subcategory: "",
@@ -105,12 +111,14 @@ export const DEFAULT_WORK_FILTERS: WorkFilters = {
   experience: "",
 };
 
-export function defaultFilters(category: CategorySlug) {
-  if (category === "cars") return { ...DEFAULT_CAR_FILTERS };
-  if (category === "rentals") return { ...DEFAULT_RENTAL_FILTERS };
-  if (category === "hotels") return { ...DEFAULT_HOTEL_FILTERS };
-  if (category === "work") return { ...DEFAULT_WORK_FILTERS };
-  return { ...DEFAULT_RE_FILTERS };
+/** `currency` seeds `priceCurrency` — pass the viewer's active display currency so the price
+ * filter's currency chips default to whatever they already see prices in. */
+export function defaultFilters(category: CategorySlug, currency: Currency = "USD") {
+  if (category === "cars") return { ...DEFAULT_CAR_FILTERS, priceCurrency: currency };
+  if (category === "rentals") return { ...DEFAULT_RENTAL_FILTERS, priceCurrency: currency };
+  if (category === "hotels") return { ...DEFAULT_HOTEL_FILTERS, priceCurrency: currency };
+  if (category === "work") return { ...DEFAULT_WORK_FILTERS, priceCurrency: currency };
+  return { ...DEFAULT_RE_FILTERS, priceCurrency: currency };
 }
 
 type FilterShape = Record<string, string | string[] | boolean>;
@@ -150,7 +158,10 @@ export function filtersToQuery<T extends object>(
       if (value.length) params.set(key, value.join(","));
     } else if (typeof fallback === "boolean") {
       if (value) params.set(key, "1");
-    } else if (value) {
+    } else if (value && value !== fallback) {
+      // Comparing to the actual default (not just truthiness) matters for fields whose default
+      // isn't an empty string — e.g. `priceCurrency` defaults to the viewer's own currency, so
+      // leaving it untouched shouldn't clutter the URL with e.g. "&priceCurrency=USD".
       params.set(key, String(value));
     }
   }
@@ -168,7 +179,8 @@ export function countActiveFilters<T extends object>(defaults: T, filters: T): n
     const value = filters[key as keyof T] as string | string[] | boolean;
     if (Array.isArray(value)) count += value.length ? 1 : 0;
     else if (typeof fallback === "boolean") count += value ? 1 : 0;
-    else count += value ? 1 : 0;
+    // Compared to the actual default, not just truthiness — see the note in filtersToQuery.
+    else count += value !== fallback ? 1 : 0;
   }
   return count;
 }
@@ -203,10 +215,33 @@ function matchesText(listing: Listing, q: string) {
     .every((term) => haystack.includes(term));
 }
 
-function matchesCommon(listing: Listing, filters: { city: string[]; priceMin: string; priceMax: string; withPhoto: boolean; verifiedOnly: boolean; q: string }) {
+function matchesCommon(
+  listing: Listing,
+  filters: {
+    city: string[];
+    priceMin: string;
+    priceMax: string;
+    priceCurrency: Currency;
+    withPhoto: boolean;
+    verifiedOnly: boolean;
+    q: string;
+  },
+) {
   if (!matchesText(listing, filters.q)) return false;
   if (filters.city.length && !filters.city.includes(listing.city)) return false;
-  if (!inRange(listing.price, num(filters.priceMin), num(filters.priceMax))) return false;
+  // Listing prices are always stored in USD — the seller/buyer may have typed the bound in a
+  // different currency, so convert it back to USD before comparing.
+  const rate = currencyOption(filters.priceCurrency).rate;
+  const priceMin = num(filters.priceMin);
+  const priceMax = num(filters.priceMax);
+  if (
+    !inRange(
+      listing.price,
+      priceMin !== undefined ? priceMin / rate : undefined,
+      priceMax !== undefined ? priceMax / rate : undefined,
+    )
+  )
+    return false;
   if (filters.withPhoto && listing.images.length === 0) return false;
   if (filters.verifiedOnly && !listing.verified) return false;
   return true;
