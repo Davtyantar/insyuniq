@@ -1,13 +1,17 @@
 "use client";
 
+import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
+import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/layout/logo";
 import { APP_NAME } from "@/lib/constants";
 import { CATEGORIES } from "@/lib/categories";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
   const { t } = useTranslation();
+  const [openSection, setOpenSection] = React.useState<string | null>(null);
 
   // Category column titles/subcategory labels still come straight from the
   // (Armenian-only) category config — translating those is a follow-up pass
@@ -60,7 +64,58 @@ export function Footer() {
 
   return (
     <footer className="mt-16 border-t border-border bg-card">
-      <div className="container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.1fr_repeat(6,1fr)]">
+      {/* Phone: logo/description up top, then each category as a collapsible accordion row —
+          all columns expanded at once (the sm+ layout below) makes for a very long scroll. */}
+      <div className="container space-y-1 py-8 sm:hidden">
+        <div className="space-y-3 pb-6">
+          <Logo />
+          <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{t("footer.description")}</p>
+        </div>
+        {COLUMNS.map((column) => {
+          const expanded = openSection === column.title;
+          return (
+            <div key={column.title} className="border-b border-border">
+              <button
+                type="button"
+                onClick={() => setOpenSection((current) => (current === column.title ? null : column.title))}
+                aria-expanded={expanded}
+                className="flex w-full items-center justify-between gap-3 py-3.5 text-left text-sm font-semibold text-foreground"
+              >
+                {column.title}
+                <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180")} />
+              </button>
+              <div
+                className={cn(
+                  "grid transition-[grid-template-rows] duration-300 ease-out",
+                  expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                )}
+              >
+                <div className="overflow-hidden">
+                  <ul
+                    className={cn(
+                      "flex flex-col gap-2.5 pb-4 transition-opacity duration-300",
+                      expanded ? "opacity-100 delay-100" : "opacity-0",
+                    )}
+                  >
+                    {column.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="container hidden gap-10 py-12 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.1fr_repeat(6,1fr)]">
         <div className="space-y-3">
           <Logo />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{t("footer.description")}</p>
