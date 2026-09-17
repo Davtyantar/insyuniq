@@ -24,6 +24,12 @@ import {
 /** In USD — real estate sale prices span a much wider range than any other category. */
 const PRICE_BOUNDS: PriceBounds = { min: 0, max: 300000, step: 1000 };
 
+const AMENITY_OPTIONS = [
+  { value: "furniture", label: "Կահույք" },
+  { value: "balcony", label: "Պատշգամբ" },
+  { value: "parking", label: "Կայանատեղի" },
+];
+
 interface Props {
   filters: RealEstateFilters;
   onChange: (patch: Partial<RealEstateFilters>) => void;
@@ -141,32 +147,36 @@ export function RealEstateFilterFields({ filters, onChange, mobile = false }: Pr
 
       {!isLand && !isGarage && (
         <FilterSection title="Շենքի տեսակ" defaultOpen={!mobile}>
-          <ChipGroup
-            options={BUILDING_TYPES}
-            values={filters.buildingType ? [filters.buildingType] : []}
-            onChange={(values) =>
-              onChange({ buildingType: (values[0] ?? "") as RealEstateFilters["buildingType"] })
+          <SelectField
+            value={filters.buildingType}
+            onChange={(value) =>
+              onChange({ buildingType: value as RealEstateFilters["buildingType"] })
             }
+            options={BUILDING_TYPES}
+            placeholder="Ցանկացած տեսակ"
+            anyLabel="Ցանկացած տեսակ"
           />
         </FilterSection>
       )}
 
       {!isLand && (
         <FilterSection title="Հարմարություններ" defaultOpen={!mobile}>
-          <ToggleRow
-            label="Կահույք"
-            checked={filters.furniture}
-            onChange={(furniture) => onChange({ furniture })}
-          />
-          <ToggleRow
-            label="Պատշգամբ"
-            checked={filters.balcony}
-            onChange={(balcony) => onChange({ balcony })}
-          />
-          <ToggleRow
-            label="Կայանատեղի"
-            checked={filters.parking}
-            onChange={(parking) => onChange({ parking })}
+          <MultiSelectField
+            values={[
+              filters.furniture && "furniture",
+              filters.balcony && "balcony",
+              filters.parking && "parking",
+            ].filter((value): value is string => Boolean(value))}
+            onChange={(values) =>
+              onChange({
+                furniture: values.includes("furniture"),
+                balcony: values.includes("balcony"),
+                parking: values.includes("parking"),
+              })
+            }
+            options={AMENITY_OPTIONS}
+            placeholder="Ցանկացած հարմարություն"
+            anyLabel="Ցանկացած հարմարություն"
           />
         </FilterSection>
       )}
