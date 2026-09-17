@@ -18,6 +18,9 @@ import { ALL_LISTINGS } from "@/mock/listings";
 interface SearchBarProps {
   className?: string;
   defaultQuery?: string;
+  /** The phone header's instance: shorter placeholder, smaller resting font size (still bumped
+   * to the zoom-safe 16px the moment it's focused — see globals.css). */
+  mobile?: boolean;
 }
 
 const MAX_SUGGESTIONS = 6;
@@ -43,7 +46,7 @@ function matchListings(query: string): Listing[] {
 }
 
 /** Single search field for the whole app: live suggestions as you type, submits on Enter, routes to /search. */
-export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
+export function SearchBar({ className, defaultQuery = "", mobile = false }: SearchBarProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -163,13 +166,13 @@ export function SearchBar({ className, defaultQuery = "" }: SearchBarProps) {
             }}
             onFocus={() => setOpen(true)}
             onKeyDown={handleKeyDown}
-            placeholder={t("search.placeholder")}
+            placeholder={mobile ? t("search.placeholderShort") : t("search.placeholder")}
             aria-label={t("search.placeholder")}
             role="combobox"
             aria-expanded={showDropdown || showEmptyPanel}
             aria-autocomplete="list"
             aria-controls="search-suggestions"
-            className="h-11 rounded-xl pl-11 pr-4 text-[15px]"
+            className={cn("h-11 rounded-xl pl-11 pr-4", mobile ? "text-[13px]" : "text-[15px]")}
           />
         </div>
       </form>

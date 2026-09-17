@@ -13,7 +13,7 @@ const BENEFITS = [
 export function BenefitsSection() {
   const { t } = useTranslation();
   return (
-    <section className="border-y border-border bg-secondary/40">
+    <section className="hidden border-y border-border bg-secondary/40 md:block">
       <div className="container grid grid-cols-2 gap-3 py-12 sm:gap-4 lg:grid-cols-4">
         {BENEFITS.map((benefit) => (
           <div

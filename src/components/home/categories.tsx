@@ -29,7 +29,12 @@ export function Categories() {
               }`}
             >
               <div className='flex items-center justify-between gap-3'>
-                <h3 className='text-[18px] font-bold text-foreground'>{category.label}</h3>
+                <h3 className='text-[18px] font-bold text-foreground'>
+                  {category.mobileLabel && <span className='sm:hidden'>{category.mobileLabel}</span>}
+                  <span className={category.mobileLabel ? "hidden sm:inline" : undefined}>
+                    {category.label}
+                  </span>
+                </h3>
                 <Link
                   href={category.href}
                   className='inline-flex shrink-0 items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-brand-700'

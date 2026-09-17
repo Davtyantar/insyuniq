@@ -35,6 +35,7 @@ export const hy = {
   },
   search: {
     placeholder: "Որոնել հայտարարությունների մեջ",
+    placeholderShort: "Որոնել…",
     recent: "Վերջին որոնումները",
     popular: "Հանրաճանաչ բաժիններ",
     clear: "Մաքրել ցանկը",

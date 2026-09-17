@@ -148,7 +148,10 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
           Գլխավոր
         </Link>
         <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-        <span className="font-medium text-foreground">{config.label}</span>
+        <span className="font-medium text-foreground">
+          {config.mobileLabel && <span className="sm:hidden">{config.mobileLabel}</span>}
+          <span className={config.mobileLabel ? "hidden sm:inline" : undefined}>{config.label}</span>
+        </span>
         {subcategory && (
           <>
             <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
@@ -160,9 +163,16 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
       </nav>
 
       <h1 className="mt-3 text-base font-semibold tracking-tight sm:text-2xl lg:text-[28px]">
-        {subcategory
-          ? config.subcategories.find((s) => s.value === subcategory)?.label
-          : config.label}
+        {subcategory ? (
+          config.subcategories.find((s) => s.value === subcategory)?.label
+        ) : config.mobileLabel ? (
+          <>
+            <span className="sm:hidden">{config.mobileLabel}</span>
+            <span className="hidden sm:inline">{config.label}</span>
+          </>
+        ) : (
+          config.label
+        )}
         <CityAccent />
       </h1>
 

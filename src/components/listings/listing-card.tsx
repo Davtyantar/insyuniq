@@ -118,12 +118,9 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
           className="object-cover"
         />
 
-        <div
-          className={cn(
-            "absolute z-20 flex-wrap gap-1.5",
-            dense ? "hidden left-1.5 top-1.5 sm:left-3 sm:top-3 sm:flex" : "flex left-3 top-3",
-          )}
-        >
+        {/* Phones: bottom-left, out of the way of the favorite button and title above it.
+            sm+: back to the classic top-left placement, for both card sizes. */}
+        <div className="absolute bottom-1.5 left-1.5 z-20 flex max-w-[75%] flex-wrap gap-1.5 sm:bottom-auto sm:left-3 sm:top-3 sm:max-w-[calc(100%-1.5rem)]">
           {listing.urgent && <Badge variant="destructive">Հրատապ</Badge>}
           {badges.map((badge) => (
             <Badge key={badge} variant="outline">

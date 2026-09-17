@@ -75,18 +75,19 @@
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--accent) / 0.55) transparent;
   }
-  /* iOS Safari auto-zooms the whole page in on focus for any input/textarea/select whose
-     computed font-size is under 16px — the field "jumps closer" and the layout looks broken
-     until the user manually pinches back out. Below the sm breakpoint (phones), force every
-     form field to render at exactly the zoom-safe size regardless of its own text-size class.
+  /* iOS Safari auto-zooms the whole page in when a focused input/textarea/select's *computed*
+     font-size is under 16px at the moment it receives focus — the field "jumps closer" and the
+     layout looks broken until the user manually pinches back out. Scoped to `:focus` (not every
+     field at rest) so a field can still render smaller while idle — e.g. the compact phone
+     header's search box — and still becomes zoom-safe the instant it's actually tapped into.
      `!important` is required here: this rule lives in the `base` layer, and every field's own
      Tailwind size utility (e.g. `text-sm`) lives in the later-loaded `utilities` layer, which
      otherwise wins regardless of selector specificity — so without it, this rule is silently
      overridden and the zoom comes right back. */
   @media (max-width: 640px) {
-    input,
-    textarea,
-    select {
+    input:focus,
+    textarea:focus,
+    select:focus {
       font-size: 16px !important;
     }
   }

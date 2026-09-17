@@ -35,6 +35,7 @@ export const en = {
   },
   search: {
     placeholder: "Search listings",
+    placeholderShort: "Search…",
     recent: "Recent searches",
     popular: "Popular categories",
     clear: "Clear list",

@@ -27,6 +27,9 @@ import type { CategorySlug, Listing } from "./types";
 export interface CategoryConfig {
   slug: CategorySlug;
   label: string;
+  /** Shorter stand-in for `label` on phones, where the full label doesn't fit comfortably.
+   * Falls back to `label` itself when absent. */
+  mobileLabel?: string;
   /** Used in sentences like "Գտնվել է 12 հայտարարություն անշարժ գույքի կատեգորիայում". */
   labelPrepositional: string;
   href: string;
@@ -79,6 +82,7 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
   hotels: {
     slug: "hotels",
     label: "Հյուրանոցներ և հանգիստ",
+    mobileLabel: "Հանգիստ",
     labelPrepositional: "հյուրանոցների և հանգստի",
     href: "/hotels",
     icon: BedDouble,

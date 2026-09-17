@@ -63,7 +63,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="mt-16 border-t border-border bg-card">
+    <footer className="mt-6 border-t border-border bg-card md:mt-16">
       {/* Phone: logo/description up top, then each category as a collapsible accordion row —
           all columns expanded at once (the sm+ layout below) makes for a very long scroll. */}
       <div className="container space-y-1 py-8 sm:hidden">
@@ -81,7 +81,7 @@ export function Footer() {
                 aria-expanded={expanded}
                 className="flex w-full items-center justify-between gap-3 py-3.5 text-left text-sm font-semibold text-foreground"
               >
-                {column.title}
+                {column.title === CATEGORIES.hotels.label ? CATEGORIES.hotels.mobileLabel : column.title}
                 <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180")} />
               </button>
               <div

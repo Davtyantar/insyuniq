@@ -35,6 +35,7 @@ export const ru = {
   },
   search: {
     placeholder: "Поиск по объявлениям",
+    placeholderShort: "Поиск…",
     recent: "Недавние запросы",
     popular: "Популярные разделы",
     clear: "Очистить список",

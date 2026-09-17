@@ -23,9 +23,20 @@ const GAP_PX = 12;
  * Only ~4 cards show at once (fewer on narrow screens); the arrows reveal one more at a time
  * instead of jumping a full page, so the rest of the list stays tucked away until asked for.
  */
+/** Strips the generic "offers/picks" word each locale's title ends or starts with, leaving just
+ * the category name — used only on phones, where the full title crowds the row. */
+function shortenTitle(title: string): string {
+  return title
+    .replace(/ առաջարկներ$/, "")
+    .replace(/^Top /, "")
+    .replace(/^Предложения /, "")
+    .trim();
+}
+
 export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
   const { t } = useTranslation();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
+  const title = t(`home.hits.${titleKey}.title`);
 
   function scrollByCard(direction: 1 | -1) {
     const el = scrollerRef.current;
@@ -40,7 +51,8 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-[16px] font-semibold tracking-tight sm:text-xl md:text-2xl">
-            {t(`home.hits.${titleKey}.title`)}
+            <span className="sm:hidden">{shortenTitle(title)}</span>
+            <span className="hidden sm:inline">{title}</span>
             <CityAccent />
           </h2>
           <p className="mt-1 text-[14px] text-muted-foreground sm:text-sm">{t(`home.hits.${titleKey}.subtitle`)}</p>

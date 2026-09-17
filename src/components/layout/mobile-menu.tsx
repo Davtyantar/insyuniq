@@ -85,7 +85,7 @@ export function MobileMenu({ open, onClose, triggerRef }: MobileMenuProps) {
                     className="flex flex-1 items-center gap-3 py-3.5 text-[15px] font-medium text-foreground"
                   >
                     <category.icon className="h-5 w-5 shrink-0 text-accent" />
-                    {category.label}
+                    {category.mobileLabel ?? category.label}
                   </Link>
                   <button
                     type="button"

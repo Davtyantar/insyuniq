@@ -183,7 +183,7 @@ export function Header() {
             </button>
             <LocationPicker compact />
             <div className="min-w-0 flex-1">
-              <SearchBar />
+              <SearchBar mobile />
             </div>
           </div>
 
