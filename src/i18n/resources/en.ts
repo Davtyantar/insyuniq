@@ -224,6 +224,8 @@ export const en = {
     emptyCategory: {
       title: "This category is empty",
     },
+    clearAll: "Clear all",
+    clearAllConfirm: "Remove all favorites? This can't be undone.",
   },
   cities: {
     kapan: { name: "Kapan", in: "in Kapan" },

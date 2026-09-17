@@ -225,6 +225,8 @@ export const ru = {
     emptyCategory: {
       title: "В этой категории пусто",
     },
+    clearAll: "Очистить всё",
+    clearAllConfirm: "Удалить все избранные? Это действие нельзя отменить.",
   },
   cities: {
     kapan: { name: "Капан", in: "в Капане" },

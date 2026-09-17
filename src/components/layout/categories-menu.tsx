@@ -32,6 +32,9 @@ export function CategoriesMenu() {
   }, [open, setOpen]);
 
   const activeCategory = CATEGORY_LIST.find((category) => category.slug === active) ?? CATEGORY_LIST[0];
+  // A single column gets uncomfortably tall past ~6 items (e.g. work, services) — spill into a
+  // second column instead, widening the panel to fit it.
+  const isWide = activeCategory.subcategories.length > 6;
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
@@ -45,7 +48,13 @@ export function CategoriesMenu() {
           <span className="hidden lg:inline">{t("common.sections")}</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="flex w-[660px] max-w-[92vw] gap-0 p-0">
+      <DropdownMenuContent
+        align="start"
+        className={cn(
+          "flex max-w-[92vw] gap-0 p-0 transition-[width] duration-150",
+          isWide ? "w-[960px]" : "w-[660px]",
+        )}
+      >
         <div className="flex w-[240px] shrink-0 flex-col gap-1 border-r border-border p-2.5">
           {CATEGORY_LIST.map((category) => (
             <Link
@@ -75,7 +84,7 @@ export function CategoriesMenu() {
           >
             {activeCategory.label}
           </Link>
-          <div className="flex flex-col gap-0.5">
+          <div className={cn(isWide ? "grid grid-cols-2 gap-x-3 gap-y-0.5" : "flex flex-col gap-0.5")}>
             {activeCategory.subcategories.map((sub) => (
               <Link
                 key={sub.value}

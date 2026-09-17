@@ -100,7 +100,7 @@ function Stepper({
               disabled={step.id > highestStep}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-md border px-3 py-2 text-left transition-colors",
-                state === "current" && "border-accent bg-brand-50/60",
+                state === "current" && "border-accent bg-brand-50/60 dark:bg-emerald-500/15",
                 state === "done" && "border-border bg-card hover:bg-secondary",
                 state === "todo" && "border-transparent text-muted-foreground",
               )}

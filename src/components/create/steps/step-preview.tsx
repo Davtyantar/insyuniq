@@ -11,6 +11,7 @@ import type { Listing } from "@/lib/types";
 export function StepPreview({ listing }: { listing: Listing }) {
   const { currency } = useApp();
   const specs = detailSpecs(listing);
+  const showPrice = listing.category !== "services";
 
   return (
     <div>
@@ -27,11 +28,13 @@ export function StepPreview({ listing }: { listing: Listing }) {
             <Badge variant="outline" className="mb-1.5">
               Սևագիր
             </Badge>
-            <p className="text-[20px] font-semibold leading-none tracking-tight">
-              {formatPrice(listing.price, { currency, prices: listing.prices })}
-              {isDaily(listing) && <span className="ml-1 text-[12px] font-normal text-accent">օր</span>}
-              {isMonthly(listing) && <span className="ml-1 text-[12px] font-normal text-accent">ամիս</span>}
-            </p>
+            {showPrice && (
+              <p className="text-[20px] font-semibold leading-none tracking-tight">
+                {formatPrice(listing.price, { currency, prices: listing.prices })}
+                {isDaily(listing) && <span className="ml-1 text-[12px] font-normal text-accent">օր</span>}
+                {isMonthly(listing) && <span className="ml-1 text-[12px] font-normal text-accent">ամիս</span>}
+              </p>
+            )}
             <h3 className="mt-1.5 line-clamp-2 text-[14px] font-medium leading-snug">{listing.title}</h3>
             <p className="mt-1 text-[12px] text-muted-foreground">{listingSummary(listing)}</p>
           </div>
@@ -69,11 +72,13 @@ export function StepPreview({ listing }: { listing: Listing }) {
 
         <div className="p-4 sm:p-5">
           <div className="hidden sm:block">
-            <p className="text-[28px] font-semibold leading-none tracking-tight">
-              {formatPrice(listing.price, { currency, prices: listing.prices })}
-              {isDaily(listing) && <span className="ml-1 text-sm font-normal text-accent">օր</span>}
-              {isMonthly(listing) && <span className="ml-1 text-sm font-normal text-accent">ամիս</span>}
-            </p>
+            {showPrice && (
+              <p className="text-[28px] font-semibold leading-none tracking-tight">
+                {formatPrice(listing.price, { currency, prices: listing.prices })}
+                {isDaily(listing) && <span className="ml-1 text-sm font-normal text-accent">օր</span>}
+                {isMonthly(listing) && <span className="ml-1 text-sm font-normal text-accent">ամիս</span>}
+              </p>
+            )}
             <h3 className="mt-2.5 text-[18px] font-medium leading-snug">{listing.title}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{listingSummary(listing)}</p>
           </div>

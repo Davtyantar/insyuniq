@@ -1,21 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { Heart } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { ViewToggle } from "@/components/listings/results-toolbar";
 import { useApp } from "@/components/providers/app-provider";
+import { Button } from "@/components/ui/button";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
 import type { ViewMode } from "@/lib/types";
 import { getListings } from "@/mock/listings";
 
 export function FavoritesView() {
   const { t } = useTranslation();
-  const { favorites, hydrated } = useApp();
+  const { favorites, hydrated, clearFavorites } = useApp();
   const [tab, setTab] = React.useState("all");
   const [view, setView] = React.useState<ViewMode>("grid");
+
+  function handleClearAll() {
+    if (window.confirm(t("favorites.clearAllConfirm"))) clearFavorites();
+  }
 
   const TABS = [
     { value: "all", label: t("favorites.tabs.all") },
@@ -40,7 +45,15 @@ export function FavoritesView() {
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <FloatingTabs items={TABS} value={tab} onChange={setTab} />
-        <ViewToggle view={view} onViewChange={setView} />
+        <div className="flex items-center gap-2">
+          {hydrated && listings.length > 0 && (
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleClearAll}>
+              <Trash2 className="h-4 w-4" />
+              {t("favorites.clearAll")}
+            </Button>
+          )}
+          <ViewToggle view={view} onViewChange={setView} />
+        </div>
       </div>
 
       <div className="mt-5">

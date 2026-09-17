@@ -232,7 +232,9 @@ export const hy = {
     },
     emptyCategory: {
       title: "Այս կատեգորիայում դատարկ է"
-    }
+    },
+    clearAll: "Մաքրել բոլորը",
+    clearAllConfirm: "Ջնջե՞լ բոլոր հավանածները։ Այս գործողությունը հնարավոր չէ հետ շրջել։"
   },
   /** Keyed by the slug in src/lib/cities.ts — "name" is the plain city name, "in" is the locative ("in <city>") form. */
   cities: {

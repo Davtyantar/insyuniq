@@ -222,7 +222,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
           <div
             ref={scrollerRef}
-            className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto"
+            className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto py-3"
           >
             {similar.map((item, index) => (
               <div

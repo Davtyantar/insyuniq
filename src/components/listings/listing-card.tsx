@@ -37,7 +37,7 @@ function accentBadges(listing: Listing): string[] {
   } else if (listing.category === "work") {
     badges.push(label("employmentType", listing.employmentType));
   } else if (listing.category === "services") {
-    badges.push(label("serviceSubcategory", listing.subcategory));
+    // No accent badge for services — the card already keeps this category minimal (no price).
   } else {
     if (listing.fuel === "electric") badges.push("Էլեկտրական");
     if (listing.condition === "new") badges.push("Նոր");
@@ -146,8 +146,13 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
                 <span
                   key={i}
                   className={cn(
-                    "h-[3px] flex-1 rounded-full bg-white/40 shadow-[0_0_0_1px_rgba(0,0,0,0.15)] transition-all duration-200",
-                    i === activeIndex && "h-[4px] bg-white shadow-[0_0_4px_rgba(0,0,0,0.35)]",
+                    // A light-colored photo (e.g. a silver car on grey pavement) leaves the
+                    // faint inactive segments nearly invisible against it while the active one
+                    // stays opaque — reading as "one wide bar" instead of N equal dots. A solid
+                    // dark track behind every segment keeps them all equally visible regardless
+                    // of what's under them.
+                    "h-[3px] min-w-0 flex-1 rounded-full bg-black/25 shadow-[0_0_0_1px_rgba(0,0,0,0.25)] ring-1 ring-inset ring-white/25 transition-all duration-200",
+                    i === activeIndex && "h-[4px] bg-white shadow-[0_0_4px_rgba(0,0,0,0.35)] ring-0",
                   )}
                 />
               ))}
@@ -217,28 +222,16 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground sm:gap-1.5 sm:text-[13px]">
           <MapPin className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
           <span className="min-w-0 flex-1 truncate">{locationLine(listing)}</span>
-          {/* List view pairs the date with location instead of pinning it to the card's bottom:
-              with a fixed-height photo next to a variable amount of text, "bottom of the card"
-              and "bottom of the photo" don't line up, leaving an odd empty gap under a shorter
-              photo. Grid cards don't have that mismatch, so they keep the bottom-pinned line. */}
-          {isList && (
-            <span className="inline-flex shrink-0 items-center gap-1 font-medium text-accent">
-              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              {formatRelativeDate(listing.publishedAt)}
-            </span>
-          )}
         </div>
 
         <p className="line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
           {listing.description}
         </p>
 
-        {!isList && (
-          <div className="mt-auto flex items-center gap-1 pt-0.5 text-[10px] font-medium text-accent sm:gap-1.5 sm:pt-2 sm:text-[12px]">
-            <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-            {formatRelativeDate(listing.publishedAt)}
-          </div>
-        )}
+        <div className="mt-auto flex items-center gap-1 pt-0.5 text-[10px] font-medium text-accent sm:gap-1.5 sm:pt-2 sm:text-[12px]">
+          <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+          {formatRelativeDate(listing.publishedAt)}
+        </div>
       </div>
     </article>
   );

@@ -82,7 +82,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
 
         <div
           ref={scrollerRef}
-          className='no-scrollbar snap-x-mandatory mt-5 flex gap-4 overflow-x-auto pb-1'
+          className='no-scrollbar snap-x-mandatory mt-5 flex gap-4 overflow-x-auto py-3'
         >
           {listings.map((listing, index) => {
             const category = categoryOf(listing);

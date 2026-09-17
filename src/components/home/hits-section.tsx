@@ -88,7 +88,7 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
 
       <div
         ref={scrollerRef}
-        className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto"
+        className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto py-3"
       >
         {listings.map((listing, index) => (
           <div

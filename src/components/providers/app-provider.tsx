@@ -39,6 +39,7 @@ interface AppState {
   favorites: string[];
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
+  clearFavorites: () => void;
   /** Listings published through the wizard in this session. */
   published: Listing[];
   publishListing: (listing: Listing) => void;
@@ -190,6 +191,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setFavorites((prev) => (prev.includes(id) ? prev.filter((f) => f !== id) : [id, ...prev]));
   }, []);
 
+  const clearFavorites = React.useCallback(() => setFavorites([]), []);
+
   const isFavorite = React.useCallback((id: string) => favorites.includes(id), [favorites]);
 
   const publishListing = React.useCallback((listing: Listing) => {
@@ -301,6 +304,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       favorites,
       isFavorite,
       toggleFavorite,
+      clearFavorites,
       published,
       publishListing,
       city,
@@ -336,6 +340,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       favorites,
       isFavorite,
       toggleFavorite,
+      clearFavorites,
       published,
       publishListing,
       city,

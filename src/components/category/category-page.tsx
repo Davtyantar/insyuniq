@@ -144,10 +144,15 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
   return (
     <div className="container py-5 lg:py-8">
       <nav className="flex flex-wrap items-center gap-1 text-xs text-foreground/70 sm:gap-1.5 sm:text-[13px]">
-        <Link href="/" className="transition-colors hover:text-foreground">
-          Գլխավոր
-        </Link>
-        <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
+        {/* On phones, a 3-level crumb (Home > Category > Subcategory) shows only the last two —
+            "Home" drops off below sm, where it reappears via display:contents so the flex/gap
+            layout stays identical to the 2-level case. */}
+        <span className={subcategory ? "hidden sm:contents" : "contents"}>
+          <Link href="/" className="transition-colors hover:text-foreground">
+            Գլխավոր
+          </Link>
+          <ChevronRight className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
+        </span>
         <span className="font-medium text-foreground">
           {config.mobileLabel && <span className="sm:hidden">{config.mobileLabel}</span>}
           <span className={config.mobileLabel ? "hidden sm:inline" : undefined}>{config.label}</span>
@@ -178,7 +183,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
 
       {category !== "work" && (
         <FloatingTabs
-          className="mt-4"
+          className="mt-4 hidden sm:flex"
           items={[{ value: "", label: "Բոլորը" }, ...config.subcategories]}
           value={subcategory ?? ""}
           onChange={selectSubcategory}
