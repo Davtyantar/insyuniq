@@ -1,5 +1,4 @@
 import { BenefitsSection } from "@/components/home/benefits-section";
-import { CategoryBanners } from "@/components/home/category-banners";
 import { Categories } from "@/components/home/categories";
 import { HitsSection } from "@/components/home/hits-section";
 import { NewArrivals } from "@/components/home/new-arrivals";
@@ -11,7 +10,8 @@ import {
   TOP_DAILY_HOUSES,
   TOP_HOTELS,
   TOP_REAL_ESTATE,
-  TOP_RENTALS
+  TOP_RENTALS,
+  TOP_SERVICES
 } from "@/mock/listings";
 
 export default function HomePage() {
@@ -20,8 +20,6 @@ export default function HomePage() {
       <PromoBanner />
 
       <Categories />
-
-      <CategoryBanners />
 
       <HitsSection titleKey="realEstate" href='/real-estate' listings={TOP_REAL_ESTATE} />
 
@@ -34,6 +32,8 @@ export default function HomePage() {
       <HitsSection titleKey="hotels" href='/hotels' listings={TOP_HOTELS} />
 
       <HitsSection titleKey="dailyHouses" href='/hotels?subcategory=daily-houses' listings={TOP_DAILY_HOUSES} />
+
+      <HitsSection titleKey="services" href='/services' listings={TOP_SERVICES} />
 
       <BenefitsSection />
 

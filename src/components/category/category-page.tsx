@@ -22,6 +22,7 @@ import {
   filterHotels,
   filterRealEstate,
   filterRentals,
+  filterServices,
   filterWork,
   filtersToQuery,
   parseFilters,
@@ -39,6 +40,8 @@ import type {
   RealEstateListing,
   RentalFilters,
   RentalListing,
+  ServiceFilters,
+  ServiceListing,
   SortKey,
   ViewMode,
   WorkFilters,
@@ -50,6 +53,7 @@ function runFilters(category: CategorySlug, listings: Listing[], filters: AnyFil
   if (category === "rentals") return filterRentals(listings as RentalListing[], filters as RentalFilters);
   if (category === "hotels") return filterHotels(listings as HotelListing[], filters as HotelFilters);
   if (category === "work") return filterWork(listings as WorkListing[], filters as WorkFilters);
+  if (category === "services") return filterServices(listings as ServiceListing[], filters as ServiceFilters);
   return filterRealEstate(listings as RealEstateListing[], filters as RealEstateFilters);
 }
 

@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { PasswordInput } from "@/components/auth/password-input";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { PhoneOrEmailInput } from "@/components/ui/phone-or-email-input";
 import { CURRENT_USER } from "@/mock/sellers";
 import { cn } from "@/lib/utils";
 
@@ -57,65 +58,55 @@ export function SignInView() {
   }
 
   return (
-    <div className="container flex min-h-[calc(100vh-8rem)] items-center justify-center py-10 md:py-16">
-      <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("auth.signIn.title")}</h1>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{t("auth.signIn.subtitle")}</p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-card"
-        >
-          <AuthField label={t("auth.signIn.loginLabel")} htmlFor="signin-login" error={errors.login}>
-            <Input
-              id="signin-login"
-              value={login}
-              onChange={(event) => setLogin(event.target.value)}
-              placeholder={t("auth.signIn.loginPlaceholder")}
-              autoComplete="username"
-              aria-invalid={!!errors.login}
-              className={cn(errors.login && errorInputClass)}
-            />
-          </AuthField>
-
-          <AuthField label={t("auth.signIn.passwordLabel")} htmlFor="signin-password" error={errors.password}>
-            <PasswordInput
-              id="signin-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="••••••••"
-              autoComplete="current-password"
-              aria-invalid={!!errors.password}
-              className={cn(errors.password && errorInputClass)}
-            />
-          </AuthField>
-
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <label className="flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground">
-              <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
-              {t("auth.signIn.remember")}
-            </label>
-            <Link href="#" className="text-[13px] font-medium text-accent hover:underline">
-              {t("auth.signIn.forgotPassword")}
-            </Link>
-          </div>
-
-          <Button type="submit" variant="accent" size="lg" className="w-full gap-2" disabled={submitting}>
-            <LogIn className="h-4 w-4" />
-            {submitting ? t("auth.signIn.submitting") : t("auth.signIn.submit")}
-          </Button>
-        </form>
-
-        <p className="mt-5 text-center text-sm text-muted-foreground">
+    <AuthShell
+      title={t("auth.signIn.title")}
+      footer={
+        <>
           {t("auth.signIn.noAccount")}{" "}
           <Link href="/sign-up" className="font-medium text-accent hover:underline">
             {t("auth.signIn.signUpLink")}
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <AuthField label={t("auth.signIn.loginLabel")} htmlFor="signin-login" error={errors.login}>
+          <PhoneOrEmailInput
+            id="signin-login"
+            value={login}
+            onChange={setLogin}
+            aria-invalid={!!errors.login}
+            className={cn(errors.login && errorInputClass)}
+          />
+        </AuthField>
+
+        <AuthField label={t("auth.signIn.passwordLabel")} htmlFor="signin-password" error={errors.password}>
+          <PasswordInput
+            id="signin-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            aria-invalid={!!errors.password}
+            className={cn(errors.password && errorInputClass)}
+          />
+        </AuthField>
+
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <label className="flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground">
+            <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
+            {t("auth.signIn.remember")}
+          </label>
+          <Link href="/forgot-password" className="text-[13px] font-medium text-accent hover:underline">
+            {t("auth.signIn.forgotPassword")}
+          </Link>
+        </div>
+
+        <Button type="submit" variant="accent" size="lg" className="w-full gap-2" disabled={submitting}>
+          <LogIn className="h-4 w-4" />
+          {submitting ? t("auth.signIn.submitting") : t("auth.signIn.submit")}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }

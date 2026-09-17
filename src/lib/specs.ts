@@ -33,6 +33,9 @@ export function listingSummary(listing: Listing): string {
   if (listing.category === "work") {
     return `${listing.employer} · ${label("workSubcategory", listing.subcategory)}`;
   }
+  if (listing.category === "services") {
+    return `${listing.provider} · ${label("serviceSubcategory", listing.subcategory)}`;
+  }
   if (listing.category === "cars") {
     return `${listing.brand} ${listing.model}, ${listing.year}`;
   }
@@ -68,6 +71,12 @@ export function cardSpecs(listing: Listing): string[] {
       label("experience", listing.experience),
     ];
     if (listing.schedule) specs.push(listing.schedule);
+    return specs;
+  }
+
+  if (listing.category === "services") {
+    const specs = [label("serviceSubcategory", listing.subcategory), listing.provider];
+    if (listing.workingHours) specs.push(listing.workingHours);
     return specs;
   }
 
@@ -137,6 +146,15 @@ export function detailSpecs(listing: Listing): Spec[] {
       { label: "Աշխատանքային փորձ", value: label("experience", listing.experience) },
     ];
     if (listing.schedule) specs.push({ label: "Գրաֆիկ", value: listing.schedule });
+    return specs;
+  }
+
+  if (listing.category === "services") {
+    const specs: Spec[] = [
+      { label: "Ծառայության տեսակ", value: label("serviceSubcategory", listing.subcategory) },
+      { label: "Մատուցող", value: listing.provider },
+    ];
+    if (listing.workingHours) specs.push({ label: "Աշխատանքային ժամեր", value: listing.workingHours });
     return specs;
   }
 

@@ -84,6 +84,10 @@ export const en = {
         title: "Houses by the day",
         subtitle: "Whole houses for a single day — for friend and family gatherings",
       },
+      services: {
+        title: "Top services",
+        subtitle: "The most-viewed restaurants, specialists, and professional services",
+      },
     },
     benefits: {
       verified: {
@@ -150,6 +154,19 @@ export const en = {
       haveAccount: "Already have an account?",
       signInLink: "Sign in",
     },
+    forgotPassword: {
+      title: "Reset your password",
+      subtitle: "Enter your email and we'll send you a password reset link",
+      emailLabel: "Email",
+      emailError: "Enter a valid email address",
+      submit: "Send reset link",
+      submitting: "Sending...",
+      backToSignIn: "Back to sign in",
+      sentTitle: "Link sent",
+      sentDescription: "If an account exists for \"{{email}}\", you'll get a password reset link within a few minutes.",
+      resend: "Resend",
+      backToSignInLink: "Sign in",
+    },
   },
   profile: {
     memberSince: "Member since {{date}}",
@@ -195,6 +212,7 @@ export const en = {
       cars: "Cars",
       rentals: "Rentals",
       hotels: "Hotels & getaways",
+      services: "Services",
     },
     emptyAll: {
       title: "Favorites is empty for now",

@@ -14,6 +14,7 @@ import {
   RE_CONDITIONS,
   RENTAL_SUBCATEGORIES,
   RENTAL_TERMS,
+  SERVICE_SUBCATEGORIES,
   STEERING_TYPES,
   TRANSMISSIONS,
   WORK_SUBCATEGORIES,
@@ -43,6 +44,7 @@ const MAPS: Record<string, Record<string, string>> = {
   workSubcategory: toMap(WORK_SUBCATEGORIES),
   employmentType: toMap(EMPLOYMENT_TYPES),
   experience: toMap(EXPERIENCE_LEVELS),
+  serviceSubcategory: toMap(SERVICE_SUBCATEGORIES),
 };
 
 /** Resolves an enum value to its Armenian label, falling back to the raw value. */
@@ -56,5 +58,6 @@ export function subcategoryLabel(category: string, value: string): string {
   if (category === "rentals") return label("rentalSubcategory", value);
   if (category === "hotels") return label("hotelSubcategory", value);
   if (category === "work") return label("workSubcategory", value);
+  if (category === "services") return label("serviceSubcategory", value);
   return label("reSubcategory", value);
 }

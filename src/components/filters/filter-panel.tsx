@@ -6,6 +6,7 @@ import { SingleOpenAccordion } from "@/components/filters/filter-fields";
 import { HotelFilterFields } from "@/components/filters/hotel-filters";
 import { RealEstateFilterFields } from "@/components/filters/real-estate-filters";
 import { RentalFilterFields } from "@/components/filters/rental-filters";
+import { ServiceFilterFields } from "@/components/filters/service-filters";
 import { WorkFilterFields } from "@/components/filters/work-filters";
 import { Button } from "@/components/ui/button";
 import type {
@@ -15,6 +16,7 @@ import type {
   HotelFilters,
   RealEstateFilters,
   RentalFilters,
+  ServiceFilters,
   WorkFilters,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -71,6 +73,15 @@ export function FilterFields({
         <WorkFilterFields
           filters={filters as WorkFilters}
           onChange={onChange as (patch: Partial<WorkFilters>) => void}
+          mobile={mobile}
+        />
+      );
+    }
+    if (category === "services") {
+      return (
+        <ServiceFilterFields
+          filters={filters as ServiceFilters}
+          onChange={onChange as (patch: Partial<ServiceFilters>) => void}
           mobile={mobile}
         />
       );

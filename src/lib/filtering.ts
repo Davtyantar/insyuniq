@@ -10,6 +10,8 @@ import type {
   RealEstateListing,
   RentalFilters,
   RentalListing,
+  ServiceFilters,
+  ServiceListing,
   SortKey,
   WorkFilters,
   WorkListing,
@@ -111,6 +113,17 @@ export const DEFAULT_WORK_FILTERS: WorkFilters = {
   experience: "",
 };
 
+export const DEFAULT_SERVICE_FILTERS: ServiceFilters = {
+  q: "",
+  city: [],
+  priceMin: "",
+  priceMax: "",
+  priceCurrency: "USD",
+  withPhoto: false,
+  verifiedOnly: false,
+  subcategory: "",
+};
+
 /** `currency` seeds `priceCurrency` — pass the viewer's active display currency so the price
  * filter's currency chips default to whatever they already see prices in. */
 export function defaultFilters(category: CategorySlug, currency: Currency = "USD") {
@@ -118,6 +131,7 @@ export function defaultFilters(category: CategorySlug, currency: Currency = "USD
   if (category === "rentals") return { ...DEFAULT_RENTAL_FILTERS, priceCurrency: currency };
   if (category === "hotels") return { ...DEFAULT_HOTEL_FILTERS, priceCurrency: currency };
   if (category === "work") return { ...DEFAULT_WORK_FILTERS, priceCurrency: currency };
+  if (category === "services") return { ...DEFAULT_SERVICE_FILTERS, priceCurrency: currency };
   return { ...DEFAULT_RE_FILTERS, priceCurrency: currency };
 }
 
@@ -339,6 +353,14 @@ export function filterWork(listings: WorkListing[], filters: WorkFilters): WorkL
   });
 }
 
+export function filterServices(listings: ServiceListing[], filters: ServiceFilters): ServiceListing[] {
+  return listings.filter((l) => {
+    if (!matchesCommon(l, filters)) return false;
+    if (filters.subcategory && l.subcategory !== filters.subcategory) return false;
+    return true;
+  });
+}
+
 export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string }[]> = {
   "real-estate": [
     { value: "relevant", label: "Ըստ համապատասխանության" },
@@ -374,6 +396,12 @@ export const SORT_OPTIONS: Record<CategorySlug, { value: SortKey; label: string 
     { value: "date-desc", label: "Նախ նորերը" },
     { value: "price-desc", label: "Նախ բարձր աշխատավարձը" },
     { value: "price-asc", label: "Նախ ցածր աշխատավարձը" },
+  ],
+  services: [
+    { value: "relevant", label: "Ըստ համապատասխանության" },
+    { value: "date-desc", label: "Նախ նորերը" },
+    { value: "price-asc", label: "Նախ էժանները" },
+    { value: "price-desc", label: "Նախ թանկերը" },
   ],
 };
 

@@ -35,7 +35,7 @@ export function FavoriteButton({
       className={cn(
         "inline-flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         variant === "floating" &&
-          "h-9 w-9 rounded-full bg-card/90 text-foreground shadow-card backdrop-blur hover:bg-card",
+          "h-9 w-9 rounded-full bg-card text-foreground shadow-card hover:bg-secondary",
         variant === "inline" &&
           "h-11 rounded-md border border-input px-4 text-sm font-medium hover:bg-secondary",
         className,

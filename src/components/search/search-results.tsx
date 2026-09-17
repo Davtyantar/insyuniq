@@ -19,7 +19,8 @@ const TABS = [
   { value: "cars", label: "Ավտոմեքենաներ" },
   { value: "rentals", label: "Վարձակալություն" },
   { value: "hotels", label: "Հյուրանոցներ և հանգիստ" },
-  { value: "work", label: "Աշխատանք" }
+  { value: "work", label: "Աշխատանք" },
+  { value: "services", label: "Ծառայություններ" }
 ];
 
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
@@ -84,7 +85,8 @@ export function SearchResults() {
               tab === "cars" ||
               tab === "rentals" ||
               tab === "hotels" ||
-              tab === "work"
+              tab === "work" ||
+              tab === "services"
                 ? tab
                 : "real-estate"
             }

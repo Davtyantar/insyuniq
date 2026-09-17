@@ -14,8 +14,11 @@ import {
   House,
   LandPlot,
   Laptop,
+  PartyPopper,
+  Scale,
   Scissors,
   Shield,
+  Sparkles,
   Store,
   TreePine,
   Truck,
@@ -127,6 +130,19 @@ export const WORK_SUBCATEGORIES: Option[] = [
   { value: "beauty", label: "Գեղեցկություն և խնամք", icon: Scissors },
   { value: "security", label: "Անվտանգություն", icon: Shield },
   { value: "other", label: "Այլ ոլորտներ", icon: Briefcase }
+];
+
+export const SERVICE_SUBCATEGORIES: Option[] = [
+  { value: "restaurants", label: "Ռեստորաններ և սրճարաններ", icon: Utensils },
+  { value: "construction", label: "Շինարարություն և վերանորոգում", icon: HardHat },
+  { value: "beauty", label: "Գեղեցկություն և կոսմետոլոգիա", icon: Scissors },
+  { value: "education", label: "Ուսուցում և կրթություն", icon: GraduationCap },
+  { value: "legal", label: "Իրավաբանական և հաշվապահական", icon: Scale },
+  { value: "it", label: "Համակարգչային ծառայություններ", icon: Laptop },
+  { value: "transport", label: "Տրանսպորտ և տեղափոխում", icon: Truck },
+  { value: "events", label: "Միջոցառումներ և արվեստ", icon: PartyPopper },
+  { value: "household", label: "Կենցաղային ծառայություններ", icon: Wrench },
+  { value: "other", label: "Այլ ծառայություններ", icon: Sparkles }
 ];
 
 export const EMPLOYMENT_TYPES: Option<EmploymentType>[] = [

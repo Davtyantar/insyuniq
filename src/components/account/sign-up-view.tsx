@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { PasswordInput } from "@/components/auth/password-input";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
@@ -67,113 +68,105 @@ export function SignUpView() {
   }
 
   return (
-    <div className="container flex min-h-[calc(100vh-8rem)] items-center justify-center py-10 md:py-16">
-      <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("auth.signUp.title")}</h1>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{t("auth.signUp.subtitle")}</p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-card"
-        >
-          <AuthField label={t("auth.signUp.nameLabel")} htmlFor="signup-name" error={errors.name}>
-            <Input
-              id="signup-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder={t("auth.signUp.namePlaceholder")}
-              autoComplete="name"
-              aria-invalid={!!errors.name}
-              className={cn(errors.name && errorInputClass)}
-            />
-          </AuthField>
-
-          <AuthField label={t("auth.signUp.phoneLabel")} htmlFor="signup-phone" error={errors.phone}>
-            <PhoneInput
-              id="signup-phone"
-              value={phone}
-              onChange={setPhone}
-              aria-invalid={!!errors.phone}
-              className={cn(errors.phone && errorInputClass)}
-            />
-          </AuthField>
-
-          <AuthField
-            label={t("auth.signUp.emailLabel")}
-            htmlFor="signup-email"
-            error={errors.email}
-            hint={!errors.email ? t("auth.signUp.emailOptional") : undefined}
-          >
-            <Input
-              id="signup-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@example.com"
-              autoComplete="email"
-              aria-invalid={!!errors.email}
-              className={cn(errors.email && errorInputClass)}
-            />
-          </AuthField>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <AuthField label={t("auth.signUp.passwordLabel")} htmlFor="signup-password" error={errors.password}>
-              <PasswordInput
-                id="signup-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                aria-invalid={!!errors.password}
-                className={cn(errors.password && errorInputClass)}
-              />
-            </AuthField>
-            <AuthField
-              label={t("auth.signUp.confirmPasswordLabel")}
-              htmlFor="signup-confirm"
-              error={errors.confirmPassword}
-            >
-              <PasswordInput
-                id="signup-confirm"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                aria-invalid={!!errors.confirmPassword}
-                className={cn(errors.confirmPassword && errorInputClass)}
-              />
-            </AuthField>
-          </div>
-
-          <div>
-            <label className="flex cursor-pointer items-start gap-2 text-[13px] text-muted-foreground">
-              <Checkbox
-                checked={agreed}
-                onCheckedChange={(checked) => setAgreed(checked === true)}
-                className="mt-0.5"
-                aria-invalid={!!errors.terms}
-              />
-              <span>{t("auth.signUp.termsLabel")}</span>
-            </label>
-            {errors.terms && <p className="mt-1.5 text-[12px] text-destructive">{errors.terms}</p>}
-          </div>
-
-          <Button type="submit" variant="accent" size="lg" className="w-full gap-2" disabled={submitting}>
-            <UserPlus className="h-4 w-4" />
-            {submitting ? t("auth.signUp.submitting") : t("auth.signUp.submit")}
-          </Button>
-        </form>
-
-        <p className="mt-5 text-center text-sm text-muted-foreground">
+    <AuthShell
+      title={t("auth.signUp.title")}
+      footer={
+        <>
           {t("auth.signUp.haveAccount")}{" "}
           <Link href="/sign-in" className="font-medium text-accent hover:underline">
             {t("auth.signUp.signInLink")}
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <AuthField label={t("auth.signUp.nameLabel")} htmlFor="signup-name" error={errors.name}>
+          <Input
+            id="signup-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder={t("auth.signUp.namePlaceholder")}
+            autoComplete="name"
+            aria-invalid={!!errors.name}
+            className={cn(errors.name && errorInputClass)}
+          />
+        </AuthField>
+
+        <AuthField label={t("auth.signUp.phoneLabel")} htmlFor="signup-phone" error={errors.phone}>
+          <PhoneInput
+            id="signup-phone"
+            value={phone}
+            onChange={setPhone}
+            aria-invalid={!!errors.phone}
+            className={cn(errors.phone && errorInputClass)}
+          />
+        </AuthField>
+
+        <AuthField
+          label={t("auth.signUp.emailLabel")}
+          htmlFor="signup-email"
+          error={errors.email}
+          hint={!errors.email ? t("auth.signUp.emailOptional") : undefined}
+        >
+          <Input
+            id="signup-email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
+            aria-invalid={!!errors.email}
+            className={cn(errors.email && errorInputClass)}
+          />
+        </AuthField>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AuthField label={t("auth.signUp.passwordLabel")} htmlFor="signup-password" error={errors.password}>
+            <PasswordInput
+              id="signup-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="••••••••"
+              autoComplete="new-password"
+              aria-invalid={!!errors.password}
+              className={cn(errors.password && errorInputClass)}
+            />
+          </AuthField>
+          <AuthField
+            label={t("auth.signUp.confirmPasswordLabel")}
+            htmlFor="signup-confirm"
+            error={errors.confirmPassword}
+          >
+            <PasswordInput
+              id="signup-confirm"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              placeholder="••••••••"
+              autoComplete="new-password"
+              aria-invalid={!!errors.confirmPassword}
+              className={cn(errors.confirmPassword && errorInputClass)}
+            />
+          </AuthField>
+        </div>
+
+        <div>
+          <label className="flex cursor-pointer items-start gap-2 text-[13px] text-muted-foreground">
+            <Checkbox
+              checked={agreed}
+              onCheckedChange={(checked) => setAgreed(checked === true)}
+              className="mt-0.5"
+              aria-invalid={!!errors.terms}
+            />
+            <span>{t("auth.signUp.termsLabel")}</span>
+          </label>
+          {errors.terms && <p className="mt-1.5 text-[12px] text-destructive">{errors.terms}</p>}
+        </div>
+
+        <Button type="submit" variant="accent" size="lg" className="w-full gap-2" disabled={submitting}>
+          <UserPlus className="h-4 w-4" />
+          {submitting ? t("auth.signUp.submitting") : t("auth.signUp.submit")}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }

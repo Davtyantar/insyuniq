@@ -68,7 +68,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
 
         <div className="mt-4 grid gap-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-10">
           <div className="min-w-0 space-y-8">
-            {listing.category === "work" ? (
+            {listing.category === "work" || listing.category === "services" ? (
               <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border bg-secondary">
                 <Image
                   src={listing.images[0]}

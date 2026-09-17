@@ -15,10 +15,11 @@ import { Button } from "@/components/ui/button";
 import { listingHref } from "@/lib/categories";
 import {
   EMPTY_DRAFT,
-  WIZARD_STEPS,
   draftToListing,
   stepErrors,
+  wizardSteps,
   type ListingDraft,
+  type WizardStepDef,
 } from "@/lib/draft";
 import type { Listing } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -27,19 +28,21 @@ import { cn } from "@/lib/utils";
  * text to cram into a narrow header, and the current step's own title/hint already show in the
  * page header above this, so the dots only need to carry state, not repeat the copy. */
 function MobileStepper({
+  steps,
   current,
   highestStep,
   onGoTo,
 }: {
+  steps: WizardStepDef[];
   current: number;
   highestStep: number;
   onGoTo: (step: number) => void;
 }) {
   return (
     <ol className="flex items-center lg:hidden">
-      {WIZARD_STEPS.map((step, index) => {
+      {steps.map((step, index) => {
         const state = step.id === current ? "current" : step.id <= highestStep ? "done" : "todo";
-        const isLast = index === WIZARD_STEPS.length - 1;
+        const isLast = index === steps.length - 1;
         return (
           <li key={step.id} className={cn("flex items-center", !isLast && "flex-1")}>
             <button
@@ -75,17 +78,19 @@ function MobileStepper({
 
 /** Full labeled step list for the sticky desktop sidebar. */
 function Stepper({
+  steps,
   current,
   highestStep,
   onGoTo,
 }: {
+  steps: WizardStepDef[];
   current: number;
   highestStep: number;
   onGoTo: (step: number) => void;
 }) {
   return (
     <ol className="hidden lg:flex lg:flex-col lg:gap-1.5">
-      {WIZARD_STEPS.map((step) => {
+      {steps.map((step) => {
         const state = step.id === current ? "current" : step.id <= highestStep ? "done" : "todo";
         return (
           <li key={step.id} className="lg:w-full">
@@ -157,15 +162,25 @@ export function PublishWizard() {
   const [showErrors, setShowErrors] = React.useState(false);
   const [publishedListing, setPublishedListing] = React.useState<Listing | null>(null);
 
+  // Services skip the price/contacts step, so the step list itself depends on the category.
+  const steps = React.useMemo(() => wizardSteps(draft.category), [draft.category]);
+  const currentStep = steps[step - 1] ?? steps[steps.length - 1];
+
   React.useEffect(() => {
     setHighestStep((prev) => Math.max(prev, step));
   }, [step]);
+
+  // If switching category shrinks the step list out from under the current position (e.g.
+  // stepping back to step 1 and picking "services"), settle back onto the last valid step.
+  React.useEffect(() => {
+    setStep((prev) => Math.min(prev, steps.length));
+  }, [steps.length]);
 
   const patch = React.useCallback((update: Partial<ListingDraft>) => {
     setDraft((prev) => ({ ...prev, ...update }));
   }, []);
 
-  const errors = stepErrors(step, draft);
+  const errors = stepErrors(currentStep.key, draft);
   const preview = React.useMemo(
     () => (draft.category ? draftToListing(draft, "draft-preview") : null),
     [draft],
@@ -177,7 +192,7 @@ export function PublishWizard() {
       return;
     }
     setShowErrors(false);
-    setStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
+    setStep((prev) => Math.min(prev + 1, steps.length));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -216,33 +231,33 @@ export function PublishWizard() {
           Հրապարակել հայտարարություն
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Քայլ {step}-ը {WIZARD_STEPS.length}-ից · {WIZARD_STEPS[step - 1].title}
+          Քայլ {step}-ը {steps.length}-ից · {currentStep.title}
         </p>
         <div className="mt-4 hidden h-1 w-full overflow-hidden rounded-full bg-secondary lg:block">
           <div
             className="h-full rounded-full bg-accent transition-all duration-300"
-            style={{ width: `${(step / WIZARD_STEPS.length) * 100}%` }}
+            style={{ width: `${(step / steps.length) * 100}%` }}
           />
         </div>
         <div className="mt-4 lg:hidden">
-          <MobileStepper current={step} highestStep={highestStep} onGoTo={setStep} />
+          <MobileStepper steps={steps} current={step} highestStep={highestStep} onGoTo={setStep} />
         </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
         <aside className="hidden lg:sticky lg:top-[124px] lg:block lg:self-start">
-          <Stepper current={step} highestStep={highestStep} onGoTo={setStep} />
+          <Stepper steps={steps} current={step} highestStep={highestStep} onGoTo={setStep} />
         </aside>
 
         <div className="min-w-0">
           <div className="rounded-lg border border-border bg-background p-5 md:p-6">
-            {step === 1 && <StepCategory draft={draft} patch={patch} />}
-            {step === 2 && <StepType draft={draft} patch={patch} />}
-            {step === 3 && <StepSpecs draft={draft} patch={patch} />}
-            {step === 4 && <StepPhotos draft={draft} patch={patch} />}
-            {step === 5 && <StepDescription draft={draft} patch={patch} />}
-            {step === 6 && <StepPrice draft={draft} patch={patch} />}
-            {step === 7 && preview && <StepPreview listing={preview} />}
+            {currentStep.key === "category" && <StepCategory draft={draft} patch={patch} />}
+            {currentStep.key === "type" && <StepType draft={draft} patch={patch} />}
+            {currentStep.key === "specs" && <StepSpecs draft={draft} patch={patch} />}
+            {currentStep.key === "photos" && <StepPhotos draft={draft} patch={patch} />}
+            {currentStep.key === "description" && <StepDescription draft={draft} patch={patch} />}
+            {currentStep.key === "price" && <StepPrice draft={draft} patch={patch} />}
+            {currentStep.key === "preview" && preview && <StepPreview listing={preview} />}
 
             {showErrors && errors.length > 0 && (
               <div className="mt-5 flex items-start gap-2.5 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
@@ -262,7 +277,7 @@ export function PublishWizard() {
               Հետ
             </Button>
 
-            {step < WIZARD_STEPS.length ? (
+            {step < steps.length ? (
               <Button variant="accent" onClick={next} className="gap-2">
                 Հաջորդը
                 <ArrowRight className="h-4 w-4" />

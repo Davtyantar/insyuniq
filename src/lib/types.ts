@@ -1,6 +1,6 @@
 import type { Currency } from "./currency";
 
-export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels" | "work";
+export type CategorySlug = "real-estate" | "cars" | "rentals" | "hotels" | "work" | "services";
 
 export type SellerType = "owner" | "agency" | "dealer" | "private";
 
@@ -183,12 +183,34 @@ export interface WorkListing extends BaseListing {
   schedule?: string;
 }
 
+export type ServiceSubcategory =
+  | "restaurants"
+  | "construction"
+  | "beauty"
+  | "education"
+  | "legal"
+  | "it"
+  | "transport"
+  | "events"
+  | "household"
+  | "other";
+
+/** Local businesses and specialists offering a service, not a physical item for sale. */
+export interface ServiceListing extends BaseListing {
+  category: "services";
+  subcategory: ServiceSubcategory;
+  /** Business or specialist name behind the listing. */
+  provider: string;
+  workingHours?: string;
+}
+
 export type Listing =
   | RealEstateListing
   | CarListing
   | RentalListing
   | HotelListing
-  | WorkListing;
+  | WorkListing
+  | ServiceListing;
 
 export function isRealEstate(listing: Listing): listing is RealEstateListing {
   return listing.category === "real-estate";
@@ -208,6 +230,10 @@ export function isHotelStay(listing: Listing): listing is HotelListing {
 
 export function isWork(listing: Listing): listing is WorkListing {
   return listing.category === "work";
+}
+
+export function isService(listing: Listing): listing is ServiceListing {
+  return listing.category === "services";
 }
 
 export type SortKey =
@@ -293,11 +319,16 @@ export interface WorkFilters extends CommonFilters {
   experience: ExperienceLevel | "";
 }
 
+export interface ServiceFilters extends CommonFilters {
+  subcategory: string;
+}
+
 export type AnyFilters =
   | RealEstateFilters
   | CarFilters
   | RentalFilters
   | HotelFilters
-  | WorkFilters;
+  | WorkFilters
+  | ServiceFilters;
 
 export type ViewMode = "grid" | "list";

@@ -14,6 +14,7 @@ import type {
   RealEstateListing,
   RentalListing,
   RentalTerm,
+  ServiceListing,
   Steering,
   Transmission,
 } from "./types";
@@ -23,6 +24,7 @@ import {
   COMMERCIAL_PHOTOS,
   HOTEL_PHOTOS,
   HOUSE_PHOTOS,
+  WORK_PHOTOS,
 } from "@/mock/images";
 
 export interface DraftPhoto {
@@ -62,6 +64,10 @@ export interface ListingDraft {
 
   // Hotels
   pool: boolean;
+
+  // Services
+  provider: string;
+  workingHours: string;
 
   // Cars
   brand: string;
@@ -121,6 +127,8 @@ export const EMPTY_DRAFT: ListingDraft = {
   electricity: false,
   pit: false,
   pool: false,
+  provider: "",
+  workingHours: "",
   brand: "",
   model: "",
   year: "",
@@ -152,15 +160,40 @@ export const EMPTY_DRAFT: ListingDraft = {
   negotiable: false,
 };
 
-export const WIZARD_STEPS = [
-  { id: 1, title: "Կատեգորիա", hint: "Ինչ եք տեղադրում" },
-  { id: 2, title: "Հայտարարության տեսակ", hint: "Ճշտեք բաժինը" },
-  { id: 3, title: "Բնութագրեր", hint: "Հիմնական պարամետրեր" },
-  { id: 4, title: "Լուսանկարներ", hint: "Որքան շատ, այնքան լավ" },
-  { id: 5, title: "Նկարագրություն", hint: "Վերնագիր և տեքստ" },
-  { id: 6, title: "Գին և կոնտակտներ", hint: "Ինչպես կապվել ձեզ հետ" },
-  { id: 7, title: "Նախադիտում", hint: "Ստուգեք և հրապարակեք" },
-] as const;
+export type WizardStepKey =
+  | "category"
+  | "type"
+  | "specs"
+  | "photos"
+  | "description"
+  | "price"
+  | "preview";
+
+export interface WizardStepDef {
+  id: number;
+  key: WizardStepKey;
+  title: string;
+  hint: string;
+}
+
+const ALL_WIZARD_STEPS: Omit<WizardStepDef, "id">[] = [
+  { key: "category", title: "Կատեգորիա", hint: "Ինչ եք տեղադրում" },
+  { key: "type", title: "Հայտարարության տեսակ", hint: "Ճշտեք բաժինը" },
+  { key: "specs", title: "Բնութագրեր", hint: "Հիմնական պարամետրեր" },
+  { key: "photos", title: "Լուսանկարներ", hint: "Որքան շատ, այնքան լավ" },
+  { key: "description", title: "Նկարագրություն", hint: "Վերնագիր և տեքստ" },
+  { key: "price", title: "Գին և կոնտակտներ", hint: "Ինչպես կապվել ձեզ հետ" },
+  { key: "preview", title: "Նախադիտում", hint: "Ստուգեք և հրապարակեք" },
+];
+
+/** Services skip the price/contacts step entirely — pricing and reaching a provider aren't
+ * shown for that category (see the services card/filters), so asking for it here would be a
+ * dead end. */
+export function wizardSteps(category: CategorySlug | null): WizardStepDef[] {
+  return ALL_WIZARD_STEPS.filter((step) => !(category === "services" && step.key === "price")).map(
+    (step, index) => ({ ...step, id: index + 1 }),
+  );
+}
 
 const numberOr = (value: string, fallback = 0) => {
   const parsed = Number(value);
@@ -178,30 +211,32 @@ function draftPrices(draft: ListingDraft): Partial<Record<Currency, number>> {
 }
 
 /** Which fields block the Next button on each step. */
-export function stepErrors(step: number, draft: ListingDraft): string[] {
+export function stepErrors(stepKey: WizardStepKey, draft: ListingDraft): string[] {
   const errors: string[] = [];
-  switch (step) {
-    case 1:
+  switch (stepKey) {
+    case "category":
       if (!draft.category) errors.push("Ընտրեք կատեգորիան");
       break;
-    case 2:
+    case "type":
       if (!draft.subcategory) errors.push("Ընտրեք հայտարարության տեսակը");
       break;
-    case 3:
+    case "specs":
       if (!draft.city) errors.push("Նշեք քաղաքը");
       if (draft.category === "rentals" || draft.category === "hotels") {
         if (!draft.area) errors.push("Նշեք մակերեսը");
+      } else if (draft.category === "services") {
+        if (!draft.provider.trim()) errors.push("Նշեք մատուցողի անունը");
       } else if (draft.category !== "real-estate") {
         if (!draft.brand) errors.push("Ընտրեք մակնիշը");
         if (!draft.model) errors.push("Ընտրեք մոդելը");
         if (!draft.year) errors.push("Նշեք թողարկման տարին");
       }
       break;
-    case 5:
+    case "description":
       if (draft.title.trim().length < 10) errors.push("Վերնագիրը՝ նվազագույնը 10 նիշ");
       if (draft.description.trim().length < 40) errors.push("Նկարագրությունը՝ նվազագույնը 40 նիշ");
       break;
-    case 6:
+    case "price":
       if (!draft.price) errors.push("Նշեք գինը");
       if (draft.phone.trim().length < 6) errors.push("Նշեք հեռախոսահամարը");
       if (!draft.contactName.trim()) errors.push("Նշեք անունը");
@@ -214,6 +249,10 @@ export function stepErrors(step: number, draft: ListingDraft): string[] {
 
 /** Photos are optional, but a listing must still render, so fall back to stock imagery. */
 function draftImages(draft: ListingDraft): string[] {
+  // Services show a single photo, no gallery — keep only the cover shot.
+  if (draft.category === "services") {
+    return draft.photos.length ? [draft.photos[0].url] : [WORK_PHOTOS[0]];
+  }
   if (draft.photos.length) return draft.photos.map((photo) => photo.url);
   if (draft.category === "cars") return [CAR_PHOTOS.toyotaSedan, CAR_PHOTOS.darkSedan];
   if (draft.category === "rentals") {
@@ -324,6 +363,17 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
       pool: draft.pool,
     };
     return stay;
+  }
+
+  if (draft.category === "services") {
+    const service: ServiceListing = {
+      ...base,
+      category: "services",
+      subcategory: (draft.subcategory || "other") as ServiceListing["subcategory"],
+      provider: draft.provider.trim() || draft.contactName.trim(),
+      workingHours: draft.workingHours.trim() || undefined,
+    };
+    return service;
   }
 
   const realEstate: RealEstateListing = {

@@ -3,6 +3,7 @@ import {
   Briefcase,
   Building2,
   Car,
+  HeartHandshake,
   KeyRound,
   type LucideIcon
 } from "lucide-react";
@@ -10,11 +11,13 @@ import { CAR_LISTINGS } from "@/mock/cars";
 import { HOTEL_LISTINGS } from "@/mock/hotels";
 import { REAL_ESTATE_LISTINGS } from "@/mock/real-estate";
 import { RENTAL_LISTINGS } from "@/mock/rentals";
+import { SERVICE_LISTINGS } from "@/mock/services";
 import {
   CAR_SUBCATEGORIES,
   HOTEL_SUBCATEGORIES,
   REAL_ESTATE_SUBCATEGORIES,
   RENTAL_SUBCATEGORIES,
+  SERVICE_SUBCATEGORIES,
   WORK_SUBCATEGORIES,
   type Option
 } from "@/mock/taxonomy";
@@ -97,6 +100,18 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     listings: WORK_LISTINGS,
     cover: WORK_LISTINGS[0].images[0],
     tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից"
+  },
+  services: {
+    slug: "services",
+    label: "Ծառայություններ",
+    labelPrepositional: "ծառայությունների",
+    href: "/services",
+    icon: HeartHandshake,
+    searchPlaceholder: "Ռեստորան, վարպետ, դասընթաց…",
+    subcategories: SERVICE_SUBCATEGORIES,
+    listings: SERVICE_LISTINGS,
+    cover: SERVICE_LISTINGS[0].images[0],
+    tagline: "Ռեստորաններ, վարպետներ և մասնագիտական ծառայություններ Սյունիքում"
   }
 };
 
@@ -108,7 +123,8 @@ export function isCategorySlug(value: string): value is CategorySlug {
     value === "cars" ||
     value === "rentals" ||
     value === "hotels" ||
-    value === "work"
+    value === "work" ||
+    value === "services"
   );
 }
 

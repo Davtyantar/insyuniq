@@ -246,11 +246,31 @@ function jobPostingJsonLd(listing: Extract<Listing, { category: "work" }>) {
   };
 }
 
+function serviceJsonLd(listing: Extract<Listing, { category: "services" }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: listing.title,
+    description: listing.description,
+    url: absoluteUrl(`/services/${listing.id}`),
+    image: listing.images,
+    provider: { "@type": "LocalBusiness", name: listing.provider, address: postalAddress(listing) },
+    areaServed: { "@type": "City", name: listing.city },
+    offers: {
+      "@type": "Offer",
+      price: listing.price,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+  };
+}
+
 /** Dispatches to the correct schema.org type for the listing's category. */
 export function listingJsonLd(listing: Listing) {
   if (listing.category === "real-estate") return realEstateJsonLd(listing);
   if (listing.category === "rentals") return rentalJsonLd(listing);
   if (listing.category === "hotels") return hotelJsonLd(listing);
   if (listing.category === "cars") return carJsonLd(listing);
+  if (listing.category === "services") return serviceJsonLd(listing);
   return jobPostingJsonLd(listing);
 }

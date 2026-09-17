@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
-import { Heart, LogOut, Package, Plus, Settings, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Heart, LogOut, Package, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
 import { EmptyState } from "@/components/listings/empty-state";
@@ -98,21 +99,6 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
   );
 }
 
-function SignedOutView() {
-  const { t } = useTranslation();
-  return (
-    <div className="container flex min-h-[60vh] items-center justify-center py-10">
-      <EmptyState
-        icon={UserRound}
-        title={t("profile.signedOut.title")}
-        description={t("profile.signedOut.description")}
-        action={{ label: t("profile.signedOut.signIn"), href: "/sign-in" }}
-        secondaryAction={{ label: t("profile.signedOut.signUp"), href: "/sign-up" }}
-      />
-    </div>
-  );
-}
-
 function ProfileLoading() {
   return (
     <div className="container py-6 lg:py-8">
@@ -129,10 +115,16 @@ function ProfileLoading() {
 
 export function ProfileView() {
   const { t } = useTranslation();
-  const { user, updateUser, signOut, favorites, published, hydrated } = useApp();
+  const router = useRouter();
+  const { user, updateUser, signOut, favorites, published, hydrated, localizeHref } = useApp();
 
-  if (!hydrated) return <ProfileLoading />;
-  if (!user) return <SignedOutView />;
+  // No bare "you're signed out" page — send people straight to the (now much nicer) sign-in
+  // form instead. It already lands back on /profile once they've signed in.
+  React.useEffect(() => {
+    if (hydrated && !user) router.replace(localizeHref("/sign-in"));
+  }, [hydrated, user, router, localizeHref]);
+
+  if (!hydrated || !user) return <ProfileLoading />;
 
   const favoriteListings = getListings(favorites);
   const myListings = published;

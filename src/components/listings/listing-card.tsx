@@ -36,6 +36,8 @@ function accentBadges(listing: Listing): string[] {
     badges.push(listing.term === "daily" ? "Օրավարձով" : "Երկարաժամկետ");
   } else if (listing.category === "work") {
     badges.push(label("employmentType", listing.employmentType));
+  } else if (listing.category === "services") {
+    badges.push(label("serviceSubcategory", listing.subcategory));
   } else {
     if (listing.fuel === "electric") badges.push("Էլեկտրական");
     if (listing.condition === "new") badges.push("Նոր");
@@ -50,6 +52,7 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
   const { currency } = useApp();
   const badges = accentBadges(listing);
   const isList = view === "list";
+  const showPrice = listing.category !== "services";
 
   const imageRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -185,14 +188,16 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
           isList && "sm:p-5",
         )}
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[15px] font-semibold tracking-tight text-foreground sm:text-[22px]">
-            {formatPrice(listing.price, { currency, prices: listing.prices })}
-            {isDaily(listing) && <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">օր</span>}
-            {isMonthly(listing) && (
-              <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">ամիս</span>
-            )}
-          </span>
+        <div className={cn("flex items-center gap-2", showPrice ? "justify-between" : "justify-end")}>
+          {showPrice && (
+            <span className="text-[15px] font-semibold tracking-tight text-foreground sm:text-[22px]">
+              {formatPrice(listing.price, { currency, prices: listing.prices })}
+              {isDaily(listing) && <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">օր</span>}
+              {isMonthly(listing) && (
+                <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">ամիս</span>
+              )}
+            </span>
+          )}
           {listing.verified && (
             <BadgeCheck
               className="h-4 w-4 shrink-0 text-accent sm:h-5 sm:w-5"

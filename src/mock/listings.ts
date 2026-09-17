@@ -4,12 +4,14 @@ import type {
   Listing,
   RealEstateListing,
   RentalListing,
+  ServiceListing,
   WorkListing,
 } from "@/lib/types";
 import { CAR_LISTINGS } from "./cars";
 import { HOTEL_LISTINGS } from "./hotels";
 import { REAL_ESTATE_LISTINGS } from "./real-estate";
 import { RENTAL_LISTINGS } from "./rentals";
+import { SERVICE_LISTINGS } from "./services";
 import { WORK_LISTINGS } from "./work";
 
 export const ALL_LISTINGS: Listing[] = [
@@ -18,6 +20,7 @@ export const ALL_LISTINGS: Listing[] = [
   ...RENTAL_LISTINGS,
   ...HOTEL_LISTINGS,
   ...WORK_LISTINGS,
+  ...SERVICE_LISTINGS,
 ];
 
 const BY_ID = new Map<string, Listing>(ALL_LISTINGS.map((l) => [l.id, l]));
@@ -55,6 +58,11 @@ export function getWork(id: string): WorkListing | undefined {
   return listing?.category === "work" ? listing : undefined;
 }
 
+export function getService(id: string): ServiceListing | undefined {
+  const listing = BY_ID.get(id);
+  return listing?.category === "services" ? listing : undefined;
+}
+
 /** Newest listings across every category, for the home page "recently added" showcase. */
 export const RECENT_LISTINGS = [...ALL_LISTINGS]
   .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
@@ -81,6 +89,7 @@ export const TOP_REAL_ESTATE = [...REAL_ESTATE_LISTINGS].sort(byViews).slice(0, 
 export const TOP_CARS = [...CAR_LISTINGS].sort(byViews).slice(0, 8);
 export const TOP_RENTALS = [...RENTAL_LISTINGS].sort(byViews).slice(0, 8);
 export const TOP_HOTELS = [...HOTEL_LISTINGS].sort(byViews).slice(0, 8);
+export const TOP_SERVICES = [...SERVICE_LISTINGS].sort(byViews).slice(0, 8);
 
 /** Split out of TOP_HOTELS for their own home-page sections. */
 export const TOP_HOTEL_ROOMS = HOTEL_LISTINGS.filter((l) => l.subcategory === "hotels")

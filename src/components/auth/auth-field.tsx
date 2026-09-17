@@ -24,7 +24,7 @@ export function AuthField({
       </Label>
       {children}
       {error ? (
-        <p className="mt-1.5 text-[12px] text-destructive">{error}</p>
+        <p className="mt-1.5 animate-slide-up text-[12px] text-destructive">{error}</p>
       ) : hint ? (
         <p className="mt-1.5 text-[12px] text-muted-foreground">{hint}</p>
       ) : null}

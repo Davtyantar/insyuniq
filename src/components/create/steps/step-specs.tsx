@@ -341,6 +341,36 @@ export function StepSpecs({ draft, patch }: StepProps) {
     );
   }
 
+  if (draft.category === "services") {
+    return (
+      <div className='space-y-6'>
+        <StepHeader
+          title='Ծառայության բնութագրերը'
+          description='Նշեք ով է մատուցում ծառայությունը և երբ կարելի է դիմել։'
+        />
+
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <Field label='Մատուցող (կազմակերպություն կամ անուն)' required>
+            <Input
+              value={draft.provider}
+              onChange={(event) => patch({ provider: event.target.value })}
+              placeholder='Օրինակ՝ «Ոսկե Սեղան» քեյթրինգ'
+            />
+          </Field>
+          <Field label='Աշխատանքային ժամեր'>
+            <Input
+              value={draft.workingHours}
+              onChange={(event) => patch({ workingHours: event.target.value })}
+              placeholder='Օրինակ՝ Ամեն օր, 09:00–20:00'
+            />
+          </Field>
+        </div>
+
+        <LocationFields draft={draft} patch={patch} />
+      </div>
+    );
+  }
+
   const isLand = draft.subcategory === "land";
   const isGarage = draft.subcategory === "garages";
 
