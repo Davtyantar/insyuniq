@@ -42,6 +42,22 @@ const DialogContent = React.forwardRef<
     />
     <DialogPrimitive.Content
       ref={ref}
+      // iOS Safari auto-scrolls the page to lift a focused field above the keyboard, and that
+      // scroll can make Radix's outside-pointer check fire against a stale target right as the
+      // field is tapped — closing the whole sheet instead of focusing it. A tap that lands on
+      // (or inside) a form control is never "outside" the dialog, so it never dismisses it.
+      onPointerDownOutside={(event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest("input, textarea, select, [contenteditable='true']")) {
+          event.preventDefault();
+        }
+      }}
+      onInteractOutside={(event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest("input, textarea, select, [contenteditable='true']")) {
+          event.preventDefault();
+        }
+      }}
       className={cn(
         "fixed z-50 border border-border bg-card shadow-pop focus:outline-none",
         variant === "center" &&

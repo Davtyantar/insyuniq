@@ -43,6 +43,13 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/logo.png"],
   },
+  // iOS ignores the web manifest's icons for "Add to Home Screen" — it only looks at this tag.
+  icons: { apple: "/syunik-icon.png" },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_NAME,
+  },
 };
 
 export const viewport: Viewport = {
