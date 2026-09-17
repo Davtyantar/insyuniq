@@ -96,7 +96,10 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
         className={cn(
           "relative shrink-0 overflow-hidden bg-secondary",
           dense ? "aspect-square w-28" : "aspect-[4/3]",
-          isList ? "sm:aspect-auto sm:h-[212px] sm:w-[300px]" : "sm:aspect-[4/3] sm:w-full",
+          // List view: no fixed height — the flex row's default stretch makes the photo match
+          // whatever height the text column ends up needing, so a longer description (or the
+          // date row) never leaves a gap of card background showing below a shorter photo.
+          isList ? "sm:aspect-auto sm:min-h-[212px] sm:w-[300px]" : "sm:aspect-[4/3] sm:w-full",
         )}
       >
         <Image
