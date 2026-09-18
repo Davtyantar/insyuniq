@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
-import { ChevronRight, Menu } from "lucide-react";
+import { ChevronRight, Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -44,7 +44,20 @@ export function CategoriesMenu() {
           className="hidden shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:flex"
           title={t("common.allSections")}
         >
-          <Menu className="h-[18px] w-[18px]" />
+          <span className="relative flex h-[18px] w-[18px] shrink-0 items-center justify-center">
+            <Menu
+              className={cn(
+                "absolute h-[18px] w-[18px] transition-all duration-200",
+                open ? "rotate-90 opacity-0" : "rotate-0 opacity-100",
+              )}
+            />
+            <X
+              className={cn(
+                "absolute h-[18px] w-[18px] transition-all duration-200",
+                open ? "rotate-0 opacity-100" : "-rotate-90 opacity-0",
+              )}
+            />
+          </span>
           <span className="hidden lg:inline">{t("common.sections")}</span>
         </button>
       </DropdownMenuTrigger>
@@ -52,10 +65,10 @@ export function CategoriesMenu() {
         align="start"
         className={cn(
           "flex max-w-[92vw] gap-0 p-0 transition-[width] duration-150",
-          isWide ? "w-[960px]" : "w-[660px]",
+          isWide ? "w-[1000px]" : "w-[700px]",
         )}
       >
-        <div className="flex w-[240px] shrink-0 flex-col gap-1 border-r border-border p-2.5">
+        <div className="flex w-[280px] shrink-0 flex-col gap-1 border-r border-border p-2.5">
           {CATEGORY_LIST.map((category) => (
             <Link
               key={category.slug}
@@ -70,7 +83,7 @@ export function CategoriesMenu() {
               )}
             >
               <category.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span className="flex-1 truncate">{category.label}</span>
+              <span className="flex-1 whitespace-nowrap">{category.label}</span>
               <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             </Link>
           ))}

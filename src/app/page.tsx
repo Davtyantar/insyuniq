@@ -1,7 +1,6 @@
 import { BenefitsSection } from "@/components/home/benefits-section";
 import { Categories } from "@/components/home/categories";
 import { HitsSection } from "@/components/home/hits-section";
-import { HomeCategoryNav } from "@/components/home/home-category-nav";
 import { NewArrivals } from "@/components/home/new-arrivals";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { PublishCta } from "@/components/home/publish-cta";
@@ -18,8 +17,6 @@ import {
 export default function HomePage() {
   return (
     <>
-      <HomeCategoryNav />
-
       <PromoBanner />
 
       <Categories />

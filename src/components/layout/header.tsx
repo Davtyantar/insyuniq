@@ -82,23 +82,13 @@ export function Header() {
   }, [updateNavIndicator]);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 border-b transition-colors duration-200",
-        spotlight ? "border-transparent" : "border-border",
-      )}
-    >
+    <header className="sticky top-0 z-40 border-b border-border">
       <div
-        className={cn(
-          // `relative z-10` is unconditional (not just while spotlighting): this wrapper's own
-          // `backdrop-blur` already forces a stacking context regardless of z-index, so without an
-          // explicit one here, the category-nav row below (also `position: relative`) — being later
-          // in DOM order — would paint over it, burying the location/language dropdown panels.
-          "relative z-10 w-full backdrop-blur transition-shadow duration-200",
-          spotlight
-            ? "bg-card shadow-lg"
-            : "bg-card/90 supports-[backdrop-filter]:bg-card/75",
-        )}
+        // `relative z-10` (not just while spotlighting): this wrapper's own `backdrop-blur`
+        // already forces a stacking context regardless of z-index, so without an explicit one
+        // here, the category-nav row below (also `position: relative`) — being later in DOM
+        // order — would paint over it, burying the location/language dropdown panels.
+        className="relative z-10 w-full bg-card"
       >
         {/* Desktop/tablet: everything lives in one row. */}
         <div className="container hidden h-16 items-center gap-2 md:flex lg:gap-4">
@@ -195,13 +185,10 @@ export function Header() {
         </div>
       </div>
 
-      {showCategoryNav && (
-      <div
-        className={cn(
-          "relative w-full border-t bg-card/90 backdrop-blur transition-colors duration-200 supports-[backdrop-filter]:bg-card/75",
-          spotlight ? "border-transparent" : "border-border/70",
-        )}
-      >
+      {/* Hidden outright (no fade/transition) the instant search/menu spotlight is on,
+          and back the instant it's off — an instant snap, not a dim-and-fade. */}
+      {showCategoryNav && !spotlight && (
+      <div className="relative w-full bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
         <div className="container relative hidden h-11 items-center gap-6 text-sm md:flex">
           {navIndicator && (
             <div
@@ -251,13 +238,6 @@ export function Header() {
             {t("common.allListings")}
           </Link>
         </div>
-
-        {spotlight && (
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-200"
-          />
-        )}
       </div>
       )}
     </header>
