@@ -61,13 +61,7 @@ export function CategoriesMenu() {
           <span className="hidden lg:inline">{t("common.sections")}</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="start"
-        className={cn(
-          "flex max-w-[92vw] gap-0 p-0 transition-[width] duration-150",
-          isWide ? "w-[1000px]" : "w-[700px]",
-        )}
-      >
+      <DropdownMenuContent align="start" className="flex w-fit max-w-[92vw] gap-0 p-0">
         <div className="flex w-[280px] shrink-0 flex-col gap-1 border-r border-border p-2.5">
           {CATEGORY_LIST.map((category) => (
             <Link
@@ -89,7 +83,7 @@ export function CategoriesMenu() {
           ))}
         </div>
 
-        <div className="min-w-0 flex-1 p-4">
+        <div className="min-w-0 p-4">
           <Link
             href={activeCategory.href}
             onClick={() => setOpen(false)}
@@ -97,7 +91,11 @@ export function CategoriesMenu() {
           >
             {activeCategory.label}
           </Link>
-          <div className={cn(isWide ? "grid grid-cols-2 gap-x-3 gap-y-0.5" : "flex flex-col gap-0.5")}>
+          <div
+            className={cn(
+              isWide ? "grid grid-cols-[max-content_max-content] gap-x-6 gap-y-0.5" : "flex flex-col gap-0.5",
+            )}
+          >
             {activeCategory.subcategories.map((sub) => (
               <Link
                 key={sub.value}

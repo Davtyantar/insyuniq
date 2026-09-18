@@ -120,7 +120,7 @@ export const WORK_SUBCATEGORIES: Option[] = [
   { value: "construction", label: "Շինարարություն", icon: HardHat },
   {
     value: "hospitality",
-    label: "Հանրային սնունդ և հյուրընկալություն",
+    label: "Հանրային սնունդ",
     icon: Utensils
   },
   { value: "education", label: "Կրթություն", icon: GraduationCap },
@@ -134,7 +134,11 @@ export const WORK_SUBCATEGORIES: Option[] = [
 
 export const SERVICE_SUBCATEGORIES: Option[] = [
   { value: "restaurants", label: "Ռեստորաններ և սրճարաններ", icon: Utensils },
-  { value: "construction", label: "Շինարարություն և վերանորոգում", icon: HardHat },
+  {
+    value: "construction",
+    label: "Շինարարություն և վերանորոգում",
+    icon: HardHat
+  },
   { value: "beauty", label: "Գեղեցկություն և կոսմետոլոգիա", icon: Scissors },
   { value: "education", label: "Ուսուցում և կրթություն", icon: GraduationCap },
   { value: "legal", label: "Իրավաբանական և հաշվապահական", icon: Scale },
