@@ -113,12 +113,28 @@ export function PromoBanner() {
           </div>
         </div>
 
-        <div className='relative aspect-[3/2] overflow-hidden rounded-3xl bg-secondary shadow-lift ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
+        <div className='relative aspect-[3/2] overflow-hidden rounded-3xl bg-secondary ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
+          {/* The poster is a real, always-visible photo, not an empty placeholder — it fills the
+              card immediately, then slowly zooms out as it fades under the video once that's
+              ready, so the reveal reads as one continuous shot rather than a gray box popping
+              over to a clip. */}
+          <Image
+            src='/work.jpg'
+            alt=''
+            aria-hidden
+            fill
+            priority
+            sizes='(min-width: 768px) 40vw, 100vw'
+            className={cn(
+              'object-cover transition-[transform,opacity] duration-[1400ms] ease-out',
+              videoReady ? 'scale-110 opacity-0' : 'scale-100 opacity-100',
+            )}
+          />
+
           <video
             ref={videoRef}
             key={workVideoSrc}
             src={workVideoSrc}
-            poster='/work.jpg'
             aria-hidden
             autoPlay
             muted
@@ -132,19 +148,23 @@ export function PromoBanner() {
             )}
           />
 
+          {/* Bottom scrim keeps the badge/logo readable over the photo the way it already was
+              over the video — a gradient instead of a flat tint feels less like a slapped-on box. */}
           <div
             aria-hidden
-            className={cn(
-              'absolute inset-0 z-[5] flex items-center justify-center bg-secondary transition-opacity duration-500',
-              videoReady ? 'pointer-events-none opacity-0' : 'opacity-100',
-            )}
-          >
-            <span className='flex items-center gap-1.5'>
-              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.3s]' />
-              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]' />
-              <span className='h-2.5 w-2.5 animate-bounce rounded-full bg-accent' />
-            </span>
-          </div>
+            className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/10'
+          />
+
+          {!videoReady && (
+            <div
+              aria-hidden
+              className='absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4'
+            >
+              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
+              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
+              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white' />
+            </div>
+          )}
 
           <Image
             src='/logo-white.png'
