@@ -116,6 +116,7 @@ export const en = {
     },
   },
   auth: {
+    backToHome: "Back to home page",
     signIn: {
       title: "Sign in",
       subtitle: "Sign in to manage your listings and favorites",

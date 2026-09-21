@@ -118,6 +118,7 @@ export const hy = {
     }
   },
   auth: {
+    backToHome: "Վերադառնալ գլխավոր էջ",
     signIn: {
       title: "Մուտք գործել",
       subtitle:

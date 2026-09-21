@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { BottomNav } from "@/components/layout/bottom-nav";
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
-import { SearchOverlay } from "@/components/layout/search-overlay";
+import { SiteChrome } from "@/components/layout/site-chrome";
 import { AppProvider } from "@/components/providers/app-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
@@ -83,13 +80,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>
-      <body className="flex min-h-screen flex-col pb-14 md:pb-0">
+      <body className="flex min-h-screen flex-col">
         <AppProvider>
-          <Header />
-          <SearchOverlay />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <BottomNav />
+          <SiteChrome>{children}</SiteChrome>
         </AppProvider>
       </body>
     </html>

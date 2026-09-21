@@ -97,6 +97,10 @@ const config: Config = {
               "perspective(700px) rotateY(10deg) rotateX(-4deg) translateY(-10px)",
           },
         },
+        wink: {
+          "0%": { transform: "translateX(-100%) skewX(-20deg)" },
+          "15%, 100%": { transform: "translateX(100%) skewX(-20deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down .2s ease-out",
@@ -104,6 +108,7 @@ const config: Config = {
         "fade-in": "fade-in .2s ease-out",
         "fade-out": "fade-out .15s ease-in",
         "slide-up": "slide-up .25s cubic-bezier(.16,1,.3,1)",
+        wink: "wink 3.4s ease-in-out infinite",
         "float-3d": "float-3d 6s ease-in-out infinite",
       },
     },

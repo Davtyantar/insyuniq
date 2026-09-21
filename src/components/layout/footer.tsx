@@ -5,13 +5,17 @@ import { Link } from "@/components/i18n/locale-link";
 import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/layout/logo";
+import { useApp } from "@/components/providers/app-provider";
 import { APP_NAME } from "@/lib/constants";
 import { CATEGORIES } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 export function Footer() {
   const { t } = useTranslation();
+  const { user, hydrated } = useApp();
   const [openSection, setOpenSection] = React.useState<string | null>(null);
+  // Signed-out visitors go straight to /sign-in — see header.tsx for why.
+  const profileHref = hydrated && user ? "/profile" : "/sign-in";
 
   // Category column titles/subcategory labels still come straight from the
   // (Armenian-only) category config — translating those is a follow-up pass
@@ -57,7 +61,7 @@ export function Footer() {
       links: [
         { label: t("common.publishListing"), href: "/create" },
         { label: t("common.favorites"), href: "/favorites" },
-        { label: t("common.profile"), href: "/profile" },
+        { label: t("common.profile"), href: profileHref },
       ],
     },
   ];

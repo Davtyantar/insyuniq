@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Home, Plus, User, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguagePicker } from "@/components/layout/language-picker";
+import { useApp } from "@/components/providers/app-provider";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -32,10 +33,14 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 export function BottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const { user, hydrated } = useApp();
+  // Signed-out visitors go straight to /sign-in — /profile would only bounce them
+  // there itself, flashing its own chrome in transit. See header.tsx for the same fix.
+  const profileHref = hydrated && user ? "/profile" : "/sign-in";
 
   const LEADING_ITEM: NavItem = { href: "/", label: t("common.home"), icon: Home };
   const CENTER_ITEM: NavItem = { href: "/create", label: t("common.publish"), icon: Plus, primary: true };
-  const TRAILING_ITEM: NavItem = { href: "/profile", label: t("common.profile"), icon: User };
+  const TRAILING_ITEM: NavItem = { href: profileHref, label: t("common.profile"), icon: User };
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">

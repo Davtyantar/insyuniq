@@ -1,4 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { Link } from "@/components/i18n/locale-link";
+import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/layout/logo";
 
 interface AuthShellProps {
@@ -14,6 +19,7 @@ interface AuthShellProps {
  * plain heading — so the auth pages read as part of the same brand, not a bare system form.
  */
 export function AuthShell({ title, subtitle, children, footer }: AuthShellProps) {
+  const { t } = useTranslation();
   return (
     <div className="relative overflow-hidden">
       {/* Page-wide dotted pattern — the same treatment as the home page's promo banner — plus a
@@ -27,7 +33,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_55%_at_50%_-10%,rgba(37,99,246,0.10),transparent)] dark:bg-[radial-gradient(ellipse_70%_55%_at_50%_-10%,rgba(147,197,253,0.12),transparent)]"
       />
 
-      <div className="container flex min-h-[calc(100vh-8rem)] items-center justify-center py-10 md:py-16">
+      <div className="container flex min-h-screen items-center justify-center py-10 md:py-16">
         <div className="w-full max-w-md animate-slide-up">
           <div className="overflow-hidden rounded-3xl bg-card shadow-lift ring-1 ring-black/5 dark:ring-white/10">
             <div className="bg-gradient-to-b from-secondary to-card px-6 pb-7 pt-7 text-center sm:px-8 sm:pb-8 sm:pt-8">
@@ -40,6 +46,13 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
                       {subtitle}
                     </p>
                   )}
+                  <Link
+                    href="/"
+                    className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-accent hover:underline sm:text-[13px]"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    {t("auth.backToHome")}
+                  </Link>
                 </div>
               </div>
             </div>
