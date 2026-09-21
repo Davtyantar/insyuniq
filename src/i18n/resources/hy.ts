@@ -128,7 +128,7 @@ export const hy = {
       loginError: "Մուտքագրեք հեռախոսահամարը կամ էլ. փոստը",
       passwordLabel: "Գաղտնաբառ",
       passwordError: "Մուտքագրեք գաղտնաբառը",
-      passwordTooShort: "Առնվազն 6 նիշ",
+      invalidCredentials: "Սխալ մուտքանուն կամ գաղտնաբառ",
       remember: "Հիշել ինձ",
       forgotPassword: "Մոռացե՞լ եք գաղտնաբառը",
       submit: "Մուտք գործել",
@@ -178,6 +178,8 @@ export const hy = {
   profile: {
     memberSince: "Կայքում՝ {{date}}-ից",
     signOut: "Դուրս գալ",
+    changePhoto: "Փոխել նկարը",
+    photoError: "Նկարը պետք է լինի պատկեր՝ մինչև 2 ՄԲ",
     signedOut: {
       title: "Դուք դեռ մուտք չեք գործել",
       description:

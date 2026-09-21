@@ -62,7 +62,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { currency } = useApp();
+  const { currency, createHref } = useApp();
 
   const defaults = React.useMemo(() => defaultFilters(category, currency), [category, currency]);
   const applied = React.useMemo(
@@ -223,7 +223,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
               title="Ոչինչ չի գտնվել"
               description="Փորձեք փոխել ֆիլտրերը կամ ընդլայնել գնի միջակայքը — այս ընտրանքում համապատասխան հայտարարություններ չկան։"
               action={{ label: "Զրոյացնել ֆիլտրերը", onClick: resetFilters }}
-              secondaryAction={{ label: "Հրապարակել հայտարարություն", href: "/create" }}
+              secondaryAction={{ label: "Հրապարակել հայտարարություն", href: createHref }}
             />
           ) : (
             <ListingGrid

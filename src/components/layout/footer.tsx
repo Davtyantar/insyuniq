@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 export function Footer() {
   const { t } = useTranslation();
-  const { user, hydrated } = useApp();
+  const { user, hydrated, createHref } = useApp();
   const [openSection, setOpenSection] = React.useState<string | null>(null);
   // Signed-out visitors go straight to /sign-in — see header.tsx for why.
   const profileHref = hydrated && user ? "/profile" : "/sign-in";
@@ -59,7 +59,7 @@ export function Footer() {
     {
       title: t("footer.servicesTitle"),
       links: [
-        { label: t("common.publishListing"), href: "/create" },
+        { label: t("common.publishListing"), href: createHref },
         { label: t("common.favorites"), href: "/favorites" },
         { label: t("common.profile"), href: profileHref },
       ],

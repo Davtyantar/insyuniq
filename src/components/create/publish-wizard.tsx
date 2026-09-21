@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, CircleAlert, PartyPopper } from "lucide-react";
 import { StepCategory } from "@/components/create/steps/step-category";
 import { StepDescription } from "@/components/create/steps/step-description";
@@ -12,10 +13,12 @@ import { StepSpecs } from "@/components/create/steps/step-specs";
 import { StepType } from "@/components/create/steps/step-type";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { listingHref } from "@/lib/categories";
 import {
   EMPTY_DRAFT,
   draftToListing,
+  listingToDraft,
   stepErrors,
   wizardSteps,
   type ListingDraft,
@@ -127,33 +130,60 @@ function Stepper({
   );
 }
 
-function SuccessState({ listing, onReset }: { listing: Listing; onReset: () => void }) {
+function SuccessState({
+  listing,
+  isEdit,
+  onReset,
+}: {
+  listing: Listing;
+  isEdit: boolean;
+  onReset: () => void;
+}) {
   return (
     <div className="mx-auto max-w-xl rounded-lg border border-border bg-card px-6 py-12 text-center">
       <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-700">
         <PartyPopper className="h-7 w-7" />
       </span>
-      <h2 className="text-xl font-semibold tracking-tight">Հայտարարությունը հրապարակված է</h2>
+      <h2 className="text-xl font-semibold tracking-tight">
+        {isEdit ? "Հայտարարությունը թարմացված է" : "Հայտարարությունը հրապարակված է"}
+      </h2>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-        «{listing.title}»-ն արդեն հասանելի է կատալոգում։ Առաջին արձագանքները սովորաբար գալիս են մեկ օրվա ընթացքում։
+        {isEdit
+          ? `«${listing.title}»-ի փոփոխությունները պահպանված են։`
+          : `«${listing.title}»-ն արդեն հասանելի է կատալոգում։ Առաջին արձագանքները սովորաբար գալիս են մեկ օրվա ընթացքում։`}
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
         <Button asChild variant="accent">
-          <Link href={listingHref(listing)}>Բացել հայտարարությունը</Link>
-        </Button>
-        <Button asChild variant="outline">
           <Link href="/profile">Իմ հայտարարությունները</Link>
         </Button>
-        <Button variant="ghost" onClick={onReset}>
-          Հրապարակել ևս մեկը
-        </Button>
+        {!isEdit && (
+          <>
+            <Button asChild variant="outline">
+              <Link href={listingHref(listing)}>Բացել հայտարարությունը</Link>
+            </Button>
+            <Button variant="ghost" onClick={onReset}>
+              Հրապարակել ևս մեկը
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
 export function PublishWizard() {
-  const { publishListing } = useApp();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit");
+  const { publishListing, updateListing, published, user, hydrated, localizeHref } = useApp();
+
+  // Publishing requires an account. Every "Add a listing" link in the app already points
+  // signed-out visitors straight to /sign-in (see useApp().createHref) — this only catches
+  // someone reaching /create directly (a typed URL, a bookmark, the back button).
+  React.useEffect(() => {
+    if (hydrated && !user) router.replace(localizeHref("/sign-in"));
+  }, [hydrated, user, router, localizeHref]);
+
   const [step, setStep] = React.useState(1);
   // Highest step ever reached — once a step is passed it stays marked "done" in the stepper
   // even after navigating back to an earlier one, instead of resetting relative to `step`.
@@ -161,10 +191,38 @@ export function PublishWizard() {
   const [draft, setDraft] = React.useState<ListingDraft>(EMPTY_DRAFT);
   const [showErrors, setShowErrors] = React.useState(false);
   const [publishedListing, setPublishedListing] = React.useState<Listing | null>(null);
+  // Whichever listing id ?edit= actually resolved to, once resolved — the id publish() should
+  // overwrite instead of creating a new one, and what drives every "edit mode" bit of copy below.
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+  // Distinguishes "nothing to edit" from "haven't looked yet" — before hydration `published` is
+  // still empty, so resolving ?edit= against it one render too early would always miss and fall
+  // through to a blank wizard even for a listing that does exist. Skipped entirely when there's
+  // no ?edit= param, so the ordinary create flow renders immediately as before.
+  const [editResolved, setEditResolved] = React.useState(!editId);
+
+  React.useEffect(() => {
+    if (!editId || !hydrated || editResolved) return;
+    const existing = published.find((listing) => listing.id === editId);
+    if (existing) {
+      setDraft(listingToDraft(existing, { name: user?.name, phone: user?.phone }));
+      setEditingId(editId);
+    }
+    setEditResolved(true);
+    // Deliberately narrow: this is a one-time seed once hydration + the id are both ready, not a
+    // live sync — re-running on every `published`/`user` change would stomp on in-progress edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId, hydrated, editResolved]);
 
   // Services skip the price/contacts step, so the step list itself depends on the category.
   const steps = React.useMemo(() => wizardSteps(draft.category), [draft.category]);
   const currentStep = steps[step - 1] ?? steps[steps.length - 1];
+
+  // Editing an existing listing starts with every field already filled in, unlike a fresh
+  // wizard building up one step at a time — so every step reads as already-done (filled
+  // checkmark) and is immediately clickable, instead of gating on `highestStep` reached so far.
+  React.useEffect(() => {
+    if (editingId) setHighestStep(steps.length);
+  }, [editingId, steps.length]);
 
   React.useEffect(() => {
     setHighestStep((prev) => Math.max(prev, step));
@@ -203,9 +261,15 @@ export function PublishWizard() {
   }
 
   function publish() {
-    const listing = draftToListing(draft);
-    publishListing(listing);
-    setPublishedListing(listing);
+    if (editingId) {
+      const listing = draftToListing(draft, editingId);
+      updateListing(editingId, listing);
+      setPublishedListing(listing);
+    } else {
+      const listing = draftToListing(draft);
+      publishListing(listing);
+      setPublishedListing(listing);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -216,10 +280,22 @@ export function PublishWizard() {
     setHighestStep(1);
   }
 
+  // Still resolving ?edit= against the (just-hydrated) published list — a beat of skeleton
+  // instead of flashing a blank "pick a category" step 1 that's about to be replaced.
+  if (editId && !editResolved) {
+    return (
+      <div className="container py-6 lg:py-8">
+        <Skeleton className="h-7 w-64" />
+        <Skeleton className="mt-3 h-4 w-40" />
+        <Skeleton className="mt-6 h-80 w-full rounded-lg" />
+      </div>
+    );
+  }
+
   if (publishedListing) {
     return (
       <div className="container py-10">
-        <SuccessState listing={publishedListing} onReset={reset} />
+        <SuccessState listing={publishedListing} isEdit={!!editingId} onReset={reset} />
       </div>
     );
   }
@@ -228,7 +304,7 @@ export function PublishWizard() {
     <div className="container py-6 lg:py-8">
       <header className="mb-6">
         <h1 className="text-[18px] font-semibold tracking-tight lg:text-[28px]">
-          Հրապարակել հայտարարություն
+          {editingId ? "Խմբագրել հայտարարությունը" : "Հրապարակել հայտարարություն"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Քայլ {step}-ը {steps.length}-ից · {currentStep.title}
@@ -285,7 +361,7 @@ export function PublishWizard() {
             ) : (
               <Button variant="accent" size="lg" onClick={publish} className="gap-2">
                 <Check className="h-4 w-4" />
-                Հրապարակել
+                {editingId ? "Պահպանել" : "Հրապարակել"}
               </Button>
             )}
           </div>

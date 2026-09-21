@@ -125,7 +125,7 @@ export const en = {
       loginError: "Enter your phone number or email",
       passwordLabel: "Password",
       passwordError: "Enter your password",
-      passwordTooShort: "At least 6 characters",
+      invalidCredentials: "Incorrect username or password",
       remember: "Remember me",
       forgotPassword: "Forgot your password?",
       submit: "Sign in",
@@ -173,6 +173,8 @@ export const en = {
   profile: {
     memberSince: "Member since {{date}}",
     signOut: "Sign out",
+    changePhoto: "Change photo",
+    photoError: "Photo must be an image under 2 MB",
     signedOut: {
       title: "You're not signed in yet",
       description: "Sign in or create an account to publish listings and save favorites.",

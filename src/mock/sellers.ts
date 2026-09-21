@@ -134,10 +134,10 @@ export const SELLERS: Seller[] = [
   },
 ];
 
-/** The signed-in user of this prototype. */
+/** The signed-in user of this prototype — see DEMO_CREDENTIALS for how to log in as them. */
 export const CURRENT_USER: Seller = {
   id: "me",
-  name: "Тарон Давтян",
+  name: "Կարեն Հակոբյան",
   avatar: AVATARS[10],
   type: "private",
   registeredAt: "2022-03-08T10:00:00.000Z",
@@ -145,9 +145,16 @@ export const CURRENT_USER: Seller = {
   reviews: 26,
   listingsCount: 4,
   phone: "+374 91 00 44 27",
-  responseTime: "обычно отвечает в течение часа",
+  responseTime: "սովորաբար պատասխանում է մեկ ժամվա ընթացքում",
   online: true,
 };
+
+/**
+ * The only credentials the sign-in form accepts in this prototype — there's no backend to check
+ * a real account database against, so this stands in for one. Matching this logs in as
+ * CURRENT_USER; anything else shows an "invalid credentials" error.
+ */
+export const DEMO_CREDENTIALS = { login: "karen", password: "123" };
 
 const byId = new Map<string, Seller>(
   [...SELLERS, CURRENT_USER].map((seller) => [seller.id, seller]),

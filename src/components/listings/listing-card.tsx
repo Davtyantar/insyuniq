@@ -24,6 +24,9 @@ interface ListingCardProps {
    * Editorial spots (home page highlights, favorites, profile, "similar listings") keep the
    * bigger photo-first card at every width, since they show only a handful of listings. */
   dense?: boolean;
+  /** Profile's "favorites" tab only — that context is quick management, not browsing, so it
+   * doesn't need the description preview the same card shows everywhere else. */
+  hideDescription?: boolean;
 }
 
 /** Highlight badges that sit on the photo. */
@@ -48,7 +51,14 @@ function accentBadges(listing: Listing): string[] {
 
 const MAX_PREVIEW_DOTS = 6;
 
-export function ListingCard({ listing, view = "grid", priority, className, dense = false }: ListingCardProps) {
+export function ListingCard({
+  listing,
+  view = "grid",
+  priority,
+  className,
+  dense = false,
+  hideDescription = false,
+}: ListingCardProps) {
   const { currency } = useApp();
   const badges = accentBadges(listing);
   const isList = view === "list";
@@ -227,9 +237,11 @@ export function ListingCard({ listing, view = "grid", priority, className, dense
           <span className="min-w-0 flex-1 truncate">{locationLine(listing)}</span>
         </div>
 
-        <p className="line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
-          {listing.description}
-        </p>
+        {!hideDescription && (
+          <p className="line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
+            {listing.description}
+          </p>
+        )}
 
         <div className="mt-auto flex items-center gap-1 pt-0.5 text-[10px] font-medium text-accent sm:gap-1.5 sm:pt-2 sm:text-[12px]">
           <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />

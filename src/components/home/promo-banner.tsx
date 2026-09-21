@@ -23,7 +23,7 @@ const CITY_WORK_VIDEOS: Record<string, string> = {
 /** Promo banner above the category grid — the site's own "advertisement". */
 export function PromoBanner() {
   const { t } = useTranslation();
-  const { city, hydrated } = useApp();
+  const { city, hydrated, createHref } = useApp();
   const locationLabel =
     hydrated && city ? t(`cities.${CITY_SLUG[city]}.in`) : t("common.acrossTheRegion");
   const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
@@ -84,7 +84,7 @@ export function PromoBanner() {
               </p>
               <div className='mt-1 flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-center md:justify-start'>
                 <CtaButton
-                  href='/create'
+                  href={createHref}
                   size='default'
                   className='w-full whitespace-nowrap px-4 sm:w-auto'
                 >

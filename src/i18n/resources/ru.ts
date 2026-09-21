@@ -125,7 +125,7 @@ export const ru = {
       loginError: "Введите номер телефона или эл. почту",
       passwordLabel: "Пароль",
       passwordError: "Введите пароль",
-      passwordTooShort: "Минимум 6 символов",
+      invalidCredentials: "Неверный логин или пароль",
       remember: "Запомнить меня",
       forgotPassword: "Забыли пароль?",
       submit: "Войти",
@@ -173,6 +173,8 @@ export const ru = {
   profile: {
     memberSince: "На сайте с {{date}}",
     signOut: "Выйти",
+    changePhoto: "Изменить фото",
+    photoError: "Фото должно быть изображением до 2 МБ",
     signedOut: {
       title: "Вы ещё не вошли в систему",
       description:

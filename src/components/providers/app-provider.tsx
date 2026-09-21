@@ -6,6 +6,7 @@ import { i18next } from "@/i18n/config";
 import type { Currency } from "@/lib/currency";
 import { LOCALE_HTML_LANG, localeFromPathname, stripLocalePrefix, withLocalePrefix, type Locale } from "@/lib/i18n";
 import type { Listing } from "@/lib/types";
+import { SEED_LISTING } from "@/mock/seed-listing";
 
 const FAVORITES_KEY = "syuniq:favorites";
 const CITY_KEY = "syuniq:city";
@@ -13,6 +14,10 @@ const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
 const RECENT_SEARCHES_KEY = "syuniq:recentSearches";
 const USER_KEY = "syuniq:user";
+// Bumped to "v2": anyone who deleted the seed listing under the old key has an empty array
+// saved there, which (correctly, by design) is never re-seeded — bumping the key itself is a
+// one-time reset that gets everyone back the example listing once, on this deploy only.
+const PUBLISHED_KEY = "syuniq:published:v2";
 const MAX_RECENT_SEARCHES = 8;
 
 export type Theme = "light" | "dark";
@@ -40,9 +45,14 @@ interface AppState {
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
   clearFavorites: () => void;
-  /** Listings published through the wizard in this session. */
+  /** Listings published through the wizard, persisted to localStorage (starts seeded with one
+   * example listing so the profile's "my listings" tab isn't empty on a first visit). */
   published: Listing[];
   publishListing: (listing: Listing) => void;
+  /** Replaces an existing published listing in place — the wizard's edit mode. */
+  updateListing: (id: string, listing: Listing) => void;
+  /** Removes a published listing — the profile's "my listings" delete action. */
+  deleteListing: (id: string) => void;
   /** Selected city, shown next to search; null until the user picks one. */
   city: string | null;
   setCity: (city: string) => void;
@@ -86,6 +96,12 @@ interface AppState {
   signUp: (user: AuthUser) => void;
   updateUser: (patch: Partial<AuthUser>) => void;
   signOut: () => void;
+  /** "/create" when signed in, otherwise "/sign-in" — every "publish a listing" entry point
+   * (header, bottom nav, footer, home banners, profile, empty states) links through this
+   * instead of a bare "/create", so signed-out visitors land straight on the sign-in form
+   * instead of bouncing through /create's own redirect (and the header/footer flash that'd
+   * cause — see SiteChrome). Not locale-prefixed; wrap with localizeHref where needed. */
+  createHref: string;
 }
 
 const AppContext = React.createContext<AppState | null>(null);
@@ -165,6 +181,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore unavailable or corrupted storage — user simply starts signed out.
     }
+    try {
+      const savedPublished = window.localStorage.getItem(PUBLISHED_KEY);
+      // No key yet means this browser has never published anything — seed the one example
+      // listing so "my listings" has something to show and edit right away. Once anything is
+      // saved under this key (even an explicit empty array, after deleting the seed), that
+      // takes over for good.
+      setPublished(savedPublished ? (JSON.parse(savedPublished) as Listing[]) : [SEED_LISTING]);
+    } catch {
+      setPublished([SEED_LISTING]);
+    }
     setHydrated(true);
   }, []);
 
@@ -187,6 +213,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [favorites, hydrated]);
 
+  React.useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(PUBLISHED_KEY, JSON.stringify(published));
+    } catch {
+      // Storage can be full or blocked; published listings stay in memory for this session.
+    }
+    // Note: photos picked in the wizard become blob: object URLs (see step-photos.tsx), which
+    // only live for this tab's session — their listing metadata survives a reload just fine,
+    // but the photos themselves will 404 until re-uploaded. A real backend would upload the
+    // file instead; there isn't one here.
+  }, [published, hydrated]);
+
   const toggleFavorite = React.useCallback((id: string) => {
     setFavorites((prev) => (prev.includes(id) ? prev.filter((f) => f !== id) : [id, ...prev]));
   }, []);
@@ -197,6 +236,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const publishListing = React.useCallback((listing: Listing) => {
     setPublished((prev) => [listing, ...prev]);
+  }, []);
+
+  const updateListing = React.useCallback((id: string, listing: Listing) => {
+    setPublished((prev) => prev.map((item) => (item.id === id ? listing : item)));
+  }, []);
+
+  const deleteListing = React.useCallback((id: string) => {
+    setPublished((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const setCity = React.useCallback((next: string) => {
@@ -299,6 +346,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const createHref = hydrated && user ? "/create" : "/sign-in";
+
   const value = React.useMemo<AppState>(
     () => ({
       favorites,
@@ -307,6 +356,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearFavorites,
       published,
       publishListing,
+      updateListing,
+      deleteListing,
       city,
       setCity,
       locale,
@@ -335,6 +386,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signUp,
       updateUser,
       signOut,
+      createHref,
     }),
     [
       favorites,
@@ -343,6 +395,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearFavorites,
       published,
       publishListing,
+      updateListing,
+      deleteListing,
       city,
       setCity,
       locale,
@@ -371,6 +425,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signUp,
       updateUser,
       signOut,
+      createHref,
     ],
   );
 

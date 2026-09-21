@@ -26,7 +26,7 @@ const TABS = [
 /** Cross-category search: text, city and price only — deeper filters live on category pages. */
 export function SearchResults() {
   const router = useRouter();
-  const { localizeHref } = useApp();
+  const { localizeHref, createHref } = useApp();
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
   const city = searchParams.get("city") ?? "";
@@ -108,7 +108,7 @@ export function SearchResults() {
             }}
             secondaryAction={{
               label: "Հրապարակել հայտարարություն",
-              href: "/create"
+              href: createHref
             }}
           />
         ) : (

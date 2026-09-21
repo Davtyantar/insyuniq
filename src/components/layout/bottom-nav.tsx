@@ -33,13 +33,13 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 export function BottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { user, hydrated } = useApp();
+  const { user, hydrated, createHref } = useApp();
   // Signed-out visitors go straight to /sign-in — /profile would only bounce them
   // there itself, flashing its own chrome in transit. See header.tsx for the same fix.
   const profileHref = hydrated && user ? "/profile" : "/sign-in";
 
   const LEADING_ITEM: NavItem = { href: "/", label: t("common.home"), icon: Home };
-  const CENTER_ITEM: NavItem = { href: "/create", label: t("common.publish"), icon: Plus, primary: true };
+  const CENTER_ITEM: NavItem = { href: createHref, label: t("common.publish"), icon: Plus, primary: true };
   const TRAILING_ITEM: NavItem = { href: profileHref, label: t("common.profile"), icon: User };
 
   return (

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
 import { useRouter } from "next/navigation";
-import { LogIn } from "lucide-react";
+import { CircleAlert, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -12,7 +12,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneOrEmailInput } from "@/components/ui/phone-or-email-input";
-import { CURRENT_USER } from "@/mock/sellers";
+import { CURRENT_USER, DEMO_CREDENTIALS } from "@/mock/sellers";
 import { cn } from "@/lib/utils";
 
 interface FormErrors {
@@ -29,6 +29,7 @@ export function SignInView() {
   const [password, setPassword] = React.useState("");
   const [remember, setRemember] = React.useState(true);
   const [errors, setErrors] = React.useState<FormErrors>({});
+  const [authError, setAuthError] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
 
   function handleSubmit(event: React.FormEvent) {
@@ -37,22 +38,22 @@ export function SignInView() {
     const nextErrors: FormErrors = {};
     if (!login.trim()) nextErrors.login = t("auth.signIn.loginError");
     if (!password) nextErrors.password = t("auth.signIn.passwordError");
-    else if (password.length < 6) nextErrors.password = t("auth.signIn.passwordTooShort");
     setErrors(nextErrors);
+    setAuthError(false);
     if (Object.keys(nextErrors).length > 0) return;
 
-    setSubmitting(true);
-    const trimmed = login.trim();
-    const isEmail = trimmed.includes("@");
+    // No real backend behind this prototype — DEMO_CREDENTIALS stands in for an account
+    // database. Anything else is rejected instead of silently signing in as a stranger.
+    const matches =
+      login.trim().toLowerCase() === DEMO_CREDENTIALS.login && password === DEMO_CREDENTIALS.password;
+    if (!matches) {
+      setAuthError(true);
+      return;
+    }
 
-    // No backend behind this form — mimic a short round trip, then sign in locally.
+    setSubmitting(true);
     window.setTimeout(() => {
-      signIn({
-        ...CURRENT_USER,
-        phone: isEmail ? CURRENT_USER.phone : trimmed,
-        email: isEmail ? trimmed : undefined,
-        registeredAt: CURRENT_USER.registeredAt,
-      });
+      signIn(CURRENT_USER);
       router.push(localizeHref("/profile"));
     }, 450);
   }
@@ -74,7 +75,10 @@ export function SignInView() {
           <PhoneOrEmailInput
             id="signin-login"
             value={login}
-            onChange={setLogin}
+            onChange={(value) => {
+              setLogin(value);
+              setAuthError(false);
+            }}
             aria-invalid={!!errors.login}
             className={cn(errors.login && errorInputClass)}
           />
@@ -84,13 +88,23 @@ export function SignInView() {
           <PasswordInput
             id="signin-password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setAuthError(false);
+            }}
             placeholder="••••••••"
             autoComplete="current-password"
             aria-invalid={!!errors.password}
             className={cn(errors.password && errorInputClass)}
           />
         </AuthField>
+
+        {authError && (
+          <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
+            <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+            {t("auth.signIn.invalidCredentials")}
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center justify-between gap-2">
           <label className="flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground">

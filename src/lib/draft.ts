@@ -1,22 +1,27 @@
 import { MOCK_NOW } from "./constants";
 import type { Currency } from "./currency";
-import type {
-  BodyType,
-  CarCondition,
-  CarListing,
-  CategorySlug,
-  DealType,
-  DriveType,
-  FuelType,
-  HotelListing,
-  Listing,
-  RealEstateCondition,
-  RealEstateListing,
-  RentalListing,
-  RentalTerm,
-  ServiceListing,
-  Steering,
-  Transmission,
+import {
+  isCar,
+  isHotelStay,
+  isRealEstate,
+  isRental,
+  isService,
+  type BodyType,
+  type CarCondition,
+  type CarListing,
+  type CategorySlug,
+  type DealType,
+  type DriveType,
+  type FuelType,
+  type HotelListing,
+  type Listing,
+  type RealEstateCondition,
+  type RealEstateListing,
+  type RentalListing,
+  type RentalTerm,
+  type ServiceListing,
+  type Steering,
+  type Transmission,
 } from "./types";
 import {
   APARTMENT_PHOTOS,
@@ -401,4 +406,117 @@ export function draftToListing(draft: ListingDraft, id = `my-${Date.now()}`): Li
     pit: draft.pit,
   };
   return realEstate;
+}
+
+/** Reverses draftToListing — opens an already-published listing back into the wizard for
+ * editing. `contact` prefills the price step's name/phone fields, which draftToListing never
+ * actually stores on the listing itself (the seller card always reads those from the account,
+ * not the ad), so there's nothing on `listing` to read them back from. */
+export function listingToDraft(listing: Listing, contact?: { name?: string; phone?: string }): ListingDraft {
+  const draft: ListingDraft = {
+    ...EMPTY_DRAFT,
+    category: listing.category === "work" ? null : listing.category,
+    subcategory: listing.subcategory,
+    city: listing.city,
+    district: listing.district ?? "",
+    address: listing.address,
+    title: listing.title,
+    description: listing.description,
+    price: listing.prices?.USD != null ? String(listing.prices.USD) : String(listing.price),
+    priceEur: listing.prices?.EUR != null ? String(listing.prices.EUR) : "",
+    priceAmd: listing.prices?.AMD != null ? String(listing.prices.AMD) : "",
+    priceRub: listing.prices?.RUB != null ? String(listing.prices.RUB) : "",
+    photos: listing.images.map((url, index) => ({ id: `existing-${index}`, url, name: `photo-${index + 1}` })),
+    contactName: contact?.name ?? "",
+    phone: contact?.phone ?? "",
+    urgent: listing.urgent,
+    negotiable: listing.negotiable ?? false,
+  };
+
+  if (isRealEstate(listing)) {
+    return {
+      ...draft,
+      deal: listing.deal,
+      rooms: String(listing.rooms),
+      area: String(listing.area),
+      landArea: listing.landArea != null ? String(listing.landArea) : "",
+      landType: listing.landType ?? "",
+      floor: listing.floor != null ? String(listing.floor) : "",
+      totalFloors: listing.totalFloors != null ? String(listing.totalFloors) : "",
+      bathrooms: String(listing.bathrooms),
+      buildYear: listing.buildYear != null ? String(listing.buildYear) : "",
+      ceilingHeight: listing.ceilingHeight != null ? String(listing.ceilingHeight) : "",
+      reCondition: listing.condition,
+      buildingType: listing.buildingType,
+      furniture: listing.furniture,
+      balcony: listing.balcony,
+      parking: listing.parking,
+      water: listing.water ?? false,
+      gas: listing.gas ?? false,
+      electricity: listing.electricity ?? false,
+      pit: listing.pit ?? false,
+    };
+  }
+
+  if (isCar(listing)) {
+    return {
+      ...draft,
+      brand: listing.brand,
+      model: listing.model,
+      year: String(listing.year),
+      mileage: String(listing.mileage),
+      bodyType: listing.bodyType,
+      fuel: listing.fuel,
+      engineVolume: String(listing.engineVolume),
+      power: String(listing.power),
+      transmission: listing.transmission,
+      drive: listing.drive,
+      color: listing.color,
+      carCondition: listing.condition,
+      steering: listing.steering,
+      owners: String(listing.owners),
+      accidentFree: listing.accidentFree,
+    };
+  }
+
+  if (isRental(listing)) {
+    return {
+      ...draft,
+      term: listing.term,
+      rooms: String(listing.rooms),
+      area: String(listing.area),
+      floor: listing.floor != null ? String(listing.floor) : "",
+      totalFloors: listing.totalFloors != null ? String(listing.totalFloors) : "",
+      bathrooms: String(listing.bathrooms),
+      furniture: listing.furniture,
+      balcony: listing.balcony,
+      parking: listing.parking,
+    };
+  }
+
+  if (isHotelStay(listing)) {
+    return {
+      ...draft,
+      term: listing.term,
+      rooms: String(listing.rooms),
+      area: String(listing.area),
+      floor: listing.floor != null ? String(listing.floor) : "",
+      totalFloors: listing.totalFloors != null ? String(listing.totalFloors) : "",
+      bathrooms: String(listing.bathrooms),
+      furniture: listing.furniture,
+      balcony: listing.balcony,
+      parking: listing.parking,
+      pool: listing.pool,
+    };
+  }
+
+  if (isService(listing)) {
+    return {
+      ...draft,
+      provider: listing.provider,
+      workingHours: listing.workingHours ?? "",
+    };
+  }
+
+  return draft;
 }

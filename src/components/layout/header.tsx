@@ -11,8 +11,9 @@ import { LocationPicker } from "@/components/layout/location-picker";
 import { Logo } from "@/components/layout/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { useApp } from "@/components/providers/app-provider";
+import { useApp, type AuthUser } from "@/components/providers/app-provider";
 import { SearchBar } from "@/components/search/search-bar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AttentionRing } from "@/components/ui/attention-ring";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_LIST } from "@/lib/categories";
@@ -28,6 +29,20 @@ function CountBadge({ count }: { count: number }) {
   );
 }
 
+/** The header's profile glyph: the signed-in user's own avatar once we have one, the generic
+ * icon otherwise — so "who am I logged in as" is visible at a glance, not just a name label. */
+function ProfileGlyph({ user, className }: { user: AuthUser | null; className?: string }) {
+  if (!user) return <User className={className} />;
+  return (
+    <Avatar className={className}>
+      {user.avatar && <AvatarImage src={user.avatar} alt="" />}
+      <AvatarFallback className="text-[10px] font-semibold">
+        {user.name.slice(0, 1).toUpperCase()}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
 // Key for the trailing "all listings" link in the category nav's floating indicator.
 const NAV_ALL_KEY = "all";
 
@@ -35,7 +50,7 @@ export function Header() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const localPathname = stripLocalePrefix(pathname);
-  const { favorites, hydrated, searchOpen, categoriesMenuOpen, mobileMenuOpen, setMobileMenuOpen, user } =
+  const { favorites, hydrated, searchOpen, categoriesMenuOpen, mobileMenuOpen, setMobileMenuOpen, user, createHref } =
     useApp();
   const favoritesCount = hydrated ? favorites.length : 0;
   const signedIn = hydrated && !!user;
@@ -45,10 +60,6 @@ export function Header() {
   // extra hop flashes the profile page's chrome before the auth page's lack
   // of it, a visible jump. Going straight there skips that entirely.
   const profileHref = signedIn ? "/profile" : "/sign-in";
-  const actions = [
-    { href: "/favorites", label: t("common.favorites"), icon: Heart, badge: "favorites" as const },
-    { href: profileHref, label: profileLabel, icon: User, badge: null },
-  ];
   const mobileMenuTriggerRef = React.useRef<HTMLButtonElement>(null);
   // The home page already lists every category as tiles, so the nav row would repeat it.
   const showCategoryNav = localPathname !== "/";
@@ -111,20 +122,23 @@ export function Header() {
 
           {/* Phones reach these from the bottom navigation, so the header keeps only search. */}
           <nav className="hidden items-center gap-0.5 md:flex">
-            {actions.map((action) => (
-              <Button key={action.href} variant="ghost" size="icon" asChild className="relative">
-                <Link href={action.href} title={action.label} aria-label={action.label}>
-                  <action.icon className="h-5 w-5" />
-                  <CountBadge count={action.badge === "favorites" ? favoritesCount : 0} />
-                </Link>
-              </Button>
-            ))}
+            <Button variant="ghost" size="icon" asChild className="relative">
+              <Link href="/favorites" title={t("common.favorites")} aria-label={t("common.favorites")}>
+                <Heart className="h-5 w-5" />
+                <CountBadge count={favoritesCount} />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild className="relative">
+              <Link href={profileHref} title={profileLabel} aria-label={profileLabel}>
+                <ProfileGlyph user={signedIn ? user : null} className="h-6 w-6" />
+              </Link>
+            </Button>
             <ThemeToggle />
           </nav>
 
           <AttentionRing>
             <Button variant="accent" asChild className="gap-2">
-              <Link href="/create" title={t("common.publishListing")}>
+              <Link href={createHref} title={t("common.publishListing")}>
                 <Plus className="h-[18px] w-[18px]" />
                 <span className="hidden sm:inline">{t("common.publishListing")}</span>
               </Link>
@@ -151,7 +165,7 @@ export function Header() {
                 className="gap-1.5 rounded-full px-3.5"
               >
                 <Link href={profileHref}>
-                  <User className="h-4 w-4" />
+                  <ProfileGlyph user={signedIn ? user : null} className="h-5 w-5" />
                   {profileLabel}
                 </Link>
               </Button>

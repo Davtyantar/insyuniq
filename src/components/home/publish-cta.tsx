@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useApp } from "@/components/providers/app-provider";
 import { CtaButton } from "@/components/ui/cta-button";
 import { APP_NAME } from "@/lib/constants";
 
 /** Closing "publish for free" banner on the home page. */
 export function PublishCta() {
   const { t } = useTranslation();
+  const { createHref } = useApp();
   return (
     <section className="container py-12 md:py-16">
       <div className="relative overflow-hidden rounded-3xl bg-card p-6 ring-1 ring-black/5 dark:ring-white/10 sm:p-9 md:p-12">
@@ -50,7 +52,7 @@ export function PublishCta() {
               {t("home.cta.text")}
             </p>
 
-            <CtaButton href="/create" className="mt-1">
+            <CtaButton href={createHref} className="mt-1">
               {t("home.cta.button")}
             </CtaButton>
           </div>
