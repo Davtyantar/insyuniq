@@ -71,6 +71,8 @@
     @apply border-border;
   }
   html {
+    /* Painted before body styles resolve, so a PWA launch or overscroll never shows black. */
+    background-color: hsl(var(--background));
     -webkit-text-size-adjust: 100%;
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--accent) / 0.55) transparent;

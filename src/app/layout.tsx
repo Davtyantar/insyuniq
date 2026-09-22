@@ -1,12 +1,35 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SiteChrome } from "@/components/layout/site-chrome";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { AppProvider } from "@/components/providers/app-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import { SITE_URL } from "@/lib/seo";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import "./globals.css";
+
+/** iOS launch screens for the installed app, as [CSS width, CSS height, pixel ratio]. iOS shows a
+ * black screen on launch unless one of these matches the device exactly; the files are white with
+ * the app icon, generated into public/splash at width×ratio by height×ratio. */
+const IOS_SPLASH_SCREENS: [number, number, number][] = [
+  [440, 956, 3],
+  [430, 932, 3],
+  [402, 874, 3],
+  [393, 852, 3],
+  [428, 926, 3],
+  [390, 844, 3],
+  [375, 812, 3],
+  [414, 896, 3],
+  [414, 896, 2],
+  [414, 736, 3],
+  [375, 667, 2],
+  [320, 568, 2],
+  [1024, 1366, 2],
+  [834, 1194, 2],
+  [820, 1180, 2],
+  [768, 1024, 2],
+];
 
 const SITE_DESCRIPTION =
   "Անշարժ գույքի և ավտոմեքենաների առք ու վաճառքի ու վարձակալության հայտարարություններ. բնակարաններ, տներ, հողատարածքներ, մարդատար և էլեկտրական մեքենաներ։";
@@ -46,6 +69,10 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: APP_NAME,
+    startupImage: IOS_SPLASH_SCREENS.map(([width, height, ratio]) => ({
+      url: `/splash/splash-${width * ratio}x${height * ratio}.png`,
+      media: `(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
+    })),
   },
 };
 
@@ -84,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProvider>
           <SiteChrome>{children}</SiteChrome>
         </AppProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
