@@ -11,8 +11,8 @@ export function PublishCta() {
   const { t } = useTranslation();
   const { createHref } = useApp();
   return (
-    <section className="container py-12 md:py-16">
-      <div className="relative overflow-hidden rounded-3xl bg-card p-6 ring-1 ring-black/5 dark:ring-white/10 sm:p-9 md:p-12">
+    <section className="container py-8 md:py-16">
+      <div className="relative overflow-hidden rounded-3xl bg-card p-5 ring-1 ring-black/5 dark:ring-white/10 sm:p-9 md:p-12">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(37,99,246,0.4)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(15,23,42,0.22)_1.4px,transparent_0)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_120%_100%_at_100%_0%,black,transparent_75%)] dark:bg-[radial-gradient(circle_at_1px_1px,rgba(147,197,253,0.45)_1.8px,transparent_0),radial-gradient(circle_at_13px_13px,rgba(226,232,240,0.2)_1.4px,transparent_0)]"
@@ -27,8 +27,8 @@ export function PublishCta() {
           />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center gap-7 text-center md:flex-row md:items-center md:justify-between md:gap-10 md:text-left">
-          <div className="flex flex-col items-center gap-4 md:items-start">
+        <div className="relative z-10 flex flex-col items-center gap-4 text-center sm:gap-7 md:flex-row md:items-center md:justify-between md:gap-10 md:text-left">
+          <div className="flex flex-col items-center gap-3 sm:gap-4 md:items-start">
             <Image
               src="/logo.png"
               alt={APP_NAME}

@@ -13,7 +13,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 4,
     phone: "+374 91 45 22 18",
     responseTime: "обычно отвечает в течение часа",
-    online: true,
+    online: true
   },
   {
     id: "s2",
@@ -26,7 +26,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 138,
     phone: "+374 10 54 88 00",
     responseTime: "обычно отвечает в течение 15 минут",
-    online: true,
+    online: true
   },
   {
     id: "s3",
@@ -39,7 +39,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 2,
     phone: "+374 93 77 10 45",
     responseTime: "обычно отвечает в течение 3 часов",
-    online: false,
+    online: false
   },
   {
     id: "s4",
@@ -52,7 +52,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 96,
     phone: "+374 10 32 41 90",
     responseTime: "обычно отвечает в течение 30 минут",
-    online: true,
+    online: true
   },
   {
     id: "s5",
@@ -65,7 +65,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 3,
     phone: "+374 55 60 33 12",
     responseTime: "обычно отвечает в течение 2 часов",
-    online: false,
+    online: false
   },
   {
     id: "s6",
@@ -78,7 +78,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 212,
     phone: "+374 10 20 77 77",
     responseTime: "обычно отвечает в течение 10 минут",
-    online: true,
+    online: true
   },
   {
     id: "s7",
@@ -91,7 +91,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 5,
     phone: "+374 98 12 64 30",
     responseTime: "обычно отвечает в течение часа",
-    online: true,
+    online: true
   },
   {
     id: "s8",
@@ -104,7 +104,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 47,
     phone: "+374 44 90 12 12",
     responseTime: "обычно отвечает в течение 20 минут",
-    online: true,
+    online: true
   },
   {
     id: "s9",
@@ -117,7 +117,7 @@ export const SELLERS: Seller[] = [
     listingsCount: 2,
     phone: "+374 77 41 89 06",
     responseTime: "обычно отвечает в течение суток",
-    online: false,
+    online: false
   },
   {
     id: "s10",
@@ -130,8 +130,8 @@ export const SELLERS: Seller[] = [
     listingsCount: 6,
     phone: "+374 94 28 55 71",
     responseTime: "обычно отвечает в течение 2 часов",
-    online: false,
-  },
+    online: false
+  }
 ];
 
 /** The signed-in user of this prototype — see DEMO_CREDENTIALS for how to log in as them. */
@@ -146,7 +146,7 @@ export const CURRENT_USER: Seller = {
   listingsCount: 4,
   phone: "+374 91 00 44 27",
   responseTime: "սովորաբար պատասխանում է մեկ ժամվա ընթացքում",
-  online: true,
+  online: true
 };
 
 /**
@@ -154,10 +154,10 @@ export const CURRENT_USER: Seller = {
  * a real account database against, so this stands in for one. Matching this logs in as
  * CURRENT_USER; anything else shows an "invalid credentials" error.
  */
-export const DEMO_CREDENTIALS = { login: "karen", password: "123" };
+export const DEMO_CREDENTIALS = { login: "+37477112233", password: "123" };
 
 const byId = new Map<string, Seller>(
-  [...SELLERS, CURRENT_USER].map((seller) => [seller.id, seller]),
+  [...SELLERS, CURRENT_USER].map((seller) => [seller.id, seller])
 );
 
 export function getSeller(id: string): Seller {
