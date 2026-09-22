@@ -154,7 +154,7 @@ export const CURRENT_USER: Seller = {
  * a real account database against, so this stands in for one. Matching this logs in as
  * CURRENT_USER; anything else shows an "invalid credentials" error.
  */
-export const DEMO_CREDENTIALS = { login: "+37477112233", password: "123" };
+export const DEMO_CREDENTIALS = { logins: ["karen", "+37477112233"], password: "123" };
 
 const byId = new Map<string, Seller>(
   [...SELLERS, CURRENT_USER].map((seller) => [seller.id, seller])

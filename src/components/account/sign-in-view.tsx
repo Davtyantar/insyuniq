@@ -45,7 +45,8 @@ export function SignInView() {
     // No real backend behind this prototype — DEMO_CREDENTIALS stands in for an account
     // database. Anything else is rejected instead of silently signing in as a stranger.
     const matches =
-      login.trim().toLowerCase() === DEMO_CREDENTIALS.login && password === DEMO_CREDENTIALS.password;
+      DEMO_CREDENTIALS.logins.includes(login.trim().toLowerCase()) &&
+      password.trim() === DEMO_CREDENTIALS.password;
     if (!matches) {
       setAuthError(true);
       return;
