@@ -12,6 +12,7 @@ import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneOrEmailInput } from "@/components/ui/phone-or-email-input";
+import { getDemoPassword } from "@/lib/demo-password";
 import { CURRENT_USER, DEMO_CREDENTIALS } from "@/mock/sellers";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +47,7 @@ export function SignInView() {
     // database. Anything else is rejected instead of silently signing in as a stranger.
     const matches =
       DEMO_CREDENTIALS.logins.includes(login.trim().toLowerCase()) &&
-      password.trim() === DEMO_CREDENTIALS.password;
+      password.trim() === getDemoPassword();
     if (!matches) {
       setAuthError(true);
       return;

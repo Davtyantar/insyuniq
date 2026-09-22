@@ -11,6 +11,7 @@ import { LocationPicker } from "@/components/layout/location-picker";
 import { Logo } from "@/components/layout/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { UserMenu } from "@/components/layout/user-menu";
 import { useApp, type AuthUser } from "@/components/providers/app-provider";
 import { SearchBar } from "@/components/search/search-bar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -61,6 +62,7 @@ export function Header() {
   // of it, a visible jump. Going straight there skips that entirely.
   const profileHref = signedIn ? "/profile" : "/sign-in";
   const mobileMenuTriggerRef = React.useRef<HTMLButtonElement>(null);
+  const publishRef = React.useRef<HTMLDivElement>(null);
   // The home page already lists every category as tiles, so the nav row would repeat it.
   const showCategoryNav = localPathname !== "/";
   // Both the search field and the categories menu spotlight the top bar the same way.
@@ -128,22 +130,32 @@ export function Header() {
                 <CountBadge count={favoritesCount} />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" asChild className="relative">
-              <Link href={profileHref} title={profileLabel} aria-label={profileLabel}>
-                <ProfileGlyph user={signedIn ? user : null} className="h-6 w-6" />
-              </Link>
-            </Button>
             <ThemeToggle />
+            {signedIn ? (
+              <UserMenu user={user} endRef={publishRef}>
+                <Button variant="ghost" size="icon" title={profileLabel} aria-label={profileLabel}>
+                  <ProfileGlyph user={user} className="h-6 w-6" />
+                </Button>
+              </UserMenu>
+            ) : (
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href={profileHref} title={profileLabel} aria-label={profileLabel}>
+                  <ProfileGlyph user={null} className="h-6 w-6" />
+                </Link>
+              </Button>
+            )}
           </nav>
 
-          <AttentionRing>
-            <Button variant="accent" asChild className="gap-2">
-              <Link href={createHref} title={t("common.publishListing")}>
-                <Plus className="h-[18px] w-[18px]" />
-                <span className="hidden sm:inline">{t("common.publishListing")}</span>
-              </Link>
-            </Button>
-          </AttentionRing>
+          <div ref={publishRef} className="shrink-0">
+            <AttentionRing>
+              <Button variant="accent" asChild className="gap-2">
+                <Link href={createHref} title={t("common.publishListing")}>
+                  <Plus className="h-[18px] w-[18px]" />
+                  <span className="hidden sm:inline">{t("common.publishListing")}</span>
+                </Link>
+              </Button>
+            </AttentionRing>
+          </div>
         </div>
 
         {/* Phone: logo + favorites/theme/profile up top, burger + search underneath. */}
@@ -158,17 +170,21 @@ export function Header() {
                 </Link>
               </Button>
               <ThemeToggle />
-              <Button
-                variant={signedIn ? "secondary" : "accent"}
-                size="sm"
-                asChild
-                className="gap-1.5 rounded-full px-3.5"
-              >
-                <Link href={profileHref}>
-                  <ProfileGlyph user={signedIn ? user : null} className="h-5 w-5" />
-                  {profileLabel}
-                </Link>
-              </Button>
+              {signedIn ? (
+                <UserMenu user={user}>
+                  <Button variant="secondary" size="sm" className="gap-1.5 rounded-full px-3.5">
+                    <ProfileGlyph user={user} className="h-5 w-5" />
+                    {profileLabel}
+                  </Button>
+                </UserMenu>
+              ) : (
+                <Button variant="accent" size="sm" asChild className="gap-1.5 rounded-full px-3.5">
+                  <Link href={profileHref}>
+                    <ProfileGlyph user={null} className="h-5 w-5" />
+                    {profileLabel}
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
 

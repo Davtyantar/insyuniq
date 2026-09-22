@@ -205,6 +205,10 @@ export const ru = {
       emailError: "Введите корректный адрес эл. почты",
       save: "Сохранить изменения",
       saved: "Изменения сохранены",
+      passwordTitle: "Сменить пароль",
+      currentPasswordLabel: "Текущий пароль",
+      currentPasswordError: "Неверный текущий пароль",
+      newPasswordLabel: "Новый пароль",
     },
   },
   favorites: {

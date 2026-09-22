@@ -204,6 +204,10 @@ export const en = {
       emailError: "Enter a valid email address",
       save: "Save changes",
       saved: "Changes saved",
+      passwordTitle: "Change password",
+      currentPasswordLabel: "Current password",
+      currentPasswordError: "Current password is incorrect",
+      newPasswordLabel: "New password",
     },
   },
   favorites: {

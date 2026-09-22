@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
-import { useRouter } from "next/navigation";
-import { Camera, LogOut, Package, Plus } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Camera, KeyRound, Package, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { PasswordInput } from "@/components/auth/password-input";
 import { EmptyState } from "@/components/listings/empty-state";
 import { MyListingCard } from "@/components/listings/my-listing-card";
 import { useApp, type AuthUser } from "@/components/providers/app-provider";
@@ -15,7 +16,7 @@ import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatMonthYear } from "@/lib/format";
+import { getDemoPassword, setDemoPassword } from "@/lib/demo-password";
 import { cn } from "@/lib/utils";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,7 +39,16 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
   const [name, setName] = React.useState(user.name);
   const [phone, setPhone] = React.useState(user.phone);
   const [email, setEmail] = React.useState(user.email ?? "");
-  const [errors, setErrors] = React.useState<{ name?: string; email?: string }>({});
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [errors, setErrors] = React.useState<{
+    name?: string;
+    email?: string;
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
   const [saved, setSaved] = React.useState(false);
 
   function handleSubmit(event: React.FormEvent) {
@@ -46,10 +56,23 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
     const nextErrors: typeof errors = {};
     if (name.trim().length < 2) nextErrors.name = t("profile.settings.nameError");
     if (email.trim() && !EMAIL_PATTERN.test(email.trim())) nextErrors.email = t("profile.settings.emailError");
+    // The password block is optional — only validated once any of its fields is touched.
+    const changingPassword = !!(currentPassword || newPassword || confirmPassword);
+    if (changingPassword) {
+      if (currentPassword !== getDemoPassword()) nextErrors.currentPassword = t("profile.settings.currentPasswordError");
+      if (newPassword.length < 6) nextErrors.newPassword = t("auth.signUp.passwordTooShort");
+      if (confirmPassword !== newPassword) nextErrors.confirmPassword = t("auth.signUp.passwordMismatch");
+    }
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
     onSave({ name: name.trim(), phone: phone.trim(), email: email.trim() || undefined });
+    if (changingPassword) {
+      setDemoPassword(newPassword);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    }
     setSaved(true);
   }
 
@@ -101,6 +124,66 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
         </AuthField>
       </div>
 
+      <div className="space-y-4 border-t border-border pt-5">
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold">{t("profile.settings.passwordTitle")}</h2>
+        </div>
+        <AuthField
+          label={t("profile.settings.currentPasswordLabel")}
+          htmlFor="settings-current-password"
+          error={errors.currentPassword}
+        >
+          <PasswordInput
+            id="settings-current-password"
+            value={currentPassword}
+            onChange={(event) => {
+              setCurrentPassword(event.target.value);
+              setSaved(false);
+            }}
+            autoComplete="current-password"
+            aria-invalid={!!errors.currentPassword}
+            className={cn(errors.currentPassword && errorInputClass)}
+          />
+        </AuthField>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AuthField
+            label={t("profile.settings.newPasswordLabel")}
+            htmlFor="settings-new-password"
+            error={errors.newPassword}
+          >
+            <PasswordInput
+              id="settings-new-password"
+              value={newPassword}
+              onChange={(event) => {
+                setNewPassword(event.target.value);
+                setSaved(false);
+              }}
+              autoComplete="new-password"
+              aria-invalid={!!errors.newPassword}
+              className={cn(errors.newPassword && errorInputClass)}
+            />
+          </AuthField>
+          <AuthField
+            label={t("auth.signUp.confirmPasswordLabel")}
+            htmlFor="settings-confirm-password"
+            error={errors.confirmPassword}
+          >
+            <PasswordInput
+              id="settings-confirm-password"
+              value={confirmPassword}
+              onChange={(event) => {
+                setConfirmPassword(event.target.value);
+                setSaved(false);
+              }}
+              autoComplete="new-password"
+              aria-invalid={!!errors.confirmPassword}
+              className={cn(errors.confirmPassword && errorInputClass)}
+            />
+          </AuthField>
+        </div>
+      </div>
+
       <div className="flex items-center gap-3 border-t border-border pt-5">
         <Button type="submit" variant="accent">
           {t("profile.settings.save")}
@@ -111,15 +194,14 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
   );
 }
 
-function ProfileLoading() {
+export function ProfileLoading() {
   return (
     <div className="container py-6 lg:py-8">
-      <div className="flex items-center gap-5 rounded-lg border border-border bg-card p-5 md:p-6">
-        <Skeleton className="h-20 w-20 rounded-full" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-4 w-56" />
-        </div>
+      <Skeleton className="h-11 w-full rounded-lg" />
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className="aspect-[4/5] w-full rounded-lg" />
+        ))}
       </div>
     </div>
   );
@@ -128,10 +210,14 @@ function ProfileLoading() {
 export function ProfileView() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, updateUser, signOut, published, hydrated, localizeHref } = useApp();
+  const { user, updateUser, published, hydrated, localizeHref, createHref } = useApp();
   const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [avatarError, setAvatarError] = React.useState(false);
-  const [tab, setTab] = React.useState("listings");
+  // The tab lives in the URL so the header's account menu can link straight to "Settings".
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") === "settings" ? "settings" : "listings";
+  const setTab = (next: string) =>
+    router.replace(localizeHref(next === "settings" ? "/profile?tab=settings" : "/profile"), { scroll: false });
 
   // No bare "you're signed out" page — send people straight to the (now much nicer) sign-in
   // form instead. It already lands back on /profile once they've signed in.
@@ -159,62 +245,6 @@ export function ProfileView() {
 
   return (
     <div className="container py-6 lg:py-8">
-      <section className="rounded-lg border border-border bg-card p-5 md:p-6">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="relative shrink-0">
-            <Avatar className="h-20 w-20">
-              {user.avatar && <AvatarImage src={user.avatar} alt="" />}
-              <AvatarFallback className="text-xl">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <button
-              type="button"
-              onClick={() => avatarInputRef.current?.click()}
-              aria-label={t("profile.changePhoto")}
-              title={t("profile.changePhoto")}
-              className="absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-sm ring-2 ring-card transition-colors hover:bg-brand-700"
-            >
-              <Camera className="h-3.5 w-3.5" />
-            </button>
-            <input
-              ref={avatarInputRef}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleAvatarChange}
-            />
-            {avatarError && (
-              <p className="absolute top-full mt-1.5 w-max max-w-[160px] text-[11px] leading-snug text-destructive">
-                {t("profile.photoError")}
-              </p>
-            )}
-          </div>
-
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold tracking-tight md:text-2xl">{user.name}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("profile.memberSince", { date: formatMonthYear(user.registeredAt) })}
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
-              <span>{user.phone}</span>
-              {user.email && <span>{user.email}</span>}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-            <Button asChild variant="accent" className="gap-2">
-              <Link href="/create">
-                <Plus className="h-4 w-4" />
-                {t("common.publish")}
-              </Link>
-            </Button>
-            <Button variant="outline" className="gap-2" onClick={signOut}>
-              <LogOut className="h-4 w-4" />
-              {t("profile.signOut")}
-            </Button>
-          </div>
-        </div>
-      </section>
-
       <FloatingTabs
         items={[
           { value: "listings", label: t("profile.tabs.listings") },
@@ -222,7 +252,6 @@ export function ProfileView() {
         ]}
         value={tab}
         onChange={setTab}
-        className="mt-6"
       />
 
       <div className="mt-5">
@@ -239,10 +268,50 @@ export function ProfileView() {
               {myListings.map((listing, index) => (
                 <MyListingCard key={listing.id} listing={listing} priority={index < 4} />
               ))}
+              <Link
+                href={createHref}
+                className="group flex min-h-[240px] flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border bg-card/50 p-4 text-center text-muted-foreground transition-colors hover:border-accent hover:bg-accent/5 hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent transition-transform duration-200 group-hover:scale-110">
+                  <Plus className="h-6 w-6" />
+                </span>
+                <span className="text-sm font-medium">{t("profile.emptyListings.action")}</span>
+              </Link>
             </div>
           ))}
 
-        {tab === "settings" && <SettingsForm user={user} onSave={updateUser} />}
+        {tab === "settings" && (
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <div className="order-2 min-w-0 flex-1 sm:order-1 sm:max-w-xl [&>form]:h-full">
+              <SettingsForm user={user} onSave={updateUser} />
+            </div>
+
+            <div className="order-1 flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-card p-5 text-center sm:order-2 sm:w-64 md:p-6">
+              <div className="relative">
+                <Avatar className="h-28 w-28">
+                  {user.avatar && <AvatarImage src={user.avatar} alt="" />}
+                  <AvatarFallback className="text-3xl">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  aria-label={t("profile.changePhoto")}
+                  title={t("profile.changePhoto")}
+                  className="absolute bottom-0.5 right-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-sm ring-2 ring-card transition-colors hover:bg-brand-700"
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => avatarInputRef.current?.click()}>
+                {t("profile.changePhoto")}
+              </Button>
+              <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
+              {avatarError && (
+                <p className="text-[12px] leading-snug text-destructive">{t("profile.photoError")}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

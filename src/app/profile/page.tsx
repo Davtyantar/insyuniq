@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ProfileView } from "@/components/account/profile-view";
+import { ProfileLoading, ProfileView } from "@/components/account/profile-view";
 
 export const metadata: Metadata = {
   title: "Պրոֆիլ",
@@ -11,5 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default function ProfilePage() {
-  return <ProfileView />;
+  return (
+    <Suspense fallback={<ProfileLoading />}>
+      <ProfileView />
+    </Suspense>
+  );
 }

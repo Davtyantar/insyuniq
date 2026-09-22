@@ -211,7 +211,11 @@ export const hy = {
       emailLabel: "Էլ. փոստ",
       emailError: "Մուտքագրեք վավեր էլ. փոստ",
       save: "Պահպանել փոփոխությունները",
-      saved: "Փոփոխությունները պահպանված են"
+      saved: "Փոփոխությունները պահպանված են",
+      passwordTitle: "Փոխել գաղտնաբառը",
+      currentPasswordLabel: "Ընթացիկ գաղտնաբառ",
+      currentPasswordError: "Ընթացիկ գաղտնաբառը սխալ է",
+      newPasswordLabel: "Նոր գաղտնաբառ"
     }
   },
   favorites: {
