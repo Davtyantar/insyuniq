@@ -148,3 +148,111 @@
     border-radius: 999px;
   }
 }
+
+/* Installed-app launch: the logo from the iOS launch image keeps spinning in place until the
+   app is ready (see components/pwa/pwa-splash.tsx). Hidden unless the pre-paint script flagged
+   a cold start with `html.pwa-launch`. Sizes/position mirror public/splash: 30vw, dead centre. */
+.pwa-splash {
+  display: none;
+}
+html.pwa-launch .pwa-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: block;
+  /* Launch images are white regardless of theme, so this is too. */
+  background: #ffffff;
+  transition: opacity 450ms ease;
+}
+html.pwa-launch body {
+  overflow: hidden;
+}
+.pwa-splash[data-leaving] {
+  opacity: 0;
+  pointer-events: none;
+}
+.pwa-splash__stage {
+  position: absolute;
+  left: 50%;
+  top: var(--pwa-splash-y, 50%);
+  width: 30vw;
+  height: 30vw;
+  transform: translate(-50%, -50%);
+  perspective: 900px;
+}
+.pwa-splash__spinner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: pwa-spin 2800ms linear infinite;
+  will-change: transform;
+}
+.pwa-splash__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* Studio sheen: a soft light band that sweeps across the face as it turns, clipped to the logo. */
+.pwa-splash__gloss {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url("/syunik-icon-transparent.png") center / contain no-repeat;
+  mask: url("/syunik-icon-transparent.png") center / contain no-repeat;
+  background:
+    radial-gradient(120% 70% at 30% 12%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(105deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 65%);
+  background-size: 100% 100%, 250% 100%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  animation: pwa-sheen 2800ms linear infinite;
+}
+/* Contact shadow under the logo — narrows as the logo turns edge-on, so the turn reads as 3D
+   while the logo itself never moves off its spot. */
+.pwa-splash__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -10%;
+  width: 62%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(16, 24, 40, 0.28), rgba(16, 24, 40, 0));
+  transform: translateX(-50%);
+  animation: pwa-shadow 2800ms linear infinite;
+}
+@keyframes pwa-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+@keyframes pwa-sheen {
+  from {
+    background-position: 0 0, 130% 0;
+  }
+  to {
+    background-position: 0 0, -130% 0;
+  }
+}
+@keyframes pwa-shadow {
+  0%,
+  50%,
+  100% {
+    transform: translateX(-50%) scaleX(1);
+  }
+  25%,
+  75% {
+    transform: translateX(-50%) scaleX(0.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pwa-splash__spinner,
+  .pwa-splash__gloss,
+  .pwa-splash__shadow {
+    animation: none;
+  }
+}
