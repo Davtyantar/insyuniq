@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { SearchOverlay } from "@/components/layout/search-overlay";
 import { stripLocalePrefix } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <div className={cn("flex min-h-screen flex-1 flex-col", showChrome && "pb-14 md:pb-0")}>
+      <ScrollToTop />
       {showChrome && <Header />}
       {showChrome && <SearchOverlay />}
       <main className="flex-1">{children}</main>

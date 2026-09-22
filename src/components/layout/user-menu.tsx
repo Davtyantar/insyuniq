@@ -31,16 +31,30 @@ export function UserMenu({
   const { t } = useTranslation();
   const { signOut } = useApp();
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState<number>();
 
-  function handleOpenChange(open: boolean) {
-    if (!open || !endRef?.current || !triggerRef.current) return;
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (!next || !endRef?.current || !triggerRef.current) return;
     const span = endRef.current.getBoundingClientRect().right - triggerRef.current.getBoundingClientRect().left;
     setWidth(Math.max(240, Math.round(span)));
   }
 
+  // Closing on a real scroll (not the few px a tap itself can cause on mobile), same as the
+  // header's location and language pickers.
+  React.useEffect(() => {
+    if (!open) return;
+    const startY = window.scrollY;
+    function handleScroll() {
+      if (Math.abs(window.scrollY - startY) > 4) setOpen(false);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [open]);
+
   return (
-    <DropdownMenu modal={false} onOpenChange={handleOpenChange}>
+    <DropdownMenu modal={false} open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger ref={triggerRef} asChild>
         {children}
       </DropdownMenuTrigger>
@@ -49,6 +63,9 @@ export function UserMenu({
         collisionPadding={16}
         className="w-60"
         style={endRef && width ? { width } : undefined}
+        // Radix hands focus back to the avatar on close, which lights up its focus ring after an
+        // ordinary click — leave focus where the click put it instead.
+        onCloseAutoFocus={(event) => event.preventDefault()}
       >
         <div className="flex items-center gap-3 px-2.5 py-2">
           <Avatar className="h-9 w-9">
