@@ -184,7 +184,7 @@ html.pwa-launch body {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  animation: pwa-spin 2800ms linear infinite;
+  animation: pwa-spin 1800ms linear infinite;
   will-change: transform;
 }
 .pwa-splash__layer {
@@ -207,7 +207,7 @@ html.pwa-launch body {
   background-size: 100% 100%, 250% 100%;
   background-repeat: no-repeat;
   mix-blend-mode: screen;
-  animation: pwa-sheen 2800ms linear infinite;
+  animation: pwa-sheen 1800ms linear infinite;
 }
 /* Contact shadow under the logo — narrows as the logo turns edge-on, so the turn reads as 3D
    while the logo itself never moves off its spot. */
@@ -220,7 +220,7 @@ html.pwa-launch body {
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(16, 24, 40, 0.28), rgba(16, 24, 40, 0));
   transform: translateX(-50%);
-  animation: pwa-shadow 2800ms linear infinite;
+  animation: pwa-shadow 1800ms linear infinite;
 }
 @keyframes pwa-spin {
   from {

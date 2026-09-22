@@ -11,18 +11,25 @@
  *
  * Bump VERSION to drop every old cache on the next activation.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const PAGES = `pages-${VERSION}`;
 const STATIC = `static-${VERSION}`;
 const ASSETS = `assets-${VERSION}`;
-const PRECACHE = ["/", "/manifest.webmanifest", "/syunik-icon.png", "/logo.png"];
+// Each into the cache its requests are served from below, or the precached copy is never hit.
+const PRECACHE_PAGES = ["/"];
+const PRECACHE_ASSETS = [
+  "/syunik-icon.png",
+  // The launch splash's logo — must never wait on the network at startup.
+  "/syunik-icon-transparent.png",
+  "/logo.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(PAGES)
-      .then((cache) => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting()),
+    Promise.all([
+      caches.open(PAGES).then((cache) => cache.addAll(PRECACHE_PAGES)),
+      caches.open(ASSETS).then((cache) => cache.addAll(PRECACHE_ASSETS)),
+    ]).then(() => self.skipWaiting()),
   );
 });
 

@@ -2,8 +2,9 @@
 
 import * as React from "react";
 
-/** One full turn. Slow enough to read as a calm showcase spin rather than a loading spinner. */
-const TURN_MS = 2800;
+/** One full turn — keep in sync with the 1800ms animations in globals.css. Brisk enough to feel
+ * alive from the first frame, still slow enough to read as a showcase spin, not a loading spinner. */
+const TURN_MS = 1800;
 /** Stay up for at least one full turn, so the spin never gets cut off a moment after it starts. */
 const MIN_VISIBLE_MS = TURN_MS;
 const FADE_MS = 450;
@@ -58,6 +59,8 @@ export function PwaSplash() {
                 src="/syunik-icon-transparent.png"
                 alt=""
                 draggable={false}
+                // Painted on the very first frame of a launch — fetch it ahead of everything else.
+                fetchPriority="high"
                 className="pwa-splash__layer"
                 style={{
                   transform: `translateZ(${z.toFixed(2)}px)`,
