@@ -61,7 +61,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         "fixed z-50 border border-border bg-card shadow-pop focus:outline-none",
         variant === "center" &&
-          "left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl p-6 data-[state=open]:animate-slide-up",
+          "left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl p-6 data-[state=open]:animate-dialog-in",
         variant === "sheet" &&
           cn(
             "inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl",
@@ -77,7 +77,7 @@ const DialogContent = React.forwardRef<
             // lg+: it's a centered modal instead, so it keeps the original subtle fade/nudge —
             // sliding "to the bottom" would fly off center, which looks wrong for a modal.
             "lg:inset-x-auto lg:left-1/2 lg:top-1/2 lg:max-h-[86vh] lg:w-[560px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-xl",
-            "lg:data-[state=open]:animate-slide-up lg:data-[state=closed]:animate-fade-out",
+            "lg:data-[state=open]:animate-dialog-in lg:data-[state=closed]:animate-fade-out",
           ),
         variant === "full" && "inset-0 rounded-none border-0 bg-slate-950 p-0",
         variant === "blur" &&

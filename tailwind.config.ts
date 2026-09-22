@@ -87,6 +87,14 @@ const config: Config = {
           from: { transform: "translateY(8px)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
+        // Same reveal as "slide-up", but for elements centered with -translate-x/y-1/2: the
+        // keyframe's own `transform` fully overrides that centering translate while it runs
+        // (animations own the whole property, not just the offset they add), so the centering
+        // has to be baked into both ends of this keyframe instead of relying on the utility.
+        "dialog-in": {
+          from: { transform: "translate(-50%, calc(-50% + 8px))", opacity: "0" },
+          to: { transform: "translate(-50%, -50%)", opacity: "1" },
+        },
         "float-3d": {
           "0%, 100%": {
             transform:
@@ -108,6 +116,7 @@ const config: Config = {
         "fade-in": "fade-in .2s ease-out",
         "fade-out": "fade-out .15s ease-in",
         "slide-up": "slide-up .25s cubic-bezier(.16,1,.3,1)",
+        "dialog-in": "dialog-in .25s cubic-bezier(.16,1,.3,1)",
         wink: "wink 3.4s ease-in-out infinite",
         "float-3d": "float-3d 6s ease-in-out infinite",
       },
