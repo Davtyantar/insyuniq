@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { Link } from "@/components/i18n/locale-link";
-import { Briefcase } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
@@ -113,81 +113,92 @@ export function PromoBanner() {
           </div>
         </div>
 
-        <div className='relative aspect-[3/2] overflow-hidden rounded-3xl bg-secondary ring-1 ring-black/5 dark:ring-white/10 md:aspect-auto'>
-          {/* The poster is a real, always-visible photo, not an empty placeholder — it fills the
-              card immediately, then slowly zooms out as it fades under the video once that's
-              ready, so the reveal reads as one continuous shot rather than a gray box popping
-              over to a clip. */}
-          <Image
-            src='/work.jpg'
-            alt=''
-            aria-hidden
-            fill
-            priority
-            sizes='(min-width: 768px) 40vw, 100vw'
-            className={cn(
-              'object-cover transition-[transform,opacity] duration-[1400ms] ease-out',
-              videoReady ? 'scale-110 opacity-0' : 'scale-100 opacity-100',
-            )}
-          />
+        <Link
+          href={workHref}
+          className='group flex flex-col overflow-hidden rounded-3xl bg-secondary ring-1 ring-black/5 dark:ring-white/10'
+        >
+          <div className='relative aspect-[3/2] w-full shrink-0 overflow-hidden sm:aspect-auto sm:flex-1'>
+            {/* The poster is a real, always-visible photo, not an empty placeholder — it fills the
+                card immediately, then slowly zooms out as it fades under the video once that's
+                ready, so the reveal reads as one continuous shot rather than a gray box popping
+                over to a clip. */}
+            <Image
+              src='/work.jpg'
+              alt=''
+              aria-hidden
+              fill
+              priority
+              sizes='(min-width: 768px) 40vw, 100vw'
+              className={cn(
+                'object-cover transition-[transform,opacity] duration-[1400ms] ease-out',
+                videoReady ? 'scale-110 opacity-0' : 'scale-100 opacity-100',
+              )}
+            />
 
-          <video
-            ref={videoRef}
-            key={workVideoSrc}
-            src={workVideoSrc}
-            aria-hidden
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload='auto'
-            onLoadedData={() => setVideoReady(true)}
-            className={cn(
-              'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out',
-              videoReady ? 'opacity-100' : 'opacity-0',
-            )}
-          />
+            <video
+              ref={videoRef}
+              key={workVideoSrc}
+              src={workVideoSrc}
+              aria-hidden
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload='auto'
+              onLoadedData={() => setVideoReady(true)}
+              className={cn(
+                'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out',
+                videoReady ? 'opacity-100' : 'opacity-0',
+              )}
+            />
 
-          {/* Bottom scrim keeps the badge/logo readable over the photo the way it already was
-              over the video — a gradient instead of a flat tint feels less like a slapped-on box. */}
-          <div
-            aria-hidden
-            className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/10'
-          />
-
-          {!videoReady && (
+            {/* Bottom scrim keeps the badge/logo readable over the photo the way it already was
+                over the video — a gradient instead of a flat tint feels less like a slapped-on box. */}
             <div
               aria-hidden
-              className='absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4'
+              className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/10'
+            />
+
+            {!videoReady && (
+              <div
+                aria-hidden
+                className='absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4'
+              >
+                <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
+                <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
+                <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white' />
+              </div>
+            )}
+
+            <Image
+              src='/logo-white.png'
+              alt=''
+              aria-hidden
+              width={765}
+              height={235}
+              className='absolute right-3 top-3 z-10 hidden h-9 w-auto opacity-90 drop-shadow-md sm:block md:h-10'
+            />
+
+            <div
+              aria-hidden
+              className='pointer-events-none absolute inset-0 z-10 hidden bg-accent/35 opacity-0 transition-opacity duration-300 sm:block sm:group-hover:opacity-100'
+            />
+            <div
+              aria-hidden
+              className='pointer-events-none absolute inset-0 z-10 hidden items-center justify-center opacity-0 transition-opacity duration-300 sm:flex sm:group-hover:opacity-100'
             >
-              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
-              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
-              <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white' />
+              <span className='inline-flex scale-95 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-accent shadow-lg transition-transform duration-300 group-hover:scale-100'>
+                {t("home.promo.work")} {locationLabel}
+                <ArrowRight className='h-4 w-4' />
+              </span>
             </div>
-          )}
+          </div>
 
-          <Image
-            src='/logo-white.png'
-            alt=''
-            aria-hidden
-            width={765}
-            height={235}
-            className='absolute right-3 top-3 z-10 hidden h-9 w-auto opacity-90 drop-shadow-md sm:block md:h-10'
-          />
-
-          <Link
-            href={workHref}
-            className='absolute right-2 top-2 z-20 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-accent to-brand-700 py-1 pl-1 pr-3 text-left shadow-xl ring-1 ring-white/25 sm:bottom-3 sm:right-3 sm:top-auto sm:gap-2 sm:py-1.5 sm:pl-1.5 sm:pr-4'
-          >
-            <span className='flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-accent shadow-sm sm:h-7 sm:w-7'>
-              <Briefcase className='h-3 w-3 sm:h-3.5 sm:w-3.5' />
-            </span>
-            <span className='flex items-center whitespace-nowrap leading-tight'>
-              <span className='text-[10px] font-semibold text-white sm:text-[13px]'>{t("home.promo.work")}</span>
-              <span className='ml-1 text-[10px] font-bold text-white/90 sm:text-[13px]'>{locationLabel}</span>
-            </span>
-          </Link>
-        </div>
+          <div className='flex items-center justify-center gap-1.5 px-5 py-3 text-sm font-semibold text-accent sm:hidden'>
+            {t("home.promo.work")} {locationLabel}
+            <ArrowRight className='h-4 w-4' />
+          </div>
+        </Link>
       </div>
     </section>
   );

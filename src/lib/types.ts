@@ -141,7 +141,7 @@ export interface RentalListing extends BaseListing {
   parking: boolean;
 }
 
-export type HotelSubcategory = "hotels" | "guesthouses" | "houses" | "cottages" | "daily-houses";
+export type HotelSubcategory = "hotels" | "guesthouses" | "houses" | "daily-houses";
 
 export interface HotelListing extends BaseListing {
   category: "hotels";

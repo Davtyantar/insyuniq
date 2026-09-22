@@ -272,7 +272,6 @@ function draftImages(draft: ListingDraft): string[] {
     if (
       draft.subcategory === "houses" ||
       draft.subcategory === "guesthouses" ||
-      draft.subcategory === "cottages" ||
       draft.subcategory === "daily-houses"
     ) {
       return [HOUSE_PHOTOS[0], HOUSE_PHOTOS[1]];

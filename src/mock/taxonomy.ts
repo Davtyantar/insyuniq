@@ -20,7 +20,6 @@ import {
   Shield,
   Sparkles,
   Store,
-  TreePine,
   Truck,
   Utensils,
   Warehouse,
@@ -111,8 +110,7 @@ export const HOTEL_SUBCATEGORIES: Option[] = [
   { value: "hotels", label: "Հյուրանոցներ", icon: Hotel },
   { value: "guesthouses", label: "Հյուրատներ", icon: DoorOpen },
   { value: "houses", label: "Հանգստյան տներ", icon: Home },
-  { value: "daily-houses", label: "Օրավարձով առանձնատներ", icon: House },
-  { value: "cottages", label: "Կոթեջներ", icon: TreePine }
+  { value: "daily-houses", label: "Օրավարձով առանձնատներ", icon: House }
 ];
 
 export const WORK_SUBCATEGORIES: Option[] = [
