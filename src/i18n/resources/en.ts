@@ -208,6 +208,9 @@ export const en = {
       currentPasswordLabel: "Current password",
       currentPasswordError: "Current password is incorrect",
       newPasswordLabel: "New password",
+      photoTitle: "Profile photo",
+      photoHint: "JPG, PNG or WebP, up to 2 MB",
+      removePhoto: "Remove photo",
     },
   },
   favorites: {

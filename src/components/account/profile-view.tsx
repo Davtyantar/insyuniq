@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Camera, KeyRound, Package, Plus } from "lucide-react";
+import { Camera, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDemoPassword, setDemoPassword } from "@/lib/demo-password";
+import { formatMonthYear } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -286,29 +287,63 @@ export function ProfileView() {
               <SettingsForm user={user} onSave={updateUser} />
             </div>
 
-            <div className="order-1 flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-card p-5 text-center sm:order-2 sm:w-64 md:p-6">
-              <div className="relative">
-                <Avatar className="h-28 w-28">
-                  {user.avatar && <AvatarImage src={user.avatar} alt="" />}
-                  <AvatarFallback className="text-3xl">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
-                </Avatar>
+            <div className="order-1 flex flex-col rounded-lg border border-border bg-card p-5 sm:order-2 sm:w-72 md:p-6">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-sm font-semibold">{t("profile.settings.photoTitle")}</h2>
+              </div>
+
+              <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   aria-label={t("profile.changePhoto")}
                   title={t("profile.changePhoto")}
-                  className="absolute bottom-0.5 right-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-sm ring-2 ring-card transition-colors hover:bg-brand-700"
+                  className="group relative rounded-full ring-4 ring-accent/15 ring-offset-2 ring-offset-card transition-shadow hover:ring-accent/40 focus:outline-none focus-visible:ring-accent"
                 >
-                  <Camera className="h-4 w-4" />
+                  <Avatar className="h-32 w-32">
+                    {user.avatar && <AvatarImage src={user.avatar} alt="" className="object-cover" />}
+                    <AvatarFallback className="text-4xl font-semibold">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  {/* Hover veil so the whole photo reads as the upload target, not just a corner badge. */}
+                  <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Camera className="h-7 w-7" />
+                  </span>
                 </button>
+                <p className="mt-4 max-w-full truncate text-base font-semibold">{user.name}</p>
+                <p className="mt-0.5 text-[13px] text-muted-foreground">
+                  {t("profile.memberSince", { date: formatMonthYear(user.registeredAt) })}
+                </p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => avatarInputRef.current?.click()}>
-                {t("profile.changePhoto")}
-              </Button>
+
+              <div className="space-y-2 border-t border-border pt-5">
+                <Button variant="outline" className="w-full gap-2" onClick={() => avatarInputRef.current?.click()}>
+                  <Camera className="h-4 w-4" />
+                  {t("profile.changePhoto")}
+                </Button>
+                {user.avatar && (
+                  <Button
+                    variant="ghost"
+                    className="w-full gap-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => {
+                      setAvatarError(false);
+                      updateUser({ avatar: undefined });
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t("profile.settings.removePhoto")}
+                  </Button>
+                )}
+                <p
+                  className={cn(
+                    "pt-1 text-center text-[12px] leading-snug",
+                    avatarError ? "text-destructive" : "text-muted-foreground",
+                  )}
+                >
+                  {avatarError ? t("profile.photoError") : t("profile.settings.photoHint")}
+                </p>
+              </div>
               <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
-              {avatarError && (
-                <p className="text-[12px] leading-snug text-destructive">{t("profile.photoError")}</p>
-              )}
             </div>
           </div>
         )}

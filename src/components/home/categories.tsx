@@ -1,5 +1,6 @@
 import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
+import { VideoHoverCta } from "@/components/home/video-hover-cta";
 import { CATEGORY_LIST } from "@/lib/categories";
 
 /** On phones, services caps its chip list at this many and folds the rest behind a "+N" chip —
@@ -87,19 +88,7 @@ export function Categories() {
                       preload='auto'
                       className='absolute inset-0 h-full w-full object-cover'
                     />
-                    <div
-                      aria-hidden
-                      className='pointer-events-none absolute inset-0 hidden bg-accent/35 opacity-0 transition-opacity duration-300 sm:block sm:group-hover:opacity-100'
-                    />
-                    <div
-                      aria-hidden
-                      className='pointer-events-none absolute inset-0 hidden items-center justify-center opacity-0 transition-opacity duration-300 sm:flex sm:group-hover:opacity-100'
-                    >
-                      <span className='inline-flex scale-95 items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-accent shadow-lg transition-transform duration-300 group-hover:scale-100'>
-                        Գտնել տուր
-                        <ArrowRight className='h-4 w-4' />
-                      </span>
-                    </div>
+                    <VideoHoverCta>Գտնել տուր</VideoHoverCta>
                   </div>
 
                   <div className='flex items-center justify-center gap-1.5 px-5 py-3 text-sm font-semibold text-accent sm:hidden'>

@@ -45,8 +45,9 @@ export function SignInView() {
 
     // No real backend behind this prototype — DEMO_CREDENTIALS stands in for an account
     // database. Anything else is rejected instead of silently signing in as a stranger.
+    // The phone field hands back a grouped "+374 77 10 20 30", so compare without the spacing.
     const matches =
-      DEMO_CREDENTIALS.logins.includes(login.trim().toLowerCase()) &&
+      login.replace(/[\s-]/g, "").toLowerCase() === DEMO_CREDENTIALS.login &&
       password.trim() === getDemoPassword();
     if (!matches) {
       setAuthError(true);

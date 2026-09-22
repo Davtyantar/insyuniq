@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Link } from "@/components/i18n/locale-link";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { VideoHoverCta } from "@/components/home/video-hover-cta";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { CtaButton } from "@/components/ui/cta-button";
@@ -162,7 +163,7 @@ export function PromoBanner() {
             {!videoReady && (
               <div
                 aria-hidden
-                className='absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4'
+                className='absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4 sm:group-hover:opacity-0'
               >
                 <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
                 <span className='h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
@@ -179,19 +180,9 @@ export function PromoBanner() {
               className='absolute right-3 top-3 z-10 hidden h-9 w-auto opacity-90 drop-shadow-md sm:block md:h-10'
             />
 
-            <div
-              aria-hidden
-              className='pointer-events-none absolute inset-0 z-10 hidden bg-accent/35 opacity-0 transition-opacity duration-300 sm:block sm:group-hover:opacity-100'
-            />
-            <div
-              aria-hidden
-              className='pointer-events-none absolute inset-0 z-10 hidden items-center justify-center opacity-0 transition-opacity duration-300 sm:flex sm:group-hover:opacity-100'
-            >
-              <span className='inline-flex scale-95 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-accent shadow-lg transition-transform duration-300 group-hover:scale-100'>
-                {t("home.promo.work")} {locationLabel}
-                <ArrowRight className='h-4 w-4' />
-              </span>
-            </div>
+            <VideoHoverCta>
+              {t("home.promo.work")} {locationLabel}
+            </VideoHoverCta>
           </div>
 
           <div className='flex items-center justify-center gap-1.5 px-5 py-3 text-sm font-semibold text-accent sm:hidden'>

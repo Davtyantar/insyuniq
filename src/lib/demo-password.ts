@@ -1,6 +1,6 @@
 import { DEMO_CREDENTIALS } from "@/mock/sellers";
 
-const PASSWORD_KEY = "syuniq:demo-password";
+const PASSWORD_KEY = "syuniq:account-password";
 
 /** The demo account's current password — DEMO_CREDENTIALS.password until it's changed from the
  * profile's settings tab, after which that override (kept in this browser only) wins. */

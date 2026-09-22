@@ -215,7 +215,10 @@ export const hy = {
       passwordTitle: "Փոխել գաղտնաբառը",
       currentPasswordLabel: "Ընթացիկ գաղտնաբառ",
       currentPasswordError: "Ընթացիկ գաղտնաբառը սխալ է",
-      newPasswordLabel: "Նոր գաղտնաբառ"
+      newPasswordLabel: "Նոր գաղտնաբառ",
+      photoTitle: "Պրոֆիլի նկար",
+      photoHint: "JPG, PNG կամ WebP, մինչև 2 ՄԲ",
+      removePhoto: "Հեռացնել նկարը"
     }
   },
   favorites: {
