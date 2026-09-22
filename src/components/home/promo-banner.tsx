@@ -13,13 +13,18 @@ import { CITY_SLUG } from "@/lib/cities";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-/** City-specific clips for the work banner; falls back to the generic one. */
-const CITY_WORK_VIDEOS: Record<string, string> = {
-  Գորիս: "/goris-work.mp4",
-  Սիսիան: "/sisian-work.mp4",
-  Քաջարան: "/kajaran-work.mp4",
-  Մեղրի: "/megri-work.mp4",
+/** City-specific clips for the work banner, each with its own first frame as the poster so the
+ * placeholder is the same shot the clip opens on; anything else falls back to the generic pair. */
+const DEFAULT_WORK_MEDIA = { video: "/work.mp4", poster: "/work.jpg" };
+const CITY_WORK_MEDIA: Record<string, { video: string; poster: string }> = {
+  Գորիս: { video: "/goris-work.mp4", poster: "/goris-work.jpg" },
+  Սիսիան: { video: "/sisian-work.mp4", poster: "/sisian-work.jpg" },
+  Քաջարան: { video: "/kajaran-work.mp4", poster: "/kajaran-work.jpg" },
+  Մեղրի: { video: "/megri-work.mp4", poster: "/megri-work.jpg" },
 };
+/** Every poster, rendered stacked so each is already loaded when the city changes — swapping
+ * to one fetched on demand would flash an empty card first. */
+const WORK_POSTERS = [DEFAULT_WORK_MEDIA.poster, ...Object.values(CITY_WORK_MEDIA).map((media) => media.poster)];
 
 /** Promo banner above the category grid — the site's own "advertisement". */
 export function PromoBanner() {
@@ -28,24 +33,25 @@ export function PromoBanner() {
   const locationLabel =
     hydrated && city ? t(`cities.${CITY_SLUG[city]}.in`) : t("common.acrossTheRegion");
   const workHref = city ? `/work?city=${encodeURIComponent(city)}` : "/work";
-  const workVideoSrc = (hydrated && city && CITY_WORK_VIDEOS[city]) || "/work.mp4";
-  const [videoReady, setVideoReady] = React.useState(false);
+  const workMedia = (hydrated && city && CITY_WORK_MEDIA[city]) || DEFAULT_WORK_MEDIA;
+  const workVideoSrc = workMedia.video;
+  // Which clip has loaded, rather than a plain flag: on a city switch `videoReady` is false in the
+  // very render that swaps `src`, so there's no frame where the new, still-empty video counts as ready.
+  const [readyVideoSrc, setReadyVideoSrc] = React.useState<string | null>(null);
+  const videoReady = readyVideoSrc === workVideoSrc;
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  // Switching city swaps `src`, and the `key` below forces a fresh <video> element for it —
-  // reset the reveal so the new clip fades in once it's actually ready instead of popping in
-  // mid-load (or worse, flashing the previous city's last frame).
+  // Switching city swaps `src`, and the `key` below forces a fresh <video> element for it, which
+  // fades in once it's actually ready instead of popping in mid-load.
   //
-  // The readyState check right after covers navigating away and back: Next.js's router cache
-  // can restore this component (and its already-loaded <video> element) without remounting it,
-  // so the "loadeddata" event below never fires again — leaving `videoReady` stuck at the
-  // `false` this effect just set, and the spinner spinning forever. Checking the element's own
-  // readyState catches that case immediately instead of waiting on an event that isn't coming.
+  // The readyState check covers navigating away and back: Next.js's router cache can restore this
+  // component (and its already-loaded <video> element) without remounting it, so the "loadeddata"
+  // event below never fires again. Checking the element's own readyState catches that case
+  // immediately instead of waiting on an event that isn't coming.
   React.useEffect(() => {
-    setVideoReady(false);
     const el = videoRef.current;
     if (el && el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      setVideoReady(true);
+      setReadyVideoSrc(workVideoSrc);
     }
   }, [workVideoSrc]);
 
@@ -119,22 +125,31 @@ export function PromoBanner() {
           className='group flex flex-col overflow-hidden rounded-3xl bg-secondary ring-1 ring-black/5 dark:ring-white/10'
         >
           <div className='relative aspect-[3/2] w-full shrink-0 overflow-hidden sm:aspect-auto sm:flex-1'>
-            {/* The poster is a real, always-visible photo, not an empty placeholder — it fills the
+            {/* The poster is the selected city's own first frame, not a generic photo — it fills the
                 card immediately, then slowly zooms out as it fades under the video once that's
-                ready, so the reveal reads as one continuous shot rather than a gray box popping
-                over to a clip. */}
-            <Image
-              src='/work.jpg'
-              alt=''
-              aria-hidden
-              fill
-              priority
-              sizes='(min-width: 768px) 40vw, 100vw'
-              className={cn(
-                'object-cover transition-[transform,opacity] duration-[1400ms] ease-out',
-                videoReady ? 'scale-110 opacity-0' : 'scale-100 opacity-100',
-              )}
-            />
+                ready, so the reveal reads as one continuous shot. Before hydration the city isn't
+                known yet, so no poster shows rather than the wrong city's; and on a city switch
+                the new poster snaps in (no transition) so the previous clip never lingers. */}
+            {WORK_POSTERS.map((poster) => {
+              const active = hydrated && poster === workMedia.poster;
+              return (
+                <Image
+                  key={poster}
+                  src={poster}
+                  alt=''
+                  aria-hidden
+                  fill
+                  priority={poster === DEFAULT_WORK_MEDIA.poster}
+                  sizes='(min-width: 768px) 40vw, 100vw'
+                  className={cn(
+                    'object-cover',
+                    active && !videoReady
+                      ? 'scale-100 opacity-100'
+                      : 'scale-110 opacity-0 transition-[transform,opacity] duration-[1400ms] ease-out',
+                  )}
+                />
+              );
+            })}
 
             <video
               ref={videoRef}
@@ -146,7 +161,7 @@ export function PromoBanner() {
               loop
               playsInline
               preload='auto'
-              onLoadedData={() => setVideoReady(true)}
+              onLoadedData={() => setReadyVideoSrc(workVideoSrc)}
               className={cn(
                 'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out',
                 videoReady ? 'opacity-100' : 'opacity-0',
