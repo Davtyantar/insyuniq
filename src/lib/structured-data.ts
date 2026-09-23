@@ -59,7 +59,7 @@ export function breadcrumbJsonLd(crumbs: Crumb[]) {
 }
 
 /** Lightweight ItemList for a category hub page — points crawlers at every listing without inlining full items. */
-export function categoryItemListJsonLd(name: string, path: string, listings: Listing[]) {
+export function categoryItemListJsonLd(name: string, path: string, items: { href: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -67,10 +67,10 @@ export function categoryItemListJsonLd(name: string, path: string, listings: Lis
     url: absoluteUrl(path),
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: listings.slice(0, 24).map((listing, index) => ({
+      itemListElement: items.slice(0, 24).map((item, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: absoluteUrl(`/${listing.category}/${listing.id}`),
+        url: absoluteUrl(item.href),
       })),
     },
   };

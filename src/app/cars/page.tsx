@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { CategoryPage } from "@/components/category/category-page";
 import { CategoryPageSkeleton } from "@/components/category/category-page-skeleton";
 import { JsonLd } from "@/components/seo/json-ld";
+import { legacyCard } from "@/lib/card";
 import { CATEGORIES } from "@/lib/categories";
 import { breadcrumbJsonLd, categoryItemListJsonLd } from "@/lib/structured-data";
 
@@ -18,7 +19,7 @@ export default function CarsPage() {
     <>
       <JsonLd
         data={[
-          categoryItemListJsonLd(category.label, category.href, category.listings),
+          categoryItemListJsonLd(category.label, category.href, category.listings.map(legacyCard)),
           breadcrumbJsonLd([
             { name: "Գլխավոր", path: "/" },
             { name: category.label, path: category.href },

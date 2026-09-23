@@ -6,6 +6,7 @@ import {
   propertyStateToSearch,
   stripRejectedParams,
   toPropertyQuery,
+  toSearchParams,
 } from "./property-filters";
 
 const parse = (door: Parameters<typeof parsePropertyState>[0], query: string) =>
@@ -91,5 +92,12 @@ describe("stripRejectedParams", () => {
   it("removes exactly the parameters the API rejected", () => {
     const params = new URLSearchParams("city=kapan&areaMin=5&page=2");
     expect(stripRejectedParams(params, { areaMin: ["too small"] })).toBe("?city=kapan&page=2");
+  });
+});
+
+describe("toSearchParams", () => {
+  it("takes the first value of repeated params and skips undefined", () => {
+    const params = toSearchParams({ city: ["kapan", "goris"], page: "2", q: undefined });
+    expect(params.toString()).toBe("city=kapan&page=2");
   });
 });

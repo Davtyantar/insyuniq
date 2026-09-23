@@ -40,6 +40,8 @@ export interface CategoryConfig {
   cover: string;
   /** Short marketing line on the home page. */
   tagline: string;
+  /** "api" once the door reads InSyunik-Api; "mock" until its module PR lands (spec W11). */
+  source: "api" | "mock";
 }
 
 export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
@@ -53,7 +55,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: REAL_ESTATE_SUBCATEGORIES,
     listings: REAL_ESTATE_LISTINGS,
     cover: REAL_ESTATE_LISTINGS[0].images[0],
-    tagline: "Բնակարաններ, տներ և հողատարածքներ ողջ Սյունիքում"
+    tagline: "Բնակարաններ, տներ և հողատարածքներ ողջ Սյունիքում",
+    source: "api"
   },
   cars: {
     slug: "cars",
@@ -65,7 +68,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: CAR_SUBCATEGORIES,
     listings: CAR_LISTINGS,
     cover: CAR_LISTINGS[4].images[0],
-    tagline: "Մարդատար, ամենագնաց և էլեկտրական մեքենաներ Սյունիքում"
+    tagline: "Մարդատար, ամենագնաց և էլեկտրական մեքենաներ Սյունիքում",
+    source: "mock"
   },
   rentals: {
     slug: "rentals",
@@ -77,7 +81,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: RENTAL_SUBCATEGORIES,
     listings: RENTAL_LISTINGS,
     cover: RENTAL_LISTINGS[0].images[0],
-    tagline: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով"
+    tagline: "Բնակարաններ, տներ, կոմերցիոն գույք և ավտոտնակներ վարձով",
+    source: "api"
   },
   hotels: {
     slug: "hotels",
@@ -91,7 +96,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     listings: HOTEL_LISTINGS,
     cover: HOTEL_LISTINGS[0].images[0],
     tagline:
-      "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով"
+      "Հյուրանոցներ, հյուրատներ և հանգստյան բնակատեղեր՝ օրավարձ և ժամկետով",
+    source: "api"
   },
   work: {
     slug: "work",
@@ -103,7 +109,8 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: WORK_SUBCATEGORIES,
     listings: WORK_LISTINGS,
     cover: WORK_LISTINGS[0].images[0],
-    tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից"
+    tagline: "Թափուր աշխատատեղեր Սյունիքի մարզի գործատուներից",
+    source: "mock"
   },
   services: {
     slug: "services",
@@ -115,11 +122,15 @@ export const CATEGORIES: Record<CategorySlug, CategoryConfig> = {
     subcategories: SERVICE_SUBCATEGORIES,
     listings: SERVICE_LISTINGS,
     cover: SERVICE_LISTINGS[0].images[0],
-    tagline: "Ռեստորաններ, վարպետներ և մասնագիտական ծառայություններ Սյունիքում"
+    tagline: "Ռեստորաններ, վարպետներ և մասնագիտական ծառայություններ Սյունիքում",
+    source: "mock"
   }
 };
 
 export const CATEGORY_LIST = Object.values(CATEGORIES);
+
+export const API_DOORS = CATEGORY_LIST.filter((c) => c.source === "api").map((c) => c.slug);
+export const MOCK_DOORS = CATEGORY_LIST.filter((c) => c.source === "mock").map((c) => c.slug);
 
 export function isCategorySlug(value: string): value is CategorySlug {
   return (
