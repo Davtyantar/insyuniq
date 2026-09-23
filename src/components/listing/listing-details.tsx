@@ -11,6 +11,7 @@ import { PriceTag } from "@/components/listing/price-tag";
 import { SellerCard } from "@/components/listing/seller-card";
 import { ListingCard } from "@/components/listings/listing-card";
 import { FavoriteButton } from "@/components/listings/favorite-button";
+import { legacyCard } from "@/lib/card";
 import { CATEGORIES } from "@/lib/categories";
 import { formatFullDate, formatNumber, formatRelativeDate } from "@/lib/format";
 import { cardSpecs, detailSpecs, isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
@@ -125,7 +126,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                     </p>
 
                     <div className="mt-3 flex items-center gap-4 text-[12px] text-muted-foreground">
-                      <span>{formatRelativeDate(listing.publishedAt)}</span>
+                      <span suppressHydrationWarning>{formatRelativeDate(listing.publishedAt)}</span>
                       <span className="inline-flex items-center gap-1">
                         <Eye className="h-3.5 w-3.5" />
                         {formatNumber(listing.views)} դիտում
@@ -265,7 +266,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
               </p>
 
               <div className="mt-4 flex items-center gap-4 border-t border-border pt-4 text-[12px] text-muted-foreground">
-                <span title={formatFullDate(listing.publishedAt)}>
+                <span title={formatFullDate(listing.publishedAt)} suppressHydrationWarning>
                   {formatRelativeDate(listing.publishedAt)}
                 </span>
                 <span className="inline-flex items-center gap-1">
@@ -329,7 +330,7 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 key={item.id}
                 className="w-[calc(50%-6px)] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
               >
-                <ListingCard listing={item} priority={index < 4} />
+                <ListingCard card={legacyCard(item)} priority={index < 4} />
               </div>
             ))}
           </div>

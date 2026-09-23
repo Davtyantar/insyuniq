@@ -6,13 +6,13 @@ import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CityAccent } from "@/components/city-accent";
 import { ListingCard } from "@/components/listings/listing-card";
-import type { Listing } from "@/lib/types";
+import type { CardModel } from "@/lib/card";
 
 interface HitsSectionProps {
   /** i18n key under `home.hits.*`, e.g. "cars" — resolved client-side so the section reacts to locale changes. */
   titleKey: string;
   href: string;
-  listings: Listing[];
+  cards: CardModel[];
 }
 
 /** Gap between cards (Tailwind gap-3 = 0.75rem), used to compute the one-card scroll step. */
@@ -33,7 +33,7 @@ function shortenTitle(title: string): string {
     .trim();
 }
 
-export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
+export function HitsSection({ titleKey, href, cards }: HitsSectionProps) {
   const { t } = useTranslation();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const title = t(`home.hits.${titleKey}.title`);
@@ -90,14 +90,14 @@ export function HitsSection({ titleKey, href, listings }: HitsSectionProps) {
         ref={scrollerRef}
         className="no-scrollbar snap-x-mandatory mt-5 flex gap-3 overflow-x-auto py-3"
       >
-        {listings.map((listing, index) => (
+        {cards.map((card, index) => (
           <div
-            key={listing.id}
+            key={card.id}
             // Mobile shows a deliberate peek of the next card (~1.5 visible) to hint there's more
             // to scroll to; sm+ switches to evenly-divided columns with no partial card showing.
             className="w-[68%] shrink-0 snap-start sm:w-[calc(33.333%-8px)] lg:w-[calc(25%-9px)]"
           >
-            <ListingCard listing={listing} priority={index < 4} />
+            <ListingCard card={card} priority={index < 4} />
           </div>
         ))}
       </div>

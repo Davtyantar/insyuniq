@@ -8,6 +8,7 @@ import { ListingGrid } from "@/components/listings/listing-grid";
 import { ViewToggle } from "@/components/listings/results-toolbar";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
+import { legacyCard } from "@/lib/card";
 import {
   Dialog,
   DialogClose,
@@ -88,7 +89,7 @@ export function FavoritesView() {
 
       <div className="mt-5">
         {!hydrated ? (
-          <ListingGrid listings={[]} loading skeletonCount={6} view={view} columns={4} dense />
+          <ListingGrid cards={[]} loading skeletonCount={6} view={view} columns={4} dense />
         ) : visible.length === 0 ? (
           <EmptyState
             icon={Heart}
@@ -97,7 +98,7 @@ export function FavoritesView() {
             action={{ label: t("favorites.emptyAll.action"), href: "/" }}
           />
         ) : (
-          <ListingGrid listings={visible} view={view} columns={4} dense />
+          <ListingGrid cards={visible.map(legacyCard)} view={view} columns={4} dense />
         )}
       </div>
     </div>

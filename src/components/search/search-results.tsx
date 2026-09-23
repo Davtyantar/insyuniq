@@ -8,6 +8,7 @@ import { ListingGrid } from "@/components/listings/listing-grid";
 import { SortSelect, ViewToggle } from "@/components/listings/results-toolbar";
 import { useApp } from "@/components/providers/app-provider";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
+import { legacyCard } from "@/lib/card";
 import { sortListings } from "@/lib/filtering";
 import { plural } from "@/lib/format";
 import type { SortKey, ViewMode } from "@/lib/types";
@@ -112,7 +113,7 @@ export function SearchResults() {
             }}
           />
         ) : (
-          <ListingGrid listings={visible} view={view} columns={4} />
+          <ListingGrid cards={visible.map(legacyCard)} view={view} columns={4} />
         )}
       </div>
     </div>
