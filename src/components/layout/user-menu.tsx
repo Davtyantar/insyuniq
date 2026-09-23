@@ -68,7 +68,7 @@ export function UserMenu({
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
         <div className="flex items-center gap-3 px-2.5 py-2">
-          <Avatar className="h-9 w-9">
+          <Avatar className="h-9 w-9 ring-[1.5px] ring-accent ring-offset-2 ring-offset-popover">
             {user.avatar && <AvatarImage src={user.avatar} alt="" />}
             <AvatarFallback className="text-sm font-semibold">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
           </Avatar>

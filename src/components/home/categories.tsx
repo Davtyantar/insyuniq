@@ -88,6 +88,11 @@ export function Categories() {
                       preload='auto'
                       className='absolute inset-0 h-full w-full object-cover'
                     />
+                    {/* The work tile's scrim, faded in on hover only, so the tint lands as deep as it does there. */}
+                    <div
+                      aria-hidden
+                      className='pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-black/50 via-black/0 to-black/10 opacity-0 transition-opacity duration-300 sm:block sm:group-hover:opacity-100 sm:group-focus-visible:opacity-100'
+                    />
                     <VideoHoverCta>Գտնել տուր</VideoHoverCta>
                   </div>
 

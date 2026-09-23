@@ -163,7 +163,11 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
           }}
           className="no-scrollbar snap-x-mandatory mt-5 overflow-x-auto pb-8 py-3 sm:snap-none sm:overflow-hidden sm:[-webkit-mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)] md:pb-10"
         >
-          <div ref={trackRef} className="flex gap-4 sm:will-change-transform">
+          {/* Hovering a card turns the rest of the row grey, so the hovered one stands out in colour. */}
+          <div
+            ref={trackRef}
+            className="flex gap-4 sm:will-change-transform sm:[&:has(>article:hover)>article:not(:hover)]:grayscale"
+          >
             {[...listings, ...listings].map((listing, index) => {
               const category = categoryOf(listing);
               const isDuplicate = index >= listings.length;
@@ -171,7 +175,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                 <article
                   key={`${listing.id}-${isDuplicate ? "dup" : "orig"}`}
                   aria-hidden={isDuplicate || undefined}
-                  className="group relative w-[74%] shrink-0 snap-start sm:w-[min(45%,288px)] sm:snap-align-none md:w-[min(31%,238px)] lg:w-[min(22.5%,306px)]"
+                  className="group relative w-[74%] shrink-0 snap-start transition-[filter] duration-300 sm:w-[min(45%,288px)] sm:snap-align-none md:w-[min(31%,238px)] lg:w-[min(22.5%,306px)]"
                 >
                   <Link
                     href={listingHref(listing)}
@@ -221,7 +225,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                         <Clock className="h-3 w-3" />
                         {formatRelativeDate(listing.publishedAt)}
                       </div>
-                      <p className="mt-1 line-clamp-1 text-[14px] font-medium leading-snug transition-colors group-hover:text-brand-300 sm:text-[15px]">
+                      <p className="mt-1 line-clamp-1 text-[14px] font-medium leading-snug sm:text-[15px]">
                         {listingSummary(listing)}
                       </p>
                       <div className="mt-1 flex items-center justify-between gap-2">

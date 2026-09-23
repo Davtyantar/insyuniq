@@ -319,7 +319,7 @@ export function ProfileView() {
                   onClick={() => avatarInputRef.current?.click()}
                   aria-label={t("profile.changePhoto")}
                   title={t("profile.changePhoto")}
-                  className="group relative rounded-full ring-4 ring-accent/15 ring-offset-2 ring-offset-card transition-shadow hover:ring-accent/40 focus:outline-none focus-visible:ring-accent"
+                  className="group relative rounded-full ring-2 ring-accent ring-offset-2 ring-offset-card focus:outline-none"
                 >
                   <Avatar className="h-32 w-32">
                     {user.avatar && <AvatarImage src={user.avatar} alt="" className="object-cover" />}

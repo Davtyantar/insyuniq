@@ -35,7 +35,7 @@ function CountBadge({ count }: { count: number }) {
 function ProfileGlyph({ user, className }: { user: AuthUser | null; className?: string }) {
   if (!user) return <User className={className} />;
   return (
-    <Avatar className={cn(className, "ring-2 ring-accent ring-offset-1 ring-offset-background")}>
+    <Avatar className={cn(className, "ring-[1.5px] ring-accent ring-offset-1 ring-offset-background")}>
       {user.avatar && <AvatarImage src={user.avatar} alt="" />}
       <AvatarFallback className="text-[10px] font-semibold">
         {user.name.slice(0, 1).toUpperCase()}
