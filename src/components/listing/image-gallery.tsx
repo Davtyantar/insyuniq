@@ -11,9 +11,11 @@ interface ImageGalleryProps {
   images: string[];
   alt: string;
   listingId: string;
+  /** Listing summary shown beside the photo in the fullscreen viewer (large screens). */
+  lightboxInfo?: React.ReactNode;
 }
 
-export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
+export function ImageGallery({ images, alt, listingId, lightboxInfo }: ImageGalleryProps) {
   const [index, setIndex] = React.useState(0);
   const [fullscreen, setFullscreen] = React.useState(false);
   const trackRef = React.useRef<HTMLDivElement>(null);
@@ -155,6 +157,7 @@ export function ImageGallery({ images, alt, listingId }: ImageGalleryProps) {
         onIndexChange={setIndex}
         open={fullscreen}
         onOpenChange={setFullscreen}
+        info={lightboxInfo}
       />
     </div>
   );

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { Link } from "@/components/i18n/locale-link";
-import { BadgeCheck, ChevronLeft, ChevronRight, Eye, MapPin } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Eye, MapPin, Phone, Star } from "lucide-react";
 import { ImageGallery } from "@/components/listing/image-gallery";
 import { MapPlaceholder } from "@/components/listing/map-placeholder";
 import { MobileContactBar } from "@/components/listing/mobile-contact-bar";
@@ -81,7 +81,104 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
                 <FavoriteButton listingId={listing.id} className="absolute right-3 top-3" />
               </div>
             ) : (
-              <ImageGallery images={listing.images} alt={listing.title} listingId={listing.id} />
+              <ImageGallery
+                images={listing.images}
+                alt={listing.title}
+                listingId={listing.id}
+                lightboxInfo={
+                  <div className="flex min-h-full flex-col">
+                    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[12px] font-medium text-secondary-foreground">
+                      <category.icon className="h-3.5 w-3.5" />
+                      {subcategoryLabel ?? category.label}
+                    </span>
+
+                    <div className="mt-4 flex items-center gap-2">
+                      <PriceTag
+                        price={listing.price}
+                        prices={listing.prices}
+                        perMonth={isMonthly(listing)}
+                        perDay={isDaily(listing)}
+                        className="text-[26px] font-semibold leading-none tracking-tight"
+                      />
+                      {listing.verified && (
+                        <BadgeCheck className="h-5 w-5 shrink-0 text-accent" aria-label="Ստուգված հայտարարություն" />
+                      )}
+                    </div>
+
+                    <h2 className="mt-3 break-words text-[16px] font-medium leading-snug">{listing.title}</h2>
+                    <p className="mt-1 text-[13px] text-muted-foreground">{listingSummary(listing)}</p>
+
+                    <ul className="mt-4 flex flex-wrap gap-1.5">
+                      {cardSpecs(listing).map((spec) => (
+                        <li key={spec} className="rounded-md border border-border bg-background px-2.5 py-1 text-[12px]">
+                          {spec}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <p className="mt-4 flex items-start gap-1.5 text-[13px] text-muted-foreground">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                      {locationLine(listing)}, {listing.address}
+                    </p>
+
+                    <div className="mt-3 flex items-center gap-4 text-[12px] text-muted-foreground">
+                      <span>{formatRelativeDate(listing.publishedAt)}</span>
+                      <span className="inline-flex items-center gap-1">
+                        <Eye className="h-3.5 w-3.5" />
+                        {formatNumber(listing.views)} դիտում
+                      </span>
+                    </div>
+
+                    {listing.description && (
+                      <section className="mt-5 border-t border-border pt-5">
+                        <h3 className="text-[14px] font-semibold">Նկարագրություն</h3>
+                        <p className="mt-2 whitespace-pre-line break-words text-[13.5px] leading-relaxed text-foreground/85">
+                          {listing.description}
+                        </p>
+                      </section>
+                    )}
+
+                    {specs.length > 0 && (
+                      <section className="mt-5 border-t border-border pt-5">
+                        <h3 className="text-[14px] font-semibold">Բնութագրեր</h3>
+                        <dl className="mt-1">
+                          {specs.map((spec) => (
+                            <div
+                              key={spec.label}
+                              className="flex items-baseline justify-between gap-4 border-b border-border py-2 text-[13px] last:border-b-0"
+                            >
+                              <dt className="text-muted-foreground">{spec.label}</dt>
+                              <dd className="text-right font-medium">{spec.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </section>
+                    )}
+
+                    <div className="mt-auto pt-5">
+                      <div className="flex items-center gap-3 rounded-xl border border-border bg-background p-3">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-secondary">
+                          <Image src={seller.avatar} alt="" fill sizes="40px" className="object-cover" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-[14px] font-medium">{seller.name}</p>
+                          <p className="inline-flex items-center gap-1 text-[12px] text-muted-foreground">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                            {seller.rating.toFixed(1)} · {seller.reviews} կարծիք
+                          </p>
+                        </div>
+                      </div>
+                      <a
+                        href={`tel:${seller.phone.replace(/\s+/g, "")}`}
+                        className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent text-[14px] font-semibold text-accent-foreground transition-colors hover:bg-brand-700"
+                      >
+                        <Phone className="h-4 w-4" />
+                        {seller.phone}
+                      </a>
+                    </div>
+                  </div>
+                }
+              />
             )}
 
             <section>
