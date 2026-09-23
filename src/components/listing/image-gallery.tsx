@@ -60,11 +60,7 @@ export function ImageGallery({ images, alt, listingId, lightboxInfo }: ImageGall
                 fill
                 sizes="100vw"
                 priority={i === 0}
-                onClick={() => {
-                  setIndex(i);
-                  setFullscreen(true);
-                }}
-                className="cursor-zoom-in object-cover"
+                className="object-cover"
               />
             </div>
           ))}
