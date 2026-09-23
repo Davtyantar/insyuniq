@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCatalogByIds } from "./catalog";
+import { getCatalogByIds, getAllActiveCards } from "./catalog";
 import { createApi } from "./client";
 import { getPropertyListing, getSimilarProperty } from "./property";
 
@@ -54,5 +54,21 @@ describe("getCatalogByIds", () => {
     const api = createApi({ fetch: recordingFetch(() => ({ status: 200, body: {} }), seen) });
     expect(await getCatalogByIds(api, ["re-1"])).toEqual([]);
     expect(seen).toHaveLength(0);
+  });
+});
+
+describe("getAllActiveCards", () => {
+  it("pages until total is reached", async () => {
+    const seen: URL[] = [];
+    const api = createApi({
+      fetch: recordingFetch((url) => {
+        const page = Number(url.searchParams.get("page") ?? "1");
+        const items = page < 3 ? [{ id: `p${page}a` }, { id: `p${page}b` }] : [{ id: "p3a" }];
+        return { status: 200, body: { items, page, pageSize: 2, total: 5 } };
+      }, seen),
+    });
+    const cards = await getAllActiveCards(api, 2);
+    expect(cards.map((c) => c.id)).toEqual(["p1a", "p1b", "p2a", "p2b", "p3a"]);
+    expect(seen).toHaveLength(3);
   });
 });
