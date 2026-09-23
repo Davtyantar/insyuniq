@@ -2,11 +2,14 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ListingDetails } from "@/components/listing/listing-details";
 import { JsonLd } from "@/components/seo/json-ld";
+import { legacyCard } from "@/lib/card";
 import { CATEGORIES } from "@/lib/categories";
+import { legacyDetail } from "@/lib/detail";
 import { buildListingDescription } from "@/lib/seo";
 import { breadcrumbJsonLd, listingJsonLd } from "@/lib/structured-data";
 import { CAR_LISTINGS } from "@/mock/cars";
 import { getCar, getSimilar } from "@/mock/listings";
+import { getSeller } from "@/mock/sellers";
 
 interface PageProps {
   params: { id: string };
@@ -45,7 +48,10 @@ export default function CarListingPage({ params }: PageProps) {
           ]),
         ]}
       />
-      <ListingDetails listing={listing} similar={getSimilar(listing)} />
+      <ListingDetails
+        detail={legacyDetail(listing, getSeller(listing.sellerId))}
+        similar={getSimilar(listing).map(legacyCard)}
+      />
     </>
   );
 }

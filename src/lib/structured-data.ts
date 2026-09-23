@@ -1,3 +1,6 @@
+import type { PropertyListing } from "@/lib/api/types";
+import { CITY_LABEL } from "@/lib/geo";
+import { propertyHref } from "@/lib/property-doors";
 import { APP_NAME } from "./constants";
 import { absoluteUrl, SITE_URL, type Crumb } from "./seo";
 import type { Listing } from "./types";
@@ -96,6 +99,50 @@ function accommodationType(subcategory: string): string | undefined {
   if (subcategory === "houses") return "House";
   if (subcategory === "commercial" || subcategory === "garages") return "Place";
   return undefined;
+}
+
+export function propertyListingJsonLd(listing: PropertyListing) {
+  const kind = accommodationType(listing.subcategory);
+  const address = {
+    "@type": "PostalAddress",
+    ...(listing.address && { streetAddress: listing.address }),
+    addressLocality: CITY_LABEL[listing.city],
+    addressRegion: ADDRESS_REGION,
+    addressCountry: ADDRESS_COUNTRY,
+  };
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: listing.title,
+    description: listing.description,
+    url: absoluteUrl(propertyHref(listing)),
+    image: listing.images,
+    datePosted: listing.publishedAt,
+    ...(kind && {
+      about: {
+        "@type": kind,
+        name: listing.title,
+        numberOfRooms: listing.rooms || undefined,
+        ...(listing.area !== undefined && {
+          floorSize: { "@type": "QuantitativeValue", value: listing.area, unitCode: "MTK" },
+        }),
+        address,
+        // Only a seller-set point is claimed as precise (SEO_BACKEND_REQUIREMENTS §1).
+        ...(listing.coords && {
+          geo: { "@type": "GeoCoordinates", latitude: listing.coords.lat, longitude: listing.coords.lng },
+        }),
+      },
+    }),
+    offers: {
+      "@type": "Offer",
+      ...(listing.price.amount !== null && { price: listing.price.amount }),
+      // Read from the listing, not hardcoded: the API stores USD or AMD per listing.
+      priceCurrency: listing.price.currency,
+      availability: "https://schema.org/InStock",
+      businessFunction:
+        listing.deal === "sale" ? "http://purl.org/goodrelations/v1#Sell" : "http://purl.org/goodrelations/v1#LeaseOut",
+    },
+  };
 }
 
 function realEstateJsonLd(listing: Extract<Listing, { category: "real-estate" }>) {
