@@ -145,6 +145,12 @@ export function isCard(card: CardModel | null): card is CardModel {
   return card !== null;
 }
 
+/** Orders cards to match a list of ids (e.g. favorites), dropping ids with no matching card. */
+export function orderByIds(ids: string[], cards: CardModel[]): CardModel[] {
+  const byId = new Map(cards.map((card) => [card.id, card]));
+  return ids.map((id) => byId.get(id)).filter((card): card is CardModel => card !== undefined);
+}
+
 /** Home's "recently added": API and mock doors side by side until the last door moves. */
 export function newestCards(groups: CardModel[][], limit: number): CardModel[] {
   return sortCards(groups.flat(), "date-desc").slice(0, limit);

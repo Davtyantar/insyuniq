@@ -3,7 +3,16 @@ import { catalogFixture, PROPERTY_FIXTURE } from "@/test/fixtures";
 import { CAR_LISTINGS } from "@/mock/cars";
 import { SERVICE_LISTINGS } from "@/mock/services";
 import { WORK_LISTINGS } from "@/mock/work";
-import { type CardModel, catalogCard, isCard, legacyCard, newestCards, propertyCard, sortCards } from "./card";
+import {
+  type CardModel,
+  catalogCard,
+  isCard,
+  legacyCard,
+  newestCards,
+  orderByIds,
+  propertyCard,
+  sortCards,
+} from "./card";
 
 describe("propertyCard", () => {
   it("links to the deal's door and summarises size", () => {
@@ -58,6 +67,14 @@ describe("sortCards", () => {
     ];
     expect(sortCards(cards, "price-asc").map((c) => c.id)).toEqual(["c", "a", "b"]);
     expect(sortCards(cards, "date-desc").map((c) => c.id)).toEqual(["c", "b", "a"]);
+  });
+});
+
+describe("orderByIds", () => {
+  it("follows the favorites order and drops ids with no card", () => {
+    const base = propertyCard(PROPERTY_FIXTURE);
+    const cards = [{ ...base, id: "a" }, { ...base, id: "b" }];
+    expect(orderByIds(["b", "gone", "a"], cards).map((c) => c.id)).toEqual(["b", "a"]);
   });
 });
 

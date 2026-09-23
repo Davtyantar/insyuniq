@@ -8,11 +8,17 @@ import { ListingGrid } from "@/components/listings/listing-grid";
 import { SortSelect, ViewToggle } from "@/components/listings/results-toolbar";
 import { useApp } from "@/components/providers/app-provider";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
-import { legacyCard } from "@/lib/card";
-import { sortListings } from "@/lib/filtering";
+import { searchCatalog } from "@/lib/api/catalog";
+import { createApi } from "@/lib/api/client";
+import { type CardModel, catalogCard, isCard, legacyCard, sortCards } from "@/lib/card";
+import { MOCK_DOORS } from "@/lib/categories";
 import { plural } from "@/lib/format";
+import { citySlugOf } from "@/lib/geo";
 import type { SortKey, ViewMode } from "@/lib/types";
 import { ALL_LISTINGS } from "@/mock/listings";
+
+/** The catalog page cap. Search is not paginated yet; see "Known gaps" in the plan. */
+const SEARCH_API_LIMIT = 100;
 
 const TABS = [
   { value: "all", label: "Բոլորը" },
@@ -37,9 +43,35 @@ export function SearchResults() {
   const [sort, setSort] = React.useState<SortKey>("relevant");
   const [view, setView] = React.useState<ViewMode>("grid");
 
-  const results = React.useMemo(() => {
+  const [apiCards, setApiCards] = React.useState<CardModel[] | null>(null);
+
+  React.useEffect(() => {
+    const citySlug = city ? citySlugOf(city) : undefined;
+    if (city && !citySlug) {
+      setApiCards([]);
+      return;
+    }
+    const controller = new AbortController();
+    setApiCards(null);
+    searchCatalog(
+      createApi(),
+      { q: q || undefined, city: citySlug, priceMax, cur: priceMax ? "USD" : undefined, pageSize: SEARCH_API_LIMIT },
+      controller.signal,
+    )
+      .then((page) => setApiCards(page.items.map(catalogCard).filter(isCard)))
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          console.warn("Search request failed", error);
+          setApiCards([]);
+        }
+      });
+    return () => controller.abort();
+  }, [q, city, priceMax]);
+
+  const mockCards = React.useMemo(() => {
     const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
-    const matched = ALL_LISTINGS.filter((listing) => {
+    return ALL_LISTINGS.filter((listing) => {
+      if (!MOCK_DOORS.includes(listing.category)) return false;
       if (city && listing.city !== city) return false;
       if (priceMax && listing.price > priceMax) return false;
       if (!terms.length) return true;
@@ -48,17 +80,19 @@ export function SearchResults() {
         listing.description,
         listing.city,
         listing.district ?? "",
-        "brand" in listing ? `${listing.brand} ${listing.model}` : ""
+        "brand" in listing ? `${listing.brand} ${listing.model}` : "",
       ]
         .join(" ")
         .toLowerCase();
       return terms.every((term) => haystack.includes(term));
-    });
-    return sortListings(matched, sort);
-  }, [q, city, priceMax, sort]);
+    }).map(legacyCard);
+  }, [q, city, priceMax]);
+
+  const results = React.useMemo(() => sortCards([...(apiCards ?? []), ...mockCards], sort), [apiCards, mockCards, sort]);
+  const loading = apiCards === null;
 
   const visible =
-    tab === "all" ? results : results.filter((l) => l.category === tab);
+    tab === "all" ? results : results.filter((card) => card.door === tab);
 
   return (
     <div className='container py-6 lg:py-8'>
@@ -72,11 +106,13 @@ export function SearchResults() {
           </>
         )}
       </h1>
-      <p className='mt-1 text-sm text-muted-foreground'>
-        {visible.length}{" "}
-        {plural(visible.length, "հայտարարություն", "հայտարարություններ")}
-        {city && ` · ${city}`}
-      </p>
+      {!loading && (
+        <p className='mt-1 text-sm text-muted-foreground'>
+          {visible.length}{" "}
+          {plural(visible.length, "հայտարարություն", "հայտարարություններ")}
+          {city && ` · ${city}`}
+        </p>
+      )}
 
       <div className='mt-5 flex flex-wrap items-center justify-between gap-3'>
         <FloatingTabs items={TABS} value={tab} onChange={setTab} />
@@ -99,7 +135,7 @@ export function SearchResults() {
       </div>
 
       <div className='mt-5'>
-        {visible.length === 0 ? (
+        {!loading && visible.length === 0 ? (
           <EmptyState
             title='Ոչինչ չի գտնվել'
             description='Փորձեք այլ հարցում կամ դիտեք հայտարարությունները ըստ կատեգորիաների։'
@@ -113,7 +149,7 @@ export function SearchResults() {
             }}
           />
         ) : (
-          <ListingGrid cards={visible.map(legacyCard)} view={view} columns={4} />
+          <ListingGrid cards={visible} loading={loading} view={view} columns={4} />
         )}
       </div>
     </div>

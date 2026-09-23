@@ -45,6 +45,8 @@ interface AppState {
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
   clearFavorites: () => void;
+  /** Drops ids the API no longer knows (deleted or archived listings). */
+  removeFavorites: (ids: string[]) => void;
   /** Listings published through the wizard, persisted to localStorage (starts seeded with one
    * example listing so the profile's "my listings" tab isn't empty on a first visit). */
   published: Listing[];
@@ -232,6 +234,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const clearFavorites = React.useCallback(() => setFavorites([]), []);
 
+  const removeFavorites = React.useCallback((ids: string[]) => {
+    setFavorites((prev) => prev.filter((id) => !ids.includes(id)));
+  }, []);
+
   const isFavorite = React.useCallback((id: string) => favorites.includes(id), [favorites]);
 
   const publishListing = React.useCallback((listing: Listing) => {
@@ -354,6 +360,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isFavorite,
       toggleFavorite,
       clearFavorites,
+      removeFavorites,
       published,
       publishListing,
       updateListing,
@@ -393,6 +400,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isFavorite,
       toggleFavorite,
       clearFavorites,
+      removeFavorites,
       published,
       publishListing,
       updateListing,

@@ -6,9 +6,9 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/listings/empty-state";
 import { ListingGrid } from "@/components/listings/listing-grid";
 import { ViewToggle } from "@/components/listings/results-toolbar";
+import { useFavoriteCards } from "@/components/listings/use-favorite-cards";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
-import { legacyCard } from "@/lib/card";
 import {
   Dialog,
   DialogClose,
@@ -20,11 +20,11 @@ import {
 } from "@/components/ui/dialog";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
 import type { ViewMode } from "@/lib/types";
-import { getListings } from "@/mock/listings";
 
 export function FavoritesView() {
   const { t } = useTranslation();
-  const { favorites, hydrated, clearFavorites } = useApp();
+  const { clearFavorites } = useApp();
+  const { cards, loading } = useFavoriteCards();
   const [tab, setTab] = React.useState("all");
   const [view, setView] = React.useState<ViewMode>("grid");
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -38,22 +38,21 @@ export function FavoritesView() {
     { value: "services", label: t("favorites.tabs.services") },
   ];
 
-  const listings = getListings(favorites);
-  const visible = tab === "all" ? listings : listings.filter((l) => l.category === tab);
+  const visible = tab === "all" ? cards : cards.filter((card) => card.door === tab);
 
   return (
     <div className="container py-6 lg:py-8">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight lg:text-[28px]">{t("common.favorites")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {hydrated ? t("favorites.count", { count: listings.length }) : t("favorites.loading")}
+          {!loading ? t("favorites.count", { count: cards.length }) : t("favorites.loading")}
         </p>
       </header>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <FloatingTabs items={TABS} value={tab} onChange={setTab} />
         <div className="flex items-center gap-2">
-          {hydrated && listings.length > 0 && (
+          {!loading && cards.length > 0 && (
             <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setConfirmOpen(true)}>
               <Trash2 className="h-4 w-4" />
               {t("favorites.clearAll")}
@@ -88,17 +87,17 @@ export function FavoritesView() {
       </Dialog>
 
       <div className="mt-5">
-        {!hydrated ? (
+        {loading ? (
           <ListingGrid cards={[]} loading skeletonCount={6} view={view} columns={4} dense />
         ) : visible.length === 0 ? (
           <EmptyState
             icon={Heart}
-            title={listings.length === 0 ? t("favorites.emptyAll.title") : t("favorites.emptyCategory.title")}
+            title={cards.length === 0 ? t("favorites.emptyAll.title") : t("favorites.emptyCategory.title")}
             description={t("favorites.emptyAll.description")}
             action={{ label: t("favorites.emptyAll.action"), href: "/" }}
           />
         ) : (
-          <ListingGrid cards={visible.map(legacyCard)} view={view} columns={4} dense />
+          <ListingGrid cards={visible} view={view} columns={4} dense />
         )}
       </div>
     </div>
