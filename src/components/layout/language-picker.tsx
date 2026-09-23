@@ -7,7 +7,7 @@ import { FlagIcon } from "@/components/layout/flag-icon";
 import { useApp } from "@/components/providers/app-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { CURRENCY_OPTIONS, currencyOption } from "@/lib/currency";
+import { CURRENCY_OPTIONS, DISPLAY_CURRENCIES, currencyOption } from "@/lib/currency";
 import { LOCALE_OPTIONS } from "@/lib/i18n";
 
 type Tab = "language" | "currency";
@@ -224,7 +224,7 @@ export function LanguagePicker({ variant = "header" }: LanguagePickerProps) {
             </TabsContent>
 
             <TabsContent value="currency" className="max-h-[50vh] overflow-y-auto p-1.5">
-              {CURRENCY_OPTIONS.map((option) => (
+              {DISPLAY_CURRENCIES.map((option) => (
                 <button
                   key={option.value}
                   type="button"

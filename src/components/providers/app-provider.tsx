@@ -160,7 +160,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       const savedCurrency = window.localStorage.getItem(CURRENCY_KEY);
-      if (savedCurrency === "USD" || savedCurrency === "AMD" || savedCurrency === "EUR" || savedCurrency === "RUB") {
+      if (savedCurrency === "USD" || savedCurrency === "AMD") {
         setCurrencyState(savedCurrency);
       }
     } catch {

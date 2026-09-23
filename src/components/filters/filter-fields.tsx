@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { CURRENCY_OPTIONS, currencyOption, type Currency } from "@/lib/currency";
+import { DISPLAY_CURRENCIES, currencyOption, type Currency } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 import type { Option } from "@/mock/taxonomy";
 
@@ -206,7 +206,7 @@ export function PriceRangeField({
   return (
     <div className="space-y-3">
       <div className="flex gap-1.5">
-        {CURRENCY_OPTIONS.map((option) => (
+        {DISPLAY_CURRENCIES.map((option) => (
           <button
             key={option.value}
             type="button"
