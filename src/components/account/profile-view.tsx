@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Camera, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
+import { Camera, ChevronRight, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, errorInputClass } from "@/components/auth/auth-field";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -245,7 +245,24 @@ export function ProfileView() {
   const myListings = published;
 
   return (
-    <div className="container py-6 lg:py-8">
+    <div className="container py-4 lg:py-6">
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-foreground/70"
+      >
+        <Link href="/" className="transition-colors hover:text-foreground">
+          {t("common.home")}
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <Link href="/profile" className="transition-colors hover:text-foreground">
+          {t("common.profile")}
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span aria-current="page" className="font-medium text-foreground">
+          {t(tab === "settings" ? "profile.tabs.settings" : "profile.tabs.listings")}
+        </span>
+      </nav>
+
       <FloatingTabs
         items={[
           { value: "listings", label: t("profile.tabs.listings") },
