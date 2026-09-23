@@ -85,7 +85,7 @@ export function ListingCard({
   return (
     <article
       className={cn(
-        "group relative flex h-full overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm transition-shadow hover:shadow-lift",
+        "group relative flex h-full overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm",
         dense ? "flex-row" : "flex-col",
         isList ? "sm:flex-row" : "sm:flex-col",
         className,
@@ -225,7 +225,7 @@ export function ListingCard({
 
         <h3
           className={cn(
-            "line-clamp-2 text-[12.5px] font-medium leading-snug text-foreground",
+            "line-clamp-2 text-[12.5px] font-medium leading-snug text-foreground transition-colors group-hover:text-accent",
             isList ? "sm:line-clamp-none sm:text-[17px]" : "sm:text-[15px]",
           )}
         >

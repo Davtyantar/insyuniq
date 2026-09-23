@@ -182,7 +182,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                     <span className="sr-only">{listing.title}</span>
                   </Link>
 
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary shadow-sm ring-2 ring-transparent transition-[box-shadow] duration-300 sm:group-hover:shadow-lift sm:group-hover:ring-accent/50">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary shadow-sm">
                     <Image
                       src={listing.images[0]}
                       alt={listing.title}
@@ -221,7 +221,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                         <Clock className="h-3 w-3" />
                         {formatRelativeDate(listing.publishedAt)}
                       </div>
-                      <p className="mt-1 line-clamp-1 text-[14px] font-medium leading-snug sm:text-[15px]">
+                      <p className="mt-1 line-clamp-1 text-[14px] font-medium leading-snug transition-colors group-hover:text-brand-300 sm:text-[15px]">
                         {listingSummary(listing)}
                       </p>
                       <div className="mt-1 flex items-center justify-between gap-2">
