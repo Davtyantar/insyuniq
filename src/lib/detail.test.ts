@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROPERTY_FIXTURE } from "@/test/fixtures";
 import { getSeller } from "@/mock/sellers";
+import { SERVICE_LISTINGS } from "@/mock/services";
 import { WORK_LISTINGS } from "@/mock/work";
 import { formatPhone, legacyDetail, propertyDetail } from "./detail";
 
@@ -31,6 +32,13 @@ describe("legacyDetail", () => {
     expect(detail.heroImage).toBe(true);
     expect(detail.isWorkplace).toBe(true);
     expect(detail.reference).toBe(job.id.toUpperCase());
+  });
+
+  it("keeps the price on service detail pages, which the service card hides", () => {
+    const service = SERVICE_LISTINGS[0];
+    expect(legacyDetail(service, getSeller(service.sellerId)).price?.amount).toBe(
+      service.prices?.USD ?? service.price,
+    );
   });
 });
 

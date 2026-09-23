@@ -1,5 +1,5 @@
 import type { Money, PropertyListing, SellerType } from "@/lib/api/types";
-import { legacyCard } from "@/lib/card";
+import { legacyMoney } from "@/lib/card";
 import { CATEGORIES } from "@/lib/categories";
 import { locationText } from "@/lib/geo";
 import { DOOR_BY_DEAL, doorSubcategoryLabel } from "@/lib/property-doors";
@@ -97,7 +97,7 @@ export function legacyDetail(listing: Listing, seller: Seller | undefined): Deta
     subcategoryLabel: CATEGORIES[listing.category].subcategories.find((s) => s.value === listing.subcategory)?.label,
     title: listing.title,
     description: listing.description,
-    price: legacyCard(listing).price,
+    price: legacyMoney(listing),
     verified: listing.verified,
     images: listing.images,
     heroImage: listing.category === "work" || listing.category === "services",

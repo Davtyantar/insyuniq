@@ -96,17 +96,19 @@ function legacyBadges(listing: Listing): string[] {
   return badges;
 }
 
-export function legacyCard(listing: Listing): CardModel {
+/** A mock listing's price as contract Money: USD, period from the legacy term rules. */
+export function legacyMoney(listing: Listing): Money {
   const period: Money["period"] = isDaily(listing) ? "night" : isMonthly(listing) ? "month" : "total";
+  return { amount: listing.prices?.USD ?? listing.price, currency: "USD", period, negotiable: Boolean(listing.negotiable) };
+}
+
+export function legacyCard(listing: Listing): CardModel {
   return {
     id: listing.id,
     door: listing.category,
     href: listingHref(listing),
     title: listing.title,
-    price:
-      listing.category === "services"
-        ? null
-        : { amount: listing.prices?.USD ?? listing.price, currency: "USD", period, negotiable: Boolean(listing.negotiable) },
+    price: listing.category === "services" ? null : legacyMoney(listing),
     location: locationLine(listing),
     images: listing.images,
     imageCount: listing.images.length,
