@@ -70,11 +70,20 @@ describe("toPropertyQuery", () => {
     expect(toPropertyQuery("real-estate", parse("real-estate", "priceMax=50000&cur=AMD")).cur).toBe("AMD");
     expect(toPropertyQuery("real-estate", parse("real-estate", "")).cur).toBeUndefined();
   });
+
+  it("ignores a currency chosen without a price bound", () => {
+    expect(toPropertyQuery("real-estate", parse("real-estate", "cur=AMD")).cur).toBeUndefined();
+  });
 });
 
 describe("countActivePropertyFilters", () => {
   it("counts every non-default filter except the text query", () => {
     expect(countActivePropertyFilters(parse("real-estate", "q=բնակարան&city=kapan&furniture=1&areaMin=40").filters)).toBe(3);
+  });
+
+  it("does not count a currency without a price bound", () => {
+    expect(countActivePropertyFilters(parse("real-estate", "cur=AMD").filters)).toBe(0);
+    expect(countActivePropertyFilters(parse("real-estate", "cur=AMD&priceMax=100").filters)).toBe(2);
   });
 });
 

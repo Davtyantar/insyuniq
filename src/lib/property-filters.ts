@@ -164,7 +164,7 @@ export function toPropertyFacetQuery(door: PropertyDoor, filters: PropertyFilter
     priceMin: num(filters.priceMin),
     priceMax: num(filters.priceMax),
     // The API compares amounts in the listing's own currency, so bounds need one (spec 4.5).
-    cur: filters.cur || (priced ? "USD" : undefined),
+    cur: priced ? filters.cur || "USD" : undefined,
     withPhoto: yes(filters.withPhoto),
     verifiedOnly: yes(filters.verifiedOnly),
     subcategory: filters.subcategory || undefined,
@@ -198,6 +198,7 @@ export function countActivePropertyFilters(filters: PropertyFilters): number {
   for (const key of Object.keys(DEFAULT_PROPERTY_FILTERS) as (keyof PropertyFilters)[]) {
     if (key === "q") continue;
     const value = filters[key];
+    if (key === "cur" && filters.priceMin === "" && filters.priceMax === "") continue;
     if (Array.isArray(value) ? value.length > 0 : Boolean(value)) count += 1;
   }
   return count;
