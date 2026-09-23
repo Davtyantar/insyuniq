@@ -140,3 +140,12 @@ export function sortCards(cards: CardModel[], sort: SortKey): CardModel[] {
   if (sort === "relevant") return copy.sort((a, b) => Number(b.featured) - Number(a.featured) || newestFirst(a, b));
   return copy.sort(newestFirst);
 }
+
+export function isCard(card: CardModel | null): card is CardModel {
+  return card !== null;
+}
+
+/** Home's "recently added": API and mock doors side by side until the last door moves. */
+export function newestCards(groups: CardModel[][], limit: number): CardModel[] {
+  return sortCards(groups.flat(), "date-desc").slice(0, limit);
+}

@@ -3,7 +3,7 @@ import { catalogFixture, PROPERTY_FIXTURE } from "@/test/fixtures";
 import { CAR_LISTINGS } from "@/mock/cars";
 import { SERVICE_LISTINGS } from "@/mock/services";
 import { WORK_LISTINGS } from "@/mock/work";
-import { type CardModel, catalogCard, legacyCard, propertyCard, sortCards } from "./card";
+import { type CardModel, catalogCard, isCard, legacyCard, newestCards, propertyCard, sortCards } from "./card";
 
 describe("propertyCard", () => {
   it("links to the deal's door and summarises size", () => {
@@ -58,5 +58,14 @@ describe("sortCards", () => {
     ];
     expect(sortCards(cards, "price-asc").map((c) => c.id)).toEqual(["c", "a", "b"]);
     expect(sortCards(cards, "date-desc").map((c) => c.id)).toEqual(["c", "b", "a"]);
+  });
+});
+
+describe("newestCards", () => {
+  it("merges sources newest first and caps the count", () => {
+    const base = propertyCard(PROPERTY_FIXTURE);
+    const at = (id: string, day: number) => ({ ...base, id, publishedAt: `2026-09-${String(day).padStart(2, "0")}T00:00:00Z` });
+    expect(newestCards([[at("a", 3), at("b", 1)], [at("c", 2)]], 2).map((c) => c.id)).toEqual(["a", "c"]);
+    expect([base, null].filter(isCard)).toHaveLength(1);
   });
 });
