@@ -71,4 +71,20 @@ describe("getAllActiveCards", () => {
     expect(cards.map((c) => c.id)).toEqual(["p1a", "p1b", "p2a", "p2b", "p3a"]);
     expect(seen).toHaveLength(3);
   });
+
+  it("stops on an empty first page", async () => {
+    const seen: URL[] = [];
+    const api = createApi({ fetch: recordingFetch(() => ({ status: 200, body: { items: [], page: 1, pageSize: 2, total: 0 } }), seen) });
+    expect(await getAllActiveCards(api, 2)).toEqual([]);
+    expect(seen).toHaveLength(1);
+  });
+
+  it("stops at maxPages when the API never reaches its total", async () => {
+    const seen: URL[] = [];
+    const api = createApi({
+      fetch: recordingFetch(() => ({ status: 200, body: { items: [{ id: "x" }], page: 1, pageSize: 1, total: 1_000_000 } }), seen),
+    });
+    expect(await getAllActiveCards(api, 1, 3)).toHaveLength(3);
+    expect(seen).toHaveLength(3);
+  });
 });

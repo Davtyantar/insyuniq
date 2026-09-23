@@ -28,13 +28,15 @@ export async function getCatalogByIds(api: Api, ids: string[]): Promise<CatalogC
   return pages.flatMap((page) => page.items);
 }
 
-/** Every active listing, for the sitemap. Fine below a few thousand listings; past that the
+/** Every active listing, for the sitemap. Capped at `maxPages` (500 × 100 = the 50,000-URL
+ * limit of one sitemap file) so a malformed response can never loop forever; past that the
  * sitemap becomes an index (SEO_BACKEND_REQUIREMENTS §4). */
-export async function getAllActiveCards(api: Api, pageSize = 100): Promise<CatalogCard[]> {
+export async function getAllActiveCards(api: Api, pageSize = 100, maxPages = 500): Promise<CatalogCard[]> {
   const cards: CatalogCard[] = [];
-  for (let page = 1; ; page += 1) {
+  for (let page = 1; page <= maxPages; page += 1) {
     const result = await searchCatalog(api, { page, pageSize, sort: "date-desc" });
     cards.push(...result.items);
-    if (result.items.length === 0 || cards.length >= result.total) return cards;
+    if (result.items.length === 0 || cards.length >= result.total) break;
   }
+  return cards;
 }
