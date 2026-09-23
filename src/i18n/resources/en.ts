@@ -228,14 +228,16 @@ export const en = {
     emptyAll: {
       title: "Favorites is empty for now",
       description: "Tap the heart on a listing card to come back to it from any device.",
-      action: "Browse real estate",
-      secondaryAction: "Browse cars",
+      action: "Back to home",
     },
     emptyCategory: {
       title: "This category is empty",
     },
     clearAll: "Clear all",
-    clearAllConfirm: "Remove all favorites? This can't be undone.",
+    clearAllTitle: "Remove all favorites?",
+    clearAllText: "Every saved listing will be removed from your favorites. This can't be undone.",
+    clearAllCancel: "Cancel",
+    clearAllConfirm: "Remove",
   },
   cities: {
     kapan: { name: "Kapan", in: "in Kapan" },

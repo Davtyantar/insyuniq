@@ -240,15 +240,16 @@ export const hy = {
       title: "Հավանածներում դեռ դատարկ է",
       description:
         "Սեղմեք սրտիկի վրա հայտարարության քարտում, որպեսզի հետո վերադառնաք դրան ցանկացած սարքից։",
-      action: "Դիտել անշարժ գույքը",
-      secondaryAction: "Դիտել ավտոմեքենաները"
+      action: "Վերադառնալ գլխավոր"
     },
     emptyCategory: {
       title: "Այս կատեգորիայում դատարկ է"
     },
     clearAll: "Մաքրել բոլորը",
-    clearAllConfirm:
-      "Ջնջե՞լ բոլոր հավանածները։ Այս գործողությունը հնարավոր չէ հետ շրջել։"
+    clearAllTitle: "Ջնջե՞լ բոլոր հավանածները",
+    clearAllText: "Բոլոր պահպանված հայտարարությունները կհեռացվեն հավանածներից։ Այս գործողությունը հնարավոր չէ հետարկել։",
+    clearAllCancel: "Չեղարկել",
+    clearAllConfirm: "Ջնջել"
   },
   /** Keyed by the slug in src/lib/cities.ts — "name" is the plain city name, "in" is the locative ("in <city>") form. */
   cities: {

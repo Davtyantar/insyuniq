@@ -63,6 +63,11 @@ export function ListingCard({
   const badges = accentBadges(listing);
   const isList = view === "list";
   const showPrice = listing.category !== "services";
+  const verifiedBadge = listing.verified && (
+    <BadgeCheck className="h-4 w-4 shrink-0 text-accent sm:h-5 sm:w-5" aria-label="Ստուգված հայտարարություն">
+      <title>Ստուգված հայտարարություն</title>
+    </BadgeCheck>
+  );
 
   const imageRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -203,8 +208,8 @@ export function ListingCard({
           isList && "sm:p-5",
         )}
       >
-        <div className={cn("flex items-center gap-2", showPrice ? "justify-between" : "justify-end")}>
-          {showPrice && (
+        {showPrice ? (
+          <div className="flex items-center justify-between gap-2">
             <span className="text-[15px] font-semibold tracking-tight text-foreground sm:text-[22px]">
               {formatPrice(listing.price, { currency, prices: listing.prices })}
               {isDaily(listing) && <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">օր</span>}
@@ -212,25 +217,23 @@ export function ListingCard({
                 <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">ամիս</span>
               )}
             </span>
-          )}
-          {listing.verified && (
-            <BadgeCheck
-              className="h-4 w-4 shrink-0 text-accent sm:h-5 sm:w-5"
-              aria-label="Ստուգված հայտարարություն"
-            >
-              <title>Ստուգված հայտարարություն</title>
-            </BadgeCheck>
-          )}
-        </div>
+            {verifiedBadge}
+          </div>
+        ) : null}
 
-        <h3
-          className={cn(
-            "line-clamp-2 text-[12.5px] font-medium leading-snug text-foreground transition-colors group-hover:text-accent",
-            isList ? "sm:line-clamp-none sm:text-[17px]" : "sm:text-[15px]",
-          )}
-        >
-          {listing.category === "work" ? listing.title : listingSummary(listing)}
-        </h3>
+        {/* No price row (services): the verified badge moves up beside the title instead of
+            leaving an empty row above it. */}
+        <div className="flex items-start justify-between gap-2">
+          <h3
+            className={cn(
+              "line-clamp-2 min-w-0 text-[12.5px] font-medium leading-snug text-foreground transition-colors group-hover:text-accent",
+              isList ? "sm:line-clamp-none sm:text-[17px]" : "sm:text-[15px]",
+            )}
+          >
+            {listing.category === "work" ? listing.title : listingSummary(listing)}
+          </h3>
+          {!showPrice && verifiedBadge}
+        </div>
 
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground sm:gap-1.5 sm:text-[13px]">
           <MapPin className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />

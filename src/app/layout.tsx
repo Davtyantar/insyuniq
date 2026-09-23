@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import { PWA_SPLASH_SCRIPT, PwaSplash } from "@/components/pwa/pwa-splash";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
@@ -40,6 +41,23 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: "--font-sans",
   display: "swap",
+});
+
+/** Inter has no Armenian glyphs, so Armenian text gets Mardoto. The unicode-range scopes it to the
+ * Armenian block only — Latin, Cyrillic and digits stay in Inter (see fontFamily in tailwind.config). */
+const mardoto = localFont({
+  src: [
+    { path: "../../public/fonts/Mardoto-Light.ttf", weight: "300", style: "normal" },
+    { path: "../../public/fonts/Mardoto-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/Mardoto-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../public/fonts/Mardoto-Bold.ttf", weight: "700", style: "normal" },
+    { path: "../../public/fonts/Mardoto-Black.ttf", weight: "900", style: "normal" },
+  ],
+  variable: "--font-armenian",
+  display: "swap",
+  declarations: [{ prop: "unicode-range", value: "U+0530-058F, U+FB13-FB17" }],
+  // The generated Arial fallback has no unicode-range, so it would take every Latin glyph ahead of Inter.
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -104,7 +122,7 @@ const THEME_INIT_SCRIPT = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="hy" className={inter.variable} suppressHydrationWarning>
+    <html lang="hy" className={`${inter.variable} ${mardoto.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: PWA_SPLASH_SCRIPT }} />
