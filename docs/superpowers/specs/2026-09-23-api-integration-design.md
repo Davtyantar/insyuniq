@@ -24,7 +24,7 @@ create, edit and delete flow works against `http://localhost:5080`.
 | W3 | Components consume the contract's shapes directly (`PropertyListing`, `CatalogCard`, `Money`, `SellerSummary`); no adapter layer to the old `Listing` types. | `src/lib/types.ts` is rewritten; every card, filter, detail block and wizard step changes. |
 | W4 | Hotels door: `deal=daily` over every subcategory that allows daily. Prototype `houses`, `daily-houses` and `cottages` all become property `houses`. No contract change. | Door tabs: hotels, guesthouses, houses, apartments. |
 | W5 | Rentals door: `deal=rent` only. The prototype's `term` filter disappears. | Every listing belongs to exactly one door. |
-| W6 | Services gets a module (contract v0.6.0) with the prototype's subcategory list minus `restaurants`, plus the plan's fields. | The web swap of `/services` waits for v0.6.0. |
+| W6 | Services gets a module (contract v0.7.0) with the prototype's subcategory list minus `restaurants`, plus the plan's fields. | The web swap of `/services` waits for v0.7.0. |
 | W7 | Auth is Supabase email and password through `@supabase/ssr`. Phone OTP is later and needs no API change. | Sign-in loses its phone field; sign-up keeps phone for the seller profile. |
 | W8 | Category and detail pages are server-rendered per request. | Needs a Node host; static params go away. |
 | W9 | Edit and delete of listings need contract endpoints; they join the API stream (property first, then every module). | Profile edit and delete ship in web PR B, not A. |
@@ -42,10 +42,10 @@ They are recorded here so the API plans can be amended before each PR is cut.
 | PR | Branch | Contract | Delta from the existing plan |
 | --- | --- | --- | --- |
 | 1 | `feat/prototype-gaps` | v0.3.0 | None. Finish tasks 5 to 9 of its plan. |
-| 1b | `feat/property-edit` | v0.3.1 | New. `PUT /v1/property/listings/{id}` (`updatePropertyListing`, same body as create, owner = token `sub`, 403 otherwise, 404 when not active) and `DELETE /v1/property/listings/{id}` (`archivePropertyListing`, sets `status = archived`, 204). Both bearer, both rate-limited as writes. Images in an update must be paths issued to the same user or URLs already on the listing. |
-| 2 | `feat/jobs` | v0.4.0 | Task 22 plus `updateJobListing`, `archiveJobListing`, and a required `expiresAt` (date-time, at most 90 days after creation) on `JobListing` and its create request, because Google's JobPosting markup needs a real `validThrough`. |
-| 3 | `feat/vehicles` | v0.5.0 | Task 23 plus update and archive. |
-| 4 | `feat/services` | v0.6.0 | Task 24 with the field set below, plus update and archive. |
+| 1b | `feat/property-edit` | v0.4.0 | New. Every new operation is a minor bump (contract README), so Jobs, Vehicles and Services shift one minor each from the Phase A design. `PUT /v1/property/listings/{id}` (`updatePropertyListing`, same body as create, owner = token `sub`, 403 otherwise, 404 when not active) and `DELETE /v1/property/listings/{id}` (`archivePropertyListing`, sets `status = archived`, 204). Both bearer, both rate-limited as writes. Images in an update must be paths issued to the same user or URLs already on the listing. |
+| 2 | `feat/jobs` | v0.5.0 | Task 22 plus `updateJobListing`, `archiveJobListing`, and a required `expiresAt` (date-time, at most 90 days after creation) on `JobListing` and its create request, because Google's JobPosting markup needs a real `validThrough`. |
+| 3 | `feat/vehicles` | v0.6.0 | Task 23 plus update and archive. |
+| 4 | `feat/services` | v0.7.0 | Task 24 with the field set below, plus update and archive. |
 
 Services field set (replaces Task 24 Step 0's proposal):
 
@@ -125,8 +125,8 @@ the contract's parameters for each module, with the door preset excluded:
 | Door | Parameters in the URL |
 | --- | --- |
 | property doors | `q, city, district, priceMin, priceMax, cur, withPhoto, verifiedOnly, subcategory, rooms, areaMin, areaMax, floorMin, floorMax, totalFloorsMin, totalFloorsMax, condition, buildingType, furniture, balcony, parking, pool, sort, page` |
-| cars | the vehicles parameters of v0.5.0 |
-| work | the jobs parameters of v0.4.0 |
+| cars | the vehicles parameters of v0.6.0 |
+| work | the jobs parameters of v0.5.0 |
 | services | `q, city, priceMin, priceMax, cur, withPhoto, verifiedOnly, subcategory, travelsToClient, period, sort, page` |
 
 The URL of a door page is therefore the API query without the preset. The
@@ -270,9 +270,9 @@ a profile, a listing created through the wizard appears on its door and in
 | --- | --- | --- | --- |
 | 1 | API | PR 1 lands (v0.3.0) | none |
 | 2 | Web | PR A: contract vendoring, client, types, auth, property doors, detail, home, search, favorites, profile read, sitemap | 1 |
-| 3 | API | PR 1b (v0.3.1), then Jobs (v0.4.0) | 1 |
+| 3 | API | PR 1b (v0.4.0), then Jobs (v0.5.0) | 1 |
 | 4 | Web | PR B: wizard create, edit, delete for property; profile settings | 3 |
-| 5 | API | Vehicles (v0.5.0), Services (v0.6.0) | 3 |
+| 5 | API | Vehicles (v0.6.0), Services (v0.7.0) | 3 |
 | 6 | Web | PR C jobs, PR D vehicles, PR E services; each flips `source` and deletes its mock | 5 |
 | 7 | Both | Delete remaining `src/mock` listing arrays, `legacy-types.ts`; note the frozen export script in the API README | 6 |
 
@@ -287,7 +287,7 @@ chosen); any change to `InSyunik-Web`.
 
 ## 9. Open items for the writing-plans stage
 
-- Exact vehicles and jobs parameter lists are copied from v0.4.0 and v0.5.0
+- Exact vehicles and jobs parameter lists are copied from v0.5.0 and v0.6.0
   when those contracts are pinned; PR C and D plans are written then.
 - The Supabase CLI stack needs `supabase init` in one of the repos; the
   proposal is `InSyunik-Api/supabase/` with config only, no migrations, so
