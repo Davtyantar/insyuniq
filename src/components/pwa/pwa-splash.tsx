@@ -2,11 +2,12 @@
 
 import * as React from "react";
 
-/** One full turn — keep in sync with the 1800ms animations in globals.css. Brisk enough to feel
- * alive from the first frame, still slow enough to read as a showcase spin, not a loading spinner. */
-const TURN_MS = 1800;
+/** One full turn — keep in sync with the 1100ms animations in globals.css. */
+const TURN_MS = 1100;
 /** Stay up for at least one full turn, so the spin never gets cut off a moment after it starts. */
 const MIN_VISIBLE_MS = TURN_MS;
+/** Don't hold the app back on a slow network: leave by then even if the page is still loading. */
+const MAX_WAIT_MS = 4000;
 const FADE_MS = 450;
 /** Stacked copies of the logo, spread along Z, give the flat PNG real thickness as it turns edge-on. */
 const LAYERS = 12;
@@ -25,20 +26,38 @@ const DEPTH_PX = 9;
 export function PwaSplash() {
   const [phase, setPhase] = React.useState<"visible" | "leaving" | "gone">("visible");
 
+  const spinnerRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     if (!document.documentElement.classList.contains("pwa-launch")) {
       setPhase("gone");
       return;
     }
-    const wait = Math.max(0, MIN_VISIBLE_MS - performance.now());
-    const leave = window.setTimeout(() => setPhase("leaving"), wait);
-    const remove = window.setTimeout(() => {
-      setPhase("gone");
-      document.documentElement.classList.remove("pwa-launch");
-    }, wait + FADE_MS);
+    const timers: number[] = [];
+    let done = false;
+    const leave = () => {
+      if (done) return;
+      done = true;
+      // Fade out on the next full turn, face-on like the launch image, so the spin never
+      // stops at an odd angle.
+      const elapsed = Number(spinnerRef.current?.getAnimations()[0]?.currentTime ?? performance.now());
+      const turns = Math.max(Math.ceil(elapsed / TURN_MS), Math.ceil(MIN_VISIBLE_MS / TURN_MS));
+      const wait = Math.max(0, turns * TURN_MS - elapsed);
+      timers.push(
+        window.setTimeout(() => setPhase("leaving"), wait),
+        window.setTimeout(() => {
+          setPhase("gone");
+          document.documentElement.classList.remove("pwa-launch");
+        }, wait + FADE_MS),
+      );
+    };
+    // Reveal the app once it has fully loaded, so it doesn't pop in piece by piece behind the fade.
+    if (document.readyState === "complete") leave();
+    else window.addEventListener("load", leave, { once: true });
+    timers.push(window.setTimeout(leave, Math.max(0, MAX_WAIT_MS - performance.now())));
     return () => {
-      window.clearTimeout(leave);
-      window.clearTimeout(remove);
+      window.removeEventListener("load", leave);
+      timers.forEach((t) => window.clearTimeout(t));
     };
   }, []);
 
@@ -48,7 +67,7 @@ export function PwaSplash() {
     <div aria-hidden className="pwa-splash" data-leaving={phase === "leaving" || undefined}>
       <div className="pwa-splash__stage">
         <div className="pwa-splash__shadow" />
-        <div className="pwa-splash__spinner">
+        <div ref={spinnerRef} className="pwa-splash__spinner">
           {Array.from({ length: LAYERS }, (_, i) => {
             const z = (i / (LAYERS - 1) - 0.5) * DEPTH_PX;
             const isFace = i === 0 || i === LAYERS - 1;
@@ -61,6 +80,8 @@ export function PwaSplash() {
                 draggable={false}
                 // Painted on the very first frame of a launch — fetch it ahead of everything else.
                 fetchPriority="high"
+                // Paint the logo in the same frame as the splash itself, never a blank frame first.
+                decoding="sync"
                 className="pwa-splash__layer"
                 style={{
                   transform: `translateZ(${z.toFixed(2)}px)`,
@@ -70,7 +91,9 @@ export function PwaSplash() {
               />
             );
           })}
-          <div className="pwa-splash__gloss" style={{ transform: `translateZ(${DEPTH_PX / 2 + 0.1}px)` }} />
+          <div className="pwa-splash__gloss" style={{ transform: `translateZ(${DEPTH_PX / 2 + 0.1}px)` }}>
+            <div className="pwa-splash__sheen" />
+          </div>
         </div>
       </div>
     </div>

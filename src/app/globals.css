@@ -184,7 +184,7 @@ html.pwa-launch body {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  animation: pwa-spin 1800ms linear infinite;
+  animation: pwa-spin 1100ms linear infinite;
   will-change: transform;
 }
 .pwa-splash__layer {
@@ -201,13 +201,21 @@ html.pwa-launch body {
   inset: 0;
   -webkit-mask: url("/syunik-icon-transparent.png") center / contain no-repeat;
   mask: url("/syunik-icon-transparent.png") center / contain no-repeat;
-  background:
-    radial-gradient(120% 70% at 30% 12%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
-    linear-gradient(105deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 65%);
-  background-size: 100% 100%, 250% 100%;
-  background-repeat: no-repeat;
+  background: radial-gradient(120% 70% at 30% 12%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%);
   mix-blend-mode: screen;
-  animation: pwa-sheen 1800ms linear infinite;
+  overflow: hidden;
+}
+/* The sweeping band moves by transform rather than background-position, so it runs on the
+   compositor and keeps gliding while the main thread is busy hydrating the app. */
+.pwa-splash__sheen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -75%;
+  width: 250%;
+  background: linear-gradient(105deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 65%);
+  animation: pwa-sheen 1100ms linear infinite;
+  will-change: transform;
 }
 /* Contact shadow under the logo — narrows as the logo turns edge-on, so the turn reads as 3D
    while the logo itself never moves off its spot. */
@@ -220,7 +228,7 @@ html.pwa-launch body {
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(16, 24, 40, 0.28), rgba(16, 24, 40, 0));
   transform: translateX(-50%);
-  animation: pwa-shadow 1800ms linear infinite;
+  animation: pwa-shadow 1100ms linear infinite;
 }
 @keyframes pwa-spin {
   from {
@@ -232,10 +240,10 @@ html.pwa-launch body {
 }
 @keyframes pwa-sheen {
   from {
-    background-position: 0 0, 130% 0;
+    transform: translateX(-78%);
   }
   to {
-    background-position: 0 0, -130% 0;
+    transform: translateX(78%);
   }
 }
 @keyframes pwa-shadow {
@@ -251,7 +259,7 @@ html.pwa-launch body {
 }
 @media (prefers-reduced-motion: reduce) {
   .pwa-splash__spinner,
-  .pwa-splash__gloss,
+  .pwa-splash__sheen,
   .pwa-splash__shadow {
     animation: none;
   }

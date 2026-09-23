@@ -46,10 +46,13 @@ export function ListingDetails({ listing, similar }: ListingDetailsProps) {
     <div className="pb-20 md:pb-0">
       <div className="container py-4 lg:py-6">
         <nav className="flex flex-wrap items-center gap-1.5 text-[13px] text-foreground/70">
-          <Link href="/" className="transition-colors hover:text-foreground">
-            Գլխավոր
-          </Link>
-          <ChevronRight className="h-3.5 w-3.5" />
+          {/* On phones the crumb is capped at two levels — "Home" drops off when a subcategory follows. */}
+          <span className={subcategoryLabel ? "hidden sm:contents" : "contents"}>
+            <Link href="/" className="transition-colors hover:text-foreground">
+              Գլխավոր
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </span>
           <Link href={category.href} className="transition-colors hover:text-foreground">
             {category.label}
           </Link>

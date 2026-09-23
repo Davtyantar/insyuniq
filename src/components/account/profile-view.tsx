@@ -250,10 +250,13 @@ export function ProfileView() {
         aria-label="Breadcrumb"
         className="mb-4 flex flex-wrap items-center gap-1.5 text-[13px] text-foreground/70"
       >
-        <Link href="/" className="transition-colors hover:text-foreground">
-          {t("common.home")}
-        </Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        {/* On phones the crumb is capped at two levels — "Home" drops off. */}
+        <span className="hidden sm:contents">
+          <Link href="/" className="transition-colors hover:text-foreground">
+            {t("common.home")}
+          </Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+        </span>
         <Link href="/profile" className="transition-colors hover:text-foreground">
           {t("common.profile")}
         </Link>

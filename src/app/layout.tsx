@@ -108,6 +108,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: PWA_SPLASH_SCRIPT }} />
+        {/* The splash logo is requested before any stylesheet or script, so it's ready for the
+            first frame of a launch. */}
+        <link rel="preload" as="image" href="/syunik-icon-transparent.png" fetchPriority="high" />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>
       <body className="flex min-h-screen flex-col">
