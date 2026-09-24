@@ -1,4 +1,5 @@
 import { type Api, isUuid, unwrap } from "./client";
+import { toApiError } from "./errors";
 import type {
   Facets,
   PropertyFacetQuery,
@@ -6,6 +7,12 @@ import type {
   PropertyListingPage,
   PropertySearchQuery,
 } from "./types";
+
+/** A 404 is only "this listing/id doesn't exist" when the problem code says so; any other 404
+ * (a proxy error page, a misrouted request, …) must still surface as an ApiError. */
+function isNotFoundProblem(status: number, error: unknown): boolean {
+  return status === 404 && toApiError(status, error).code.endsWith(".not-found");
+}
 
 export async function searchProperty(
   api: Api,
@@ -23,7 +30,7 @@ export async function getPropertyFacets(api: Api, query: PropertyFacetQuery): Pr
 export async function getPropertyListing(api: Api, id: string): Promise<PropertyListing | null> {
   if (!isUuid(id)) return null;
   const result = await api.GET("/v1/property/listings/{id}", { params: { path: { id } } });
-  if (result.response.status === 404) return null;
+  if (isNotFoundProblem(result.response.status, result.error)) return null;
   return unwrap(result);
 }
 
@@ -31,6 +38,6 @@ export async function getSimilarProperty(api: Api, id: string, limit = 8): Promi
   const result = await api.GET("/v1/property/listings/{id}/similar", {
     params: { path: { id }, query: { limit } },
   });
-  if (result.response.status === 404) return [];
+  if (isNotFoundProblem(result.response.status, result.error)) return [];
   return unwrap(result);
 }

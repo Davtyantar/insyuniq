@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getCatalogByIds, getAllActiveCards } from "./catalog";
 import { createApi } from "./client";
+import { ApiError } from "./errors";
 import { getPropertyListing, getSimilarProperty } from "./property";
 
 const ID = "947e6113-f009-5717-a2f7-97b482ec8acf";
@@ -23,6 +24,11 @@ describe("getPropertyListing", () => {
     expect(await getPropertyListing(api, ID)).toBeNull();
     expect(await getPropertyListing(api, "re-1")).toBeNull();
     expect(seen).toHaveLength(1);
+  });
+
+  it("rejects with ApiError on a 404 that is not a problem.not-found", async () => {
+    const api = createApi({ fetch: recordingFetch(() => ({ status: 404, body: "Not Found" }), []) });
+    await expect(getPropertyListing(api, ID)).rejects.toBeInstanceOf(ApiError);
   });
 });
 
