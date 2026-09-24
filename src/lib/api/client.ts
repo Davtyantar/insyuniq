@@ -5,10 +5,16 @@ import type { paths } from "./schema";
 const LOCAL_API = "http://localhost:5080";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Server: API_URL, then NEXT_PUBLIC_API_URL. Browser: NEXT_PUBLIC_API_URL (inlined at build). */
+/** Server: API_URL, then NEXT_PUBLIC_API_URL. Browser: NEXT_PUBLIC_API_URL (inlined at build).
+ * In production, an unset URL is a misconfiguration, not a silent fallback to localhost. */
 export function apiBaseUrl(): string {
   const serverUrl = typeof window === "undefined" ? process.env.API_URL : undefined;
-  return (serverUrl || process.env.NEXT_PUBLIC_API_URL || LOCAL_API).replace(/\/$/, "");
+  const configured = serverUrl || process.env.NEXT_PUBLIC_API_URL;
+  if (!configured) {
+    if (process.env.NODE_ENV === "production") throw new Error("NEXT_PUBLIC_API_URL is not set");
+    return LOCAL_API;
+  }
+  return configured.replace(/\/$/, "");
 }
 
 export interface ApiOptions {

@@ -26,6 +26,13 @@ describe("apiBaseUrl", () => {
     vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.insyunik.am");
     expect(apiBaseUrl()).toBe("http://api.internal:8080");
   });
+
+  it("throws in production instead of silently falling back to localhost", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("API_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+    expect(() => apiBaseUrl()).toThrow("NEXT_PUBLIC_API_URL is not set");
+  });
 });
 
 describe("createApi", () => {
