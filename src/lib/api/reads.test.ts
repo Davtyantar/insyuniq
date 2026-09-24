@@ -37,6 +37,13 @@ describe("getSimilarProperty", () => {
     const api = createApi({ fetch: recordingFetch(() => ({ status: 404, body: notFound }), []) });
     expect(await getSimilarProperty(api, ID)).toEqual([]);
   });
+
+  it("never calls the API for a mock id", async () => {
+    const seen: URL[] = [];
+    const api = createApi({ fetch: recordingFetch(() => ({ status: 404, body: "Not Found" }), seen) });
+    expect(await getSimilarProperty(api, "re-1")).toEqual([]);
+    expect(seen).toHaveLength(0);
+  });
 });
 
 describe("getCatalogByIds", () => {

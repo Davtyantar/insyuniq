@@ -34,7 +34,9 @@ export async function getPropertyListing(api: Api, id: string): Promise<Property
   return unwrap(result);
 }
 
+/** Empty when the id is not a UUID (never reaches the API) or the anchor listing is gone. */
 export async function getSimilarProperty(api: Api, id: string, limit = 8): Promise<PropertyListing[]> {
+  if (!isUuid(id)) return [];
   const result = await api.GET("/v1/property/listings/{id}/similar", {
     params: { path: { id }, query: { limit } },
   });
