@@ -10,6 +10,7 @@ import {
   legacyCard,
   newestCards,
   orderByIds,
+  partitionFavoriteIds,
   propertyCard,
   sortCards,
 } from "./card";
@@ -75,6 +76,16 @@ describe("orderByIds", () => {
     const base = propertyCard(PROPERTY_FIXTURE);
     const cards = [{ ...base, id: "a" }, { ...base, id: "b" }];
     expect(orderByIds(["b", "gone", "a"], cards).map((c) => c.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("partitionFavoriteIds", () => {
+  it("splits API uuids, live mock ids, and stale ids", () => {
+    const uuid = "947e6113-f009-5717-a2f7-97b482ec8acf";
+    const result = partitionFavoriteIds([uuid, "car-1", "re-1", "nope"], ["cars", "work", "services"]);
+    expect(result.apiIds).toEqual([uuid]);
+    expect(result.mockIds).toEqual(["car-1"]);
+    expect(result.staleIds).toEqual(["re-1", "nope"]);
   });
 });
 

@@ -4,15 +4,20 @@ import * as React from "react";
 import { useApp } from "@/components/providers/app-provider";
 import { getCatalogByIds } from "@/lib/api/catalog";
 import { createApi, isUuid } from "@/lib/api/client";
-import { type CardModel, catalogCard, isCard, legacyCard, orderByIds } from "@/lib/card";
+import { type CardModel, catalogCard, isCard, legacyCard, orderByIds, partitionFavoriteIds } from "@/lib/card";
+import { MOCK_DOORS } from "@/lib/categories";
 import { getListings } from "@/mock/listings";
 
 /** Favorites are ids in localStorage. UUIDs are API listings, hydrated in chunks of 50; the rest
- * are mock listings of doors not yet on the API. Ids the API omits are forgotten (spec 4.7). */
+ * are mock listings of doors not yet on the API. Ids the API omits, and stale mock ids of doors
+ * that have since moved to the API, are forgotten (spec 4.7). */
 export function useFavoriteCards(): { cards: CardModel[]; loading: boolean } {
   const { favorites, hydrated, removeFavorites } = useApp();
-  const apiIds = React.useMemo(() => favorites.filter(isUuid), [favorites]);
+  // Memoised on the joined string so toggling a mock favorite does not refetch API favorites.
+  const apiKey = React.useMemo(() => favorites.filter(isUuid).join(","), [favorites]);
+  const apiIds = React.useMemo(() => (apiKey ? apiKey.split(",") : []), [apiKey]);
   const [apiCards, setApiCards] = React.useState<CardModel[] | null>(null);
+  const partition = React.useMemo(() => partitionFavoriteIds(favorites, MOCK_DOORS), [favorites]);
 
   React.useEffect(() => {
     if (!hydrated) return;
@@ -41,10 +46,17 @@ export function useFavoriteCards(): { cards: CardModel[]; loading: boolean } {
     };
   }, [hydrated, apiIds, removeFavorites]);
 
+  // Self-heal storage once hydrated: forget ids that are neither API uuids nor live mock doors.
+  const staleKey = partition.staleIds.join(",");
+  React.useEffect(() => {
+    if (!hydrated || !staleKey) return;
+    removeFavorites(staleKey.split(","));
+  }, [hydrated, staleKey, removeFavorites]);
+
   const cards = React.useMemo(() => {
-    const mockCards = getListings(favorites.filter((id) => !isUuid(id))).map(legacyCard);
+    const mockCards = getListings(partition.mockIds).map(legacyCard);
     return orderByIds(favorites, [...(apiCards ?? []), ...mockCards]);
-  }, [favorites, apiCards]);
+  }, [favorites, apiCards, partition.mockIds]);
 
   return { cards, loading: !hydrated || apiCards === null };
 }

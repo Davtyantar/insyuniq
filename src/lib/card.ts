@@ -1,8 +1,10 @@
+import { isUuid } from "@/lib/api/client";
 import type { CatalogCard, Money, PropertyListing } from "@/lib/api/types";
 import { listingHref } from "@/lib/categories";
 import { locationText } from "@/lib/geo";
 import { label } from "@/lib/labels";
 import { convertAmount } from "@/lib/money";
+import { getListing } from "@/mock/listings";
 import { DOOR_BY_DEAL, propertyHref } from "@/lib/property-doors";
 import { propertyBadges, propertySummary } from "@/lib/property-format";
 import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
@@ -143,6 +145,30 @@ export function sortCards(cards: CardModel[], sort: SortKey): CardModel[] {
 
 export function isCard(card: CardModel | null): card is CardModel {
   return card !== null;
+}
+
+/** Splits stored favorite ids: API UUIDs, mock ids of doors still on mock data, and stale ids to
+ * forget (mock ids of doors now on the API, or ids the mock data no longer knows). */
+export function partitionFavoriteIds(
+  ids: string[],
+  mockDoors: readonly string[],
+): { apiIds: string[]; mockIds: string[]; staleIds: string[] } {
+  const apiIds: string[] = [];
+  const mockIds: string[] = [];
+  const staleIds: string[] = [];
+  for (const id of ids) {
+    if (isUuid(id)) {
+      apiIds.push(id);
+      continue;
+    }
+    const listing = getListing(id);
+    if (listing && mockDoors.includes(listing.category)) {
+      mockIds.push(id);
+    } else {
+      staleIds.push(id);
+    }
+  }
+  return { apiIds, mockIds, staleIds };
 }
 
 /** Orders cards to match a list of ids (e.g. favorites), dropping ids with no matching card. */
