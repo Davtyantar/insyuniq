@@ -67,7 +67,11 @@ export function ListingDetails({ detail, similar }: ListingDetailsProps) {
 
         <div className="mt-4 grid gap-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-10">
           <div className="min-w-0 space-y-8">
-            {detail.heroImage ? (
+            {detail.images.length === 0 ? (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border bg-secondary">
+                <FavoriteButton listingId={detail.id} className="absolute right-3 top-3" />
+              </div>
+            ) : detail.heroImage ? (
               <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border bg-secondary">
                 <Image
                   src={detail.images[0]}
