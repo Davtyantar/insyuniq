@@ -1,0 +1,1060 @@
+openapi: 3.1.0
+info:
+  title: InSyunik API
+  version: 0.3.0
+  description: |
+    Backend for InSyunik, the classifieds marketplace for Syunik province.
+    Contract v0.3.0: property listings (now with land type and utilities),
+    the cross-category catalog, an authenticated seller listing lookup,
+    seller profiles and signed media uploads (design spec 2026-09-12, ADR 0006).
+
+    Read-only mapping notes, kept only in this description because they have
+    no schema of their own: the prototype's `urgent` flag is served as
+    `featured` on read and is dropped on write, because `createPropertyListing`
+    always sets `featured = false`. `views` is dropped. `EUR` and `RUB` are
+    dropped; `Currency` stays `USD`/`AMD`. Seller rating, review count and
+    online status are dropped.
+servers:
+  - url: /
+tags:
+  - name: catalog
+  - name: property
+  - name: sellers
+  - name: media
+
+paths:
+  /v1/catalog/listings:
+    get:
+      tags: [catalog]
+      operationId: searchCatalog
+      summary: Search every category with the kernel filters
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/category"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/district"
+        - $ref: "#/components/parameters/priceMin"
+        - $ref: "#/components/parameters/priceMax"
+        - $ref: "#/components/parameters/cur"
+        - $ref: "#/components/parameters/withPhoto"
+        - $ref: "#/components/parameters/verifiedOnly"
+        - $ref: "#/components/parameters/ids"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: The requested page of cards and the total match count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogCardPage"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+
+  /v1/catalog/listings/facets:
+    get:
+      tags: [catalog]
+      operationId: getCatalogFacets
+      summary: Match counts per category and city
+      description: Takes the filter parameters of `searchCatalog`; `sort`, `page` and `pageSize` are ignored. Each facet excludes its own filter.
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/category"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/district"
+        - $ref: "#/components/parameters/priceMin"
+        - $ref: "#/components/parameters/priceMax"
+        - $ref: "#/components/parameters/cur"
+        - $ref: "#/components/parameters/withPhoto"
+        - $ref: "#/components/parameters/verifiedOnly"
+        - $ref: "#/components/parameters/ids"
+      responses:
+        "200":
+          description: "`{ category: {…}, city: {…} }`, every value present, zeros included"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facets"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+
+  /v1/catalog/listings/featured:
+    get:
+      tags: [catalog]
+      operationId: getFeaturedListings
+      summary: Featured and verified listings across categories, newest first
+      parameters:
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Up to `limit` cards (default 8)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogCard"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+
+  /v1/catalog/listings/recent:
+    get:
+      tags: [catalog]
+      operationId: getRecentListings
+      summary: Newest listings across categories, optionally one category
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: "#/components/schemas/LaunchCategory"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Up to `limit` cards (default 8)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogCard"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+
+  /v1/me/listings:
+    get:
+      tags: [catalog]
+      operationId: getMyListings
+      summary: The caller's own listings
+      description: |
+        The caller's own listings in every status by default; `status` narrows. Sort is fixed:
+        `published_at DESC NULLS LAST, created_at DESC`.
+        The seller is the token's `sub`, never a request value.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListingStatus"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: The caller's own listings, sorted for their own listings screen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogCardPage"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/property/listings:
+    get:
+      tags: [property]
+      operationId: searchPropertyListings
+      summary: Search property listings with the property filters
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/district"
+        - $ref: "#/components/parameters/priceMin"
+        - $ref: "#/components/parameters/priceMax"
+        - $ref: "#/components/parameters/cur"
+        - $ref: "#/components/parameters/withPhoto"
+        - $ref: "#/components/parameters/verifiedOnly"
+        - $ref: "#/components/parameters/propertySubcategory"
+        - $ref: "#/components/parameters/deal"
+        - $ref: "#/components/parameters/rooms"
+        - $ref: "#/components/parameters/areaMin"
+        - $ref: "#/components/parameters/areaMax"
+        - $ref: "#/components/parameters/floorMin"
+        - $ref: "#/components/parameters/floorMax"
+        - $ref: "#/components/parameters/totalFloorsMin"
+        - $ref: "#/components/parameters/totalFloorsMax"
+        - $ref: "#/components/parameters/condition"
+        - $ref: "#/components/parameters/buildingType"
+        - $ref: "#/components/parameters/furniture"
+        - $ref: "#/components/parameters/balcony"
+        - $ref: "#/components/parameters/parking"
+        - $ref: "#/components/parameters/pool"
+        - $ref: "#/components/parameters/propertySort"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: The requested page and the total match count; items carry no `seller`
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyListingPage"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+    post:
+      tags: [property]
+      operationId: createPropertyListing
+      summary: Publish a property listing
+      description: |
+        Requires a Supabase access token and a seller profile (`PUT /v1/me/profile`, else 422).
+        `id`, `status = active`, `featured = false`, `verified = false`, `sellerId` (the token's `sub`)
+        and `publishedAt` are set by the server. Every image path must have been issued to the same
+        user by `POST /v1/media/upload-url`. `subcategory` × `deal` must be an allowed pair and
+        `price.period` must follow `deal` (sale → total, rent → month, daily → night).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePropertyListingRequest"
+      responses:
+        "201":
+          description: Created, with the seller summary embedded
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "`/v1/property/listings/{id}`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyListing"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ProfileRequired"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/property/listings/facets:
+    get:
+      tags: [property]
+      operationId: getPropertyFacets
+      summary: Match counts per subcategory, deal, condition and city; each facet excludes its own filter
+      description: Takes the filter parameters of `searchPropertyListings`; `sort`, `page` and `pageSize` are ignored.
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/district"
+        - $ref: "#/components/parameters/priceMin"
+        - $ref: "#/components/parameters/priceMax"
+        - $ref: "#/components/parameters/cur"
+        - $ref: "#/components/parameters/withPhoto"
+        - $ref: "#/components/parameters/verifiedOnly"
+        - $ref: "#/components/parameters/propertySubcategory"
+        - $ref: "#/components/parameters/deal"
+        - $ref: "#/components/parameters/rooms"
+        - $ref: "#/components/parameters/areaMin"
+        - $ref: "#/components/parameters/areaMax"
+        - $ref: "#/components/parameters/floorMin"
+        - $ref: "#/components/parameters/floorMax"
+        - $ref: "#/components/parameters/totalFloorsMin"
+        - $ref: "#/components/parameters/totalFloorsMax"
+        - $ref: "#/components/parameters/condition"
+        - $ref: "#/components/parameters/buildingType"
+        - $ref: "#/components/parameters/furniture"
+        - $ref: "#/components/parameters/balcony"
+        - $ref: "#/components/parameters/parking"
+        - $ref: "#/components/parameters/pool"
+      responses:
+        "200":
+          description: "`{ subcategory, deal, condition, city }` → `{ value: count }`, zeros included"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Facets"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+
+  /v1/property/listings/{id}:
+    get:
+      tags: [property]
+      operationId: getPropertyListingById
+      summary: Get a property listing by id, with its seller
+      parameters:
+        - $ref: "#/components/parameters/listingId"
+      responses:
+        "200":
+          description: The listing; only `status = active` listings are visible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyListing"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/property/listings/{id}/similar:
+    get:
+      tags: [property]
+      operationId: getSimilarPropertyListings
+      summary: Active listings with the same subcategory, deal and city, newest first
+      parameters:
+        - $ref: "#/components/parameters/listingId"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Up to `limit` listings (default 4), excluding the anchor; empty when none
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PropertyListing"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/me/profile:
+    get:
+      tags: [sellers]
+      operationId: getMyProfile
+      summary: The caller's seller profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SellerProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [sellers]
+      operationId: putMyProfile
+      summary: Create or replace the caller's seller profile
+      description: Upsert keyed by the token's `sub`. `memberSince` is set on first creation and never changes. `avatarPath` must be an object path issued by `POST /v1/media/upload-url` with `purpose = avatar`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PutMyProfileRequest"
+      responses:
+        "200":
+          description: The profile after the write
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SellerProfile"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/media/upload-url:
+    post:
+      tags: [media]
+      operationId: createUploadUrl
+      summary: Sign a Supabase Storage upload URL for one image
+      description: |
+        Returns a signed URL the client `PUT`s the file bytes to (with its `Content-Type` header),
+        plus the `objectPath` to send back in a listing's `images` or a profile's `avatarPath`.
+        Image bytes never pass through this API. Signed URLs are valid for two hours.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUploadUrlRequest"
+      responses:
+        "200":
+          description: Signed upload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUploadUrlResponse"
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: A Supabase Auth access token (`aud = authenticated`, asymmetric signature).
+
+  parameters:
+    q:
+      name: q
+      in: query
+      description: Full-text search over title, description and address (whole words)
+      schema:
+        type: string
+        maxLength: 200
+    category:
+      name: category
+      in: query
+      description: Comma-separated launch categories
+      schema:
+        type: string
+        example: property,jobs
+    city:
+      name: city
+      in: query
+      description: Comma-separated city slugs
+      schema:
+        type: string
+        example: kapan,goris
+    district:
+      name: district
+      in: query
+      description: A district slug (carries its city); must belong to one of the selected cities when `city` is present
+      schema:
+        $ref: "#/components/schemas/District"
+    priceMin:
+      name: priceMin
+      in: query
+      description: Inclusive lower bound on `price.amount` in the listing's own currency
+      schema:
+        type: integer
+        minimum: 0
+    priceMax:
+      name: priceMax
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    cur:
+      name: cur
+      in: query
+      description: Restrict to one currency
+      schema:
+        $ref: "#/components/schemas/Currency"
+    withPhoto:
+      name: withPhoto
+      in: query
+      description: "`1` or `true` keeps only listings with at least one image"
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+    verifiedOnly:
+      name: verifiedOnly
+      in: query
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+    ids:
+      name: ids
+      in: query
+      description: "Comma-separated listing ids in canonical dashed form, at most 50; unknown or inactive ids are omitted. An empty value is no filter, so a client with no ids skips the call."
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      schema:
+        $ref: "#/components/schemas/SortKey"
+    propertySort:
+      name: sort
+      in: query
+      schema:
+        $ref: "#/components/schemas/PropertySortKey"
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 24
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+    listingId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    propertySubcategory:
+      name: subcategory
+      in: query
+      description: Comma-separated property subcategories
+      schema:
+        type: string
+        example: hotels,guesthouses,houses,apartments
+    deal:
+      name: deal
+      in: query
+      description: Comma-separated deals
+      schema:
+        type: string
+        example: rent,daily
+    rooms:
+      name: rooms
+      in: query
+      description: "Comma-separated room counts from `RoomsOption`; `4` means four or more"
+      schema:
+        type: string
+        example: "1,2"
+    areaMin:
+      name: areaMin
+      in: query
+      schema:
+        type: number
+        minimum: 0
+    areaMax:
+      name: areaMax
+      in: query
+      schema:
+        type: number
+        minimum: 0
+    floorMin:
+      name: floorMin
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    floorMax:
+      name: floorMax
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    totalFloorsMin:
+      name: totalFloorsMin
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    totalFloorsMax:
+      name: totalFloorsMax
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    condition:
+      name: condition
+      in: query
+      description: Comma-separated conditions
+      schema:
+        type: string
+        example: euro,renovated
+    buildingType:
+      name: buildingType
+      in: query
+      schema:
+        $ref: "#/components/schemas/BuildingType"
+    furniture:
+      name: furniture
+      in: query
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+    balcony:
+      name: balcony
+      in: query
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+    parking:
+      name: parking
+      in: query
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+    pool:
+      name: pool
+      in: query
+      schema:
+        type: string
+        enum: ["1", "true", "0", "false"]
+
+  responses:
+    ValidationProblem:
+      description: RFC 9457 problem with `errors` keyed by parameter or field name
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ValidationProblemDetails"
+    NotFound:
+      description: RFC 9457 problem, `type = urn:insyunik:error:<module>.not-found`
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Unauthorized:
+      description: Missing, expired, HS256-signed or wrong-audience token
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    ProfileRequired:
+      description: The caller has no seller profile yet (`type = urn:insyunik:error:property.profile-required`)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    TooManyRequests:
+      description: Write rate limit exceeded
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+  schemas:
+    # ---- closed sets: the only hand-written copy (spec §8.2) ----
+    Category:
+      type: string
+      description: Every reserved category name (ADR 0006); only `LaunchCategory` values appear in responses
+      enum: [property, jobs, vehicles, services, businesses, goods, agro]
+    LaunchCategory:
+      type: string
+      enum: [property, jobs, vehicles, services]
+    Currency:
+      type: string
+      enum: [USD, AMD]
+    PricePeriod:
+      type: string
+      enum: [total, month, night, hour]
+    ListingStatus:
+      type: string
+      enum: [draft, active, archived, closed]
+    SellerType:
+      type: string
+      enum: [private, agency, dealer, company]
+    City:
+      type: string
+      enum: [kapan, goris, sisian, kajaran, meghri, agarak, dastakert, tatev, khndzoresk, shinuhayr]
+    District:
+      type: string
+      enum:
+        - kapan-center
+        - kapan-vachagan
+        - kapan-achanan
+        - kapan-shahumyan
+        - kapan-dzork
+        - kapan-kavart
+        - kapan-aghbyur
+        - goris-center
+        - goris-verin-goris
+        - goris-aghbyur
+        - goris-davit-bek
+        - goris-syunik
+        - sisian-center
+        - sisian-arevik
+        - sisian-norashen
+        - sisian-sisakan
+        - kajaran-center
+        - kajaran-norashen
+        - kajaran-lernayin
+        - meghri-center
+        - meghri-prkashen
+        - meghri-mets-tagh
+        - agarak-center
+        - agarak-gortsaranayin
+        - dastakert-center
+        - tatev-center
+        - tatev-vorotan-gorge
+        - khndzoresk-center
+        - khndzoresk-hin-khndzoresk
+        - shinuhayr-center
+    SortKey:
+      type: string
+      description: "`relevant` = featured first, then newest (with `q`: text rank first)"
+      enum: [relevant, date-desc, price-asc, price-desc]
+    PropertySubcategory:
+      type: string
+      enum: [apartments, houses, new-buildings, commercial, land, garages, hotels, guesthouses]
+    Deal:
+      type: string
+      description: "Allowed per subcategory: apartments/houses all three; new-buildings sale; commercial/land/garages sale+rent; hotels/guesthouses daily"
+      enum: [sale, rent, daily]
+    PropertyCondition:
+      type: string
+      enum: [euro, renovated, good, needs-repair, shell]
+    BuildingType:
+      type: string
+      enum: [new, secondary]
+    PropertySortKey:
+      type: string
+      enum: [relevant, date-desc, price-asc, price-desc, area-desc]
+    RoomsOption:
+      type: string
+      description: Filter chips; `0` is a studio, `4` means four or more
+      enum: ["0", "1", "2", "3", "4"]
+    LandType:
+      type: string
+      enum: [residential, agricultural, commercial, industrial, recreational]
+
+    # ---- shared shapes ----
+    Money:
+      type: object
+      required: [amount, currency, period, negotiable]
+      properties:
+        amount:
+          type: [integer, "null"]
+          format: int64
+          minimum: 0
+          description: Whole units of `currency`; `null` only when `negotiable` is true
+        currency:
+          $ref: "#/components/schemas/Currency"
+        period:
+          $ref: "#/components/schemas/PricePeriod"
+        negotiable:
+          type: boolean
+    Coords:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+        lng:
+          type: number
+    SellerSummary:
+      type: object
+      required: [id, name, type, phone, hasWhatsApp, hasTelegram, hasViber, memberSince]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/SellerType"
+        avatarUrl:
+          type: string
+          format: uri
+        phone:
+          type: string
+          example: "+37491234567"
+        hasWhatsApp:
+          type: boolean
+        hasTelegram:
+          type: boolean
+        hasViber:
+          type: boolean
+        memberSince:
+          type: string
+          format: date-time
+    SellerProfile:
+      $ref: "#/components/schemas/SellerSummary"
+    PutMyProfileRequest:
+      type: object
+      required: [name, type, phone, hasWhatsApp, hasTelegram, hasViber]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 60
+        type:
+          $ref: "#/components/schemas/SellerType"
+        phone:
+          type: string
+          pattern: "^\\+374[0-9]{8}$"
+        hasWhatsApp:
+          type: boolean
+        hasTelegram:
+          type: boolean
+        hasViber:
+          type: boolean
+        avatarPath:
+          type: string
+          maxLength: 200
+          description: A Storage object path issued with `purpose = avatar`
+    Facets:
+      type: object
+      description: "`{ <param>: { <value>: count } }` for every faceted filter of the category, zeros included"
+      additionalProperties:
+        type: object
+        additionalProperties:
+          type: integer
+    CatalogCard:
+      type: object
+      required: [id, sellerId, category, subcategory, title, price, city, imageCount, featured, verified, status, publishedAt, card]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sellerId:
+          type: string
+          format: uuid
+        category:
+          $ref: "#/components/schemas/LaunchCategory"
+        subcategory:
+          type: string
+        title:
+          type: string
+        price:
+          $ref: "#/components/schemas/Money"
+        city:
+          $ref: "#/components/schemas/City"
+        district:
+          $ref: "#/components/schemas/District"
+        coverImage:
+          type: string
+          format: uri
+        imageCount:
+          type: integer
+        featured:
+          type: boolean
+        verified:
+          type: boolean
+        status:
+          $ref: "#/components/schemas/ListingStatus"
+        publishedAt:
+          type: string
+          format: date-time
+        card:
+          type: object
+          description: "Per category (spec §4.8): property `{deal, rooms, area, landArea}`; jobs `{employer, employmentType, experience}`; vehicles `{brand, model, year, mileage, fuel}`; services `{travelsToClient}`"
+          additionalProperties: true
+    CatalogCardPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogCard"
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+    # ---- property ----
+    PropertyFields:
+      type: object
+      properties:
+        rooms:
+          type: integer
+          minimum: 0
+          description: 0 = studio. Required for apartments, houses, new-buildings, hotels, guesthouses; forbidden for land, garages
+        area:
+          type: number
+          description: m². Required for every subcategory but land
+        landArea:
+          type: number
+          description: sotka (100 m²). Required for land; forbidden for apartments, new-buildings, garages, hotels, guesthouses
+        landType:
+          $ref: "#/components/schemas/LandType"
+          description: Only when subcategory = land
+        floor:
+          type: integer
+          description: Forbidden for houses, land, garages, hotels, guesthouses
+        totalFloors:
+          type: integer
+          description: Forbidden for land, garages, hotels, guesthouses (houses = storeys)
+        condition:
+          $ref: "#/components/schemas/PropertyCondition"
+        buildingType:
+          $ref: "#/components/schemas/BuildingType"
+        buildYear:
+          type: integer
+        ceilingHeight:
+          type: number
+        bathrooms:
+          type: integer
+        furniture:
+          type: boolean
+        balcony:
+          type: boolean
+        parking:
+          type: boolean
+        pool:
+          type: boolean
+        water:
+          type: boolean
+          description: Only when subcategory is land or garages
+        gas:
+          type: boolean
+          description: Only when subcategory is land or garages
+        electricity:
+          type: boolean
+          description: Only when subcategory is land or garages
+        pit:
+          type: boolean
+          description: Only when subcategory is land or garages
+    PropertyListing:
+      allOf:
+        - type: object
+          required: [id, category, subcategory, deal, title, description, price, city, images, featured, verified, status, publishedAt, furniture, balcony, parking, pool]
+          properties:
+            id:
+              type: string
+              format: uuid
+            category:
+              type: string
+              const: property
+            subcategory:
+              $ref: "#/components/schemas/PropertySubcategory"
+            deal:
+              $ref: "#/components/schemas/Deal"
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              $ref: "#/components/schemas/Money"
+            city:
+              $ref: "#/components/schemas/City"
+            district:
+              $ref: "#/components/schemas/District"
+            address:
+              type: string
+            coords:
+              $ref: "#/components/schemas/Coords"
+            images:
+              type: array
+              items:
+                type: string
+                format: uri
+            featured:
+              type: boolean
+            verified:
+              type: boolean
+            status:
+              $ref: "#/components/schemas/ListingStatus"
+            publishedAt:
+              type: string
+              format: date-time
+            seller:
+              $ref: "#/components/schemas/SellerSummary"
+        - $ref: "#/components/schemas/PropertyFields"
+    PropertyListingPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyListing"
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    CreatePropertyListingRequest:
+      allOf:
+        - type: object
+          required: [subcategory, deal, title, description, price, city, images]
+          properties:
+            subcategory:
+              $ref: "#/components/schemas/PropertySubcategory"
+            deal:
+              $ref: "#/components/schemas/Deal"
+            title:
+              type: string
+              minLength: 3
+              maxLength: 120
+            description:
+              type: string
+              maxLength: 4000
+            price:
+              $ref: "#/components/schemas/Money"
+            city:
+              $ref: "#/components/schemas/City"
+            district:
+              $ref: "#/components/schemas/District"
+            address:
+              type: string
+              maxLength: 200
+            coords:
+              $ref: "#/components/schemas/Coords"
+            images:
+              type: array
+              minItems: 1
+              maxItems: 20
+              items:
+                type: string
+                description: Storage object path from `createUploadUrl`
+        - $ref: "#/components/schemas/PropertyFields"
+
+    # ---- media ----
+    CreateUploadUrlRequest:
+      type: object
+      required: [fileName, contentType, sizeBytes]
+      properties:
+        fileName:
+          type: string
+          maxLength: 200
+        contentType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp]
+        sizeBytes:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+        purpose:
+          type: string
+          enum: [listing, avatar]
+          default: listing
+    CreateUploadUrlResponse:
+      type: object
+      required: [uploadUrl, token, objectPath, method, expiresAt]
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+        token:
+          type: string
+        objectPath:
+          type: string
+        method:
+          type: string
+          const: PUT
+        expiresAt:
+          type: string
+          format: date-time
+
+    # ---- errors ----
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        traceId:
+          type: string
+    ValidationProblemDetails:
+      allOf:
+        - $ref: "#/components/schemas/ProblemDetails"
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

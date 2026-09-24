@@ -7,15 +7,14 @@ import { BadgeCheck, Clock, ImageIcon, MapPin } from "lucide-react";
 import { FavoriteButton } from "@/components/listings/favorite-button";
 import { useApp } from "@/components/providers/app-provider";
 import { Badge } from "@/components/ui/badge";
-import { listingHref } from "@/lib/categories";
-import { formatPrice, formatRelativeDate } from "@/lib/format";
-import { label } from "@/lib/labels";
-import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
-import type { Listing, ViewMode } from "@/lib/types";
+import type { CardModel } from "@/lib/card";
+import { formatRelativeDate } from "@/lib/format";
+import { formatAmount, periodLabel, toDisplayCurrency } from "@/lib/money";
+import type { ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface ListingCardProps {
-  listing: Listing;
+  card: CardModel;
   view?: ViewMode;
   priority?: boolean;
   className?: string;
@@ -29,30 +28,10 @@ interface ListingCardProps {
   hideDescription?: boolean;
 }
 
-/** Highlight badges that sit on the photo. */
-function accentBadges(listing: Listing): string[] {
-  const badges: string[] = [];
-  if (listing.category === "real-estate") {
-    if (listing.buildingType === "new") badges.push("Նորակառույց");
-    if (listing.deal === "rent") badges.push("Վարձակալություն");
-  } else if (listing.category === "rentals" || listing.category === "hotels") {
-    badges.push(listing.term === "daily" ? "Օրավարձով" : "Երկարաժամկետ");
-  } else if (listing.category === "work") {
-    badges.push(label("employmentType", listing.employmentType));
-  } else if (listing.category === "services") {
-    // No accent badge for services — the card already keeps this category minimal (no price).
-  } else {
-    if (listing.fuel === "electric") badges.push("Էլեկտրական");
-    if (listing.condition === "new") badges.push("Նոր");
-    else if (listing.accidentFree) badges.push("Առանց ավարիայի");
-  }
-  return badges;
-}
-
 const MAX_PREVIEW_DOTS = 6;
 
 export function ListingCard({
-  listing,
+  card,
   view = "grid",
   priority,
   className,
@@ -60,10 +39,10 @@ export function ListingCard({
   hideDescription = false,
 }: ListingCardProps) {
   const { currency } = useApp();
-  const badges = accentBadges(listing);
   const isList = view === "list";
-  const showPrice = listing.category !== "services";
-  const verifiedBadge = listing.verified && (
+  const price = card.price;
+  const display = toDisplayCurrency(currency);
+  const verifiedBadge = card.verified && (
     <BadgeCheck className="h-4 w-4 shrink-0 text-accent sm:h-5 sm:w-5" aria-label="Ստուգված հայտարարություն">
       <title>Ստուգված հայտարարություն</title>
     </BadgeCheck>
@@ -71,7 +50,7 @@ export function ListingCard({
 
   const imageRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const zoneCount = Math.min(listing.images.length, MAX_PREVIEW_DOTS);
+  const zoneCount = Math.min(card.images.length, MAX_PREVIEW_DOTS);
 
   const scrub = React.useCallback(
     (event: React.MouseEvent) => {
@@ -97,13 +76,13 @@ export function ListingCard({
       )}
     >
       <Link
-        href={listingHref(listing)}
+        href={card.href}
         className="absolute inset-0 z-10"
-        aria-label={listing.title}
+        aria-label={card.title}
         onMouseMove={scrub}
         onMouseLeave={reset}
       >
-        <span className="sr-only">{listing.title}</span>
+        <span className="sr-only">{card.title}</span>
       </Link>
 
       <div
@@ -117,30 +96,32 @@ export function ListingCard({
           isList ? "sm:aspect-auto sm:min-h-[212px] sm:w-[300px]" : "sm:aspect-[4/3] sm:w-full",
         )}
       >
-        <Image
-          src={listing.images[activeIndex]}
-          alt={listing.title}
-          fill
-          sizes={
-            dense
-              ? isList
-                ? "(max-width: 640px) 112px, 300px"
-                : "(max-width: 640px) 112px, 33vw"
-              : isList
-                ? "(max-width: 640px) 100vw, 300px"
-                : "(max-width: 768px) 100vw, 33vw"
-          }
-          priority={priority}
-          // Photos added through the publish wizard are object URLs the optimiser cannot fetch.
-          unoptimized={listing.images[activeIndex].startsWith("blob:")}
-          className="object-cover"
-        />
+        {card.images.length > 0 && (
+          <Image
+            src={card.images[activeIndex]}
+            alt={card.title}
+            fill
+            sizes={
+              dense
+                ? isList
+                  ? "(max-width: 640px) 112px, 300px"
+                  : "(max-width: 640px) 112px, 33vw"
+                : isList
+                  ? "(max-width: 640px) 100vw, 300px"
+                  : "(max-width: 768px) 100vw, 33vw"
+            }
+            priority={priority}
+            // Photos added through the publish wizard are object URLs the optimiser cannot fetch.
+            unoptimized={card.images[activeIndex]?.startsWith("blob:")}
+            className="object-cover"
+          />
+        )}
 
         {/* Phones: bottom-left, out of the way of the favorite button and title above it.
             sm+: back to the classic top-left placement, for both card sizes. */}
         <div className="absolute bottom-1.5 left-1.5 z-20 flex max-w-[75%] flex-wrap gap-1.5 sm:bottom-auto sm:left-3 sm:top-3 sm:max-w-[calc(100%-1.5rem)]">
-          {listing.urgent && <Badge variant="destructive">Հրատապ</Badge>}
-          {badges.map((badge) => (
+          {card.featured && <Badge variant="destructive">Առանձնացված</Badge>}
+          {card.badges.map((badge) => (
             <Badge key={badge} variant="outline">
               {badge}
             </Badge>
@@ -148,7 +129,7 @@ export function ListingCard({
         </div>
 
         <FavoriteButton
-          listingId={listing.id}
+          listingId={card.id}
           className={cn(
             "absolute z-20",
             dense ? "right-1 top-1 h-6 w-6 sm:right-3 sm:top-3 sm:h-9 sm:w-9" : "right-3 top-3",
@@ -184,7 +165,7 @@ export function ListingCard({
               )}
             >
               <ImageIcon className={dense ? "h-2.5 w-2.5" : "h-3 w-3"} />
-              {listing.images.length}
+              {card.imageCount}
             </span>
           </>
         ) : (
@@ -197,7 +178,7 @@ export function ListingCard({
             )}
           >
             <ImageIcon className={cn("shrink-0", dense ? "h-2.5 w-2.5 sm:h-3 sm:w-3" : "h-3 w-3")} />
-            {listing.images.length}
+            {card.imageCount}
           </span>
         )}
       </div>
@@ -208,13 +189,12 @@ export function ListingCard({
           isList && "sm:p-5",
         )}
       >
-        {showPrice ? (
+        {price ? (
           <div className="flex items-center justify-between gap-2">
             <span className="text-[15px] font-semibold tracking-tight text-foreground sm:text-[22px]">
-              {formatPrice(listing.price, { currency, prices: listing.prices })}
-              {isDaily(listing) && <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">օր</span>}
-              {isMonthly(listing) && (
-                <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">ամիս</span>
+              {formatAmount(price, display)}
+              {price.amount !== null && periodLabel(price.period) && (
+                <span className="ml-1 text-[11px] font-normal text-accent sm:text-[13px]">{periodLabel(price.period)}</span>
               )}
             </span>
             {verifiedBadge}
@@ -230,25 +210,28 @@ export function ListingCard({
               isList ? "sm:line-clamp-none sm:text-[17px]" : "sm:text-[15px]",
             )}
           >
-            {listing.category === "work" ? listing.title : listingSummary(listing)}
+            {card.headline}
           </h3>
-          {!showPrice && verifiedBadge}
+          {!price && verifiedBadge}
         </div>
 
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground sm:gap-1.5 sm:text-[13px]">
           <MapPin className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-          <span className="min-w-0 flex-1 truncate">{locationLine(listing)}</span>
+          <span className="min-w-0 flex-1 truncate">{card.location}</span>
         </div>
 
-        {!hideDescription && (
+        {!hideDescription && card.description && (
           <p className="line-clamp-3 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
-            {listing.description}
+            {card.description}
           </p>
         )}
 
-        <div className="mt-auto flex items-center gap-1 pt-0.5 text-[10px] font-medium text-accent sm:gap-1.5 sm:pt-2 sm:text-[12px]">
+        <div
+          className="mt-auto flex items-center gap-1 pt-0.5 text-[10px] font-medium text-accent sm:gap-1.5 sm:pt-2 sm:text-[12px]"
+          suppressHydrationWarning
+        >
           <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          {formatRelativeDate(listing.publishedAt)}
+          {formatRelativeDate(card.publishedAt)}
         </div>
       </div>
     </article>

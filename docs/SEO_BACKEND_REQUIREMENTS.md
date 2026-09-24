@@ -161,6 +161,15 @@ backend starts storing/returning listings already priced in AMD**, update
 `listingJsonLd()`'s `priceCurrency` to read from the listing rather than the
 current hardcoded `"USD"`.
 
+**Update (PR A1):** `propertyListingJsonLd()` — the builder now used for the
+API-backed real-estate/rentals/hotels detail pages — already reads
+`priceCurrency` from `listing.price.currency` instead of a hardcoded string,
+since the API can return a listing priced in USD or AMD. The hardcoded
+`"USD"` described above remains only in the mock-only door builders
+(`realEstateJsonLd`, `rentalJsonLd`, `hotelJsonLd`, `carJsonLd`,
+`jobPostingJsonLd`, `serviceJsonLd` in `structured-data.ts`), which still back
+cars, work and services until their own API modules land.
+
 ---
 
 ## 6. Fields intentionally *not* requested
