@@ -1,7 +1,10 @@
 # InSyuniq
 
 Frontend доски объявлений Сюникской области (Армения): недвижимость и автомобили.
-Прототип без бэкенда — все данные лежат в mock-файлах, состояние живёт на клиенте.
+Двери недвижимости (`/real-estate`, `/rentals`, `/hotels`), главная, поиск, избранное и
+`/sitemap.xml` читают InSyunik-Api (`NEXT_PUBLIC_API_URL`, по умолчанию
+`http://localhost:5080`); автомобили, работа и услуги пока остаются на mock-данных до тех пор,
+пока для них не появятся свои API-модули.
 
 ## Стек
 
@@ -13,11 +16,18 @@ Frontend доски объявлений Сюникской области (Ар
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000
-npm run build   # продакшен-сборка
+npm run dev              # http://localhost:3000
+npm run build            # продакшен-сборка
 npm run lint
 npm run typecheck
+npm test                 # vitest
+npm run api:types        # перегенерировать src/lib/api/schema.ts из contract/openapi.yaml
+node scripts/smoke-api.mjs   # smoke-тест API-страниц на запущенном dev/prod сервере
 ```
+
+Контракт (`contract/openapi.yaml`) обновляется командой из шага 6 задачи 1:
+`git -C ../InSyunik-Api show feat/prototype-gaps:contract/openapi.yaml > contract/openapi.yaml`,
+после чего нужно перезапустить `npm run api:types`.
 
 ## Возможности
 
