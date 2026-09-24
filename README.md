@@ -25,12 +25,11 @@ npm run api:types        # перегенерировать src/lib/api/schema.t
 node scripts/smoke-api.mjs   # smoke-тест API-страниц на запущенном dev/prod сервере
 ```
 
-Контракт (`contract/openapi.yaml`) обновляется командой из шага 6 задачи 1. Пока InSyunik-Api PR 1
-не смёржен, копируйте из ветки `feat/prototype-gaps`:
-`git -C ../InSyunik-Api show feat/prototype-gaps:contract/openapi.yaml > contract/openapi.yaml`.
-После того как InSyunik-Api PR 1 смёржен, копируйте из `origin/main`:
-`git -C ../InSyunik-Api show origin/main:contract/openapi.yaml > contract/openapi.yaml`.
-В обоих случаях после копирования нужно перезапустить `npm run api:types`.
+Контракт (`contract/openapi.yaml`) — копия из InSyunik-Api; его версия закреплена в поле
+`contractVersion` файла `package.json`. Обновление:
+`git -C ../InSyunik-Api fetch origin && git -C ../InSyunik-Api show origin/main:contract/openapi.yaml > contract/openapi.yaml`,
+затем `npm run api:types` и новое значение `contractVersion`. `npm run typecheck` падает, если версии
+или сгенерированные типы расходятся.
 
 ## Возможности
 
