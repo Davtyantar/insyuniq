@@ -37,12 +37,12 @@ export async function propertyDetailMetadata(door: PropertyDoor, id: string): Pr
 }
 
 export async function PropertyDetailPage({ door, id }: { door: PropertyDoor; id: string }) {
-  const listing = await loadListing(id);
+  const similarPromise = getSimilarProperty(createApi(), id, 8);
+  const [listing, similar] = await Promise.all([loadListing(id), similarPromise]);
   if (!listing) notFound();
   // A listing lives on its deal's door; an old or hand-typed URL on another door moves for good.
   if (DOOR_BY_DEAL[listing.deal] !== door) permanentRedirect(propertyHref(listing));
 
-  const similar = await getSimilarProperty(createApi(), id, 8);
   const category = CATEGORIES[door];
   return (
     <>
