@@ -11,7 +11,8 @@
     "typecheck": "npm run contract:check && tsc --noEmit",
     "test": "vitest run",
     "api:types": "openapi-typescript contract/openapi.yaml -o src/lib/api/schema.ts --enum-values",
-    "contract:check": "node scripts/contract-check.mjs"
+    "contract:check": "node scripts/contract-check.mjs",
+    "supabase:keys": "node scripts/supabase-keys.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",
