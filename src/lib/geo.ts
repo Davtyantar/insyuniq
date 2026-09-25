@@ -70,3 +70,8 @@ export function districtsOf(cities: readonly City[]): District[] {
 export function locationText(city: City, district?: District): string {
   return district ? `${CITY_LABEL[city]}, ${DISTRICT_LABEL[district]}` : CITY_LABEL[city];
 }
+
+/** The wizard stores districts by their Armenian name; the contract needs the slug. */
+export function districtSlugOf(city: City, armenianName: string): District | undefined {
+  return districtsOf([city]).find((district) => DISTRICT_LABEL[district] === armenianName);
+}

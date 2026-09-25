@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cityValues, districtValues } from "@/lib/api/schema";
-import { CITY_LABEL, DISTRICT_LABEL, citySlugOf, districtsOf, isCity, locationText } from "./geo";
+import { CITY_LABEL, DISTRICT_LABEL, citySlugOf, districtSlugOf, districtsOf, isCity, locationText } from "./geo";
 
 describe("geo", () => {
   it("labels every contract city and district", () => {
@@ -23,5 +23,13 @@ describe("geo", () => {
   it("renders city and district as one line", () => {
     expect(locationText("kapan", "kapan-center")).toBe("Կապան, Կենտրոն");
     expect(locationText("tatev")).toBe("Տաթև");
+  });
+});
+
+describe("districtSlugOf", () => {
+  it("finds a district of the given city by its Armenian name", () => {
+    expect(districtSlugOf("kapan", "Կենտրոն")).toBe("kapan-center");
+    expect(districtSlugOf("goris", "Վերին Գորիս")).toBe("goris-verin-goris");
+    expect(districtSlugOf("kapan", "Վերին Գորիս")).toBeUndefined();
   });
 });
