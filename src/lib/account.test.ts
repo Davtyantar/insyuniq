@@ -40,6 +40,10 @@ describe("routing guards", () => {
     expect(safeNextPath("https://evil.example")).toBe("/profile");
     expect(safeNextPath("/\\evil.example")).toBe("/profile");
     expect(safeNextPath(null, "/")).toBe("/");
+    expect(safeNextPath("/\t/evil.example")).toBe("/profile");
+    expect(safeNextPath("/\n/evil.example")).toBe("/profile");
+    expect(safeNextPath("/%2F%2Fevil.example")).toBe("/%2F%2Fevil.example");
+    expect(safeNextPath("/ru/create?x=1#top")).toBe("/ru/create?x=1#top");
   });
 });
 
