@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { isProtectedPath } from "@/lib/account";
+import { isProtectedPath } from "@/lib/auth-routes";
 import { localeFromPathname, stripLocalePrefix, withLocalePrefix } from "@/lib/i18n";
 import { refreshSession } from "@/lib/supabase/middleware";
 
