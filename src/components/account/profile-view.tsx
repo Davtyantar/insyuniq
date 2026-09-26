@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Camera, ChevronRight, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
+import { Camera, ChevronRight, CircleAlert, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthField, authErrorKey, errorInputClass } from "@/components/auth/auth-field";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -16,17 +16,21 @@ import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { createApi } from "@/lib/api/client";
+import { getMyListings } from "@/lib/api/me";
+import { isUploadableImage, uploadImage } from "@/lib/api/media";
+import type { ListingStatus } from "@/lib/api/types";
+import { normalizeArmenianPhone, type AuthErrorCode } from "@/lib/account";
+import { catalogCard, legacyCard, type CardModel } from "@/lib/card";
+import { MOCK_DOORS } from "@/lib/categories";
 import { formatMonthYear } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-/** Selecting a new photo is validated here (type/size); Task 6 wires the actual upload through
- * the API's signed Storage URL — this stopgap doesn't persist the pick yet. */
-const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
-function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partial<AuthUser>) => void }) {
+function SettingsForm({ user }: { user: AuthUser }) {
   const { t } = useTranslation();
-  const { changePassword } = useApp();
+  const { saveProfile, changeEmail, changePassword } = useApp();
   const [name, setName] = React.useState(user.name);
   const [phone, setPhone] = React.useState(user.phone);
   const [email, setEmail] = React.useState(user.email ?? "");
@@ -35,44 +39,61 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [errors, setErrors] = React.useState<{
     name?: string;
+    phone?: string;
     email?: string;
     currentPassword?: string;
     newPassword?: string;
     confirmPassword?: string;
   }>({});
+  const [formError, setFormError] = React.useState<AuthErrorCode | null>(null);
+  const [emailPending, setEmailPending] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const nextErrors: typeof errors = {};
     if (name.trim().length < 2) nextErrors.name = t("profile.settings.nameError");
-    if (email.trim() && !EMAIL_PATTERN.test(email.trim())) nextErrors.email = t("profile.settings.emailError");
+    if (!normalizeArmenianPhone(phone)) nextErrors.phone = t("auth.errors.invalidPhone");
+    if (!EMAIL_PATTERN.test(email.trim())) nextErrors.email = t("profile.settings.emailError");
     // The password block is optional — only validated once any of its fields is touched.
     const changingPassword = !!(currentPassword || newPassword || confirmPassword);
     if (changingPassword) {
+      if (!currentPassword) nextErrors.currentPassword = t("profile.settings.currentPasswordError");
       if (newPassword.length < 6) nextErrors.newPassword = t("auth.signUp.passwordTooShort");
       if (confirmPassword !== newPassword) nextErrors.confirmPassword = t("auth.signUp.passwordMismatch");
     }
     setErrors(nextErrors);
+    setFormError(null);
     if (Object.keys(nextErrors).length > 0) return;
 
-    onSave({ name: name.trim(), phone: phone.trim(), email: email.trim() || undefined });
-    if (changingPassword) {
-      const result = await changePassword(currentPassword, newPassword);
-      if (!result.ok) {
-        // Only a wrong current password belongs on that field; every other failure (a weak new
-        // password, rate-limiting, …) is about the new password or the request itself.
-        if (result.error === "invalid-credentials") {
-          setErrors((prev) => ({ ...prev, currentPassword: t("profile.settings.currentPasswordError") }));
-        } else {
-          setErrors((prev) => ({ ...prev, newPassword: t(authErrorKey(result.error)) }));
-        }
-        return;
-      }
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+    setSubmitting(true);
+    const saved = await saveProfile({ name, phone });
+    if (!saved.ok) {
+      setSubmitting(false);
+      setFormError(saved.error);
+      return;
     }
+    if (email.trim() !== (user.email ?? "")) {
+      const changed = await changeEmail(email);
+      if (!changed.ok) setErrors({ email: t(authErrorKey(changed.error)) });
+      else setEmailPending(true);
+    }
+    if (changingPassword) {
+      const changed = await changePassword(currentPassword, newPassword);
+      if (!changed.ok) {
+        setErrors({
+          currentPassword:
+            changed.error === "invalid-credentials" ? t("profile.settings.currentPasswordError") : undefined,
+          newPassword: changed.error === "invalid-credentials" ? undefined : t(authErrorKey(changed.error)),
+        });
+      } else {
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    }
+    setSubmitting(false);
     setSaved(true);
   }
 
@@ -94,7 +115,7 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
             className={cn(errors.name && errorInputClass)}
           />
         </AuthField>
-        <AuthField label={t("profile.settings.phoneLabel")} htmlFor="settings-phone">
+        <AuthField label={t("profile.settings.phoneLabel")} htmlFor="settings-phone" error={errors.phone}>
           <PhoneInput
             id="settings-phone"
             value={phone}
@@ -117,10 +138,14 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
             onChange={(event) => {
               setEmail(event.target.value);
               setSaved(false);
+              setEmailPending(false);
             }}
             placeholder="you@example.com"
             className={cn(errors.email && errorInputClass)}
           />
+          {emailPending && (
+            <p className="mt-1.5 text-[12px] text-muted-foreground">{t("profile.settings.emailPending")}</p>
+          )}
         </AuthField>
       </div>
 
@@ -184,8 +209,15 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
         </div>
       </div>
 
+      {formError && (
+        <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
+          <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+          {t(authErrorKey(formError))}
+        </div>
+      )}
+
       <div className="flex items-center gap-3 border-t border-border pt-5">
-        <Button type="submit" variant="accent">
+        <Button type="submit" variant="accent" disabled={submitting}>
           {t("profile.settings.save")}
         </Button>
         {saved && <span className="text-[13px] text-emerald-600">{t("profile.settings.saved")}</span>}
@@ -210,9 +242,10 @@ export function ProfileLoading() {
 export function ProfileView() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, saveProfile, published, hydrated, localizeHref, createHref } = useApp();
+  const { user, getToken, published, deleteListing, hydrated, localizeHref, createHref, saveProfile } = useApp();
   const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [avatarError, setAvatarError] = React.useState(false);
+  const [apiListings, setApiListings] = React.useState<{ card: CardModel; status: ListingStatus }[] | null>(null);
   // The tab lives in the URL so the header's account menu can link straight to "Settings".
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab") === "settings" ? "settings" : "listings";
@@ -225,21 +258,56 @@ export function ProfileView() {
     if (hydrated && !user) router.replace(localizeHref("/sign-in"));
   }, [hydrated, user, router, localizeHref]);
 
-  function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
+  React.useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const token = await getToken();
+      if (!token) return [];
+      const page = await getMyListings(createApi({ token }), { pageSize: 100 });
+      return page.items.flatMap((item) => {
+        const card = catalogCard(item);
+        return card ? [{ card, status: item.status }] : [];
+      });
+    })()
+      .then((items) => {
+        if (!cancelled) setApiListings(items);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          console.warn("Could not load my listings", error);
+          setApiListings([]);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.email, getToken]);
+
+  const localListings = published.filter((listing) => MOCK_DOORS.includes(listing.category));
+
+  async function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    if (!file.type.startsWith("image/") || file.size > MAX_AVATAR_BYTES) {
+    if (!isUploadableImage(file)) {
       setAvatarError(true);
       return;
     }
     setAvatarError(false);
-    // Task 6 wires this pick through the API's signed Storage URL and saveProfile's avatarPath.
+    const token = await getToken();
+    if (!token) return;
+    try {
+      const avatarPath = await uploadImage(createApi({ token }), file, "avatar");
+      const result = await saveProfile({ avatarPath });
+      if (!result.ok) setAvatarError(true);
+    } catch (error) {
+      console.warn("Avatar upload failed", error);
+      setAvatarError(true);
+    }
   }
 
   if (!hydrated || !user) return <ProfileLoading />;
-
-  const myListings = published;
 
   return (
     <div className="container py-4 lg:py-6">
@@ -274,7 +342,13 @@ export function ProfileView() {
 
       <div className="mt-5">
         {tab === "listings" &&
-          (myListings.length === 0 ? (
+          (apiListings === null ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-[4/5] w-full rounded-lg" />
+              ))}
+            </div>
+          ) : apiListings.length === 0 && localListings.length === 0 ? (
             <EmptyState
               icon={Package}
               title={t("profile.emptyListings.title")}
@@ -283,8 +357,17 @@ export function ProfileView() {
             />
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {myListings.map((listing, index) => (
-                <MyListingCard key={listing.id} listing={listing} priority={index < 4} />
+              {apiListings.map(({ card, status }, index) => (
+                <MyListingCard key={card.id} card={card} status={status} priority={index < 4} />
+              ))}
+              {localListings.map((listing, index) => (
+                <MyListingCard
+                  key={listing.id}
+                  card={legacyCard(listing)}
+                  editHref={`/create?edit=${listing.id}`}
+                  onDelete={() => deleteListing(listing.id)}
+                  priority={apiListings.length + index < 4}
+                />
               ))}
               <Link
                 href={createHref}
@@ -301,10 +384,7 @@ export function ProfileView() {
         {tab === "settings" && (
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="order-2 min-w-0 flex-1 sm:order-1 sm:max-w-xl [&>form]:h-full">
-              <SettingsForm
-                user={user}
-                onSave={(patch) => void saveProfile({ name: patch.name, phone: patch.phone })}
-              />
+              <SettingsForm user={user} />
             </div>
 
             <div className="order-1 flex flex-col rounded-lg border border-border bg-card p-5 sm:order-2 sm:w-72 md:p-6">

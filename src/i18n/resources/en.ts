@@ -191,7 +191,7 @@ export const en = {
     memberSince: "Member since {{date}}",
     signOut: "Sign out",
     changePhoto: "Change photo",
-    photoError: "Photo must be an image under 2 MB",
+    photoError: "Choose a JPEG, PNG or WebP up to 10 MB and try again",
     signedOut: {
       title: "You're not signed in yet",
       description: "Sign in or create an account to publish listings and save favorites.",
@@ -219,6 +219,7 @@ export const en = {
       phoneLabel: "Phone",
       emailLabel: "Email",
       emailError: "Enter a valid email address",
+      emailPending: "We sent a confirmation link to the new address",
       save: "Save changes",
       saved: "Changes saved",
       passwordTitle: "Change password",

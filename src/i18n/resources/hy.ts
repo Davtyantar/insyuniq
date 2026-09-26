@@ -199,7 +199,7 @@ export const hy = {
     memberSince: "Կայքում՝ {{date}}-ից",
     signOut: "Դուրս գալ",
     changePhoto: "Փոխել նկարը",
-    photoError: "Նկարը պետք է լինի պատկեր՝ մինչև 2 ՄԲ",
+    photoError: "Ընտրեք JPEG, PNG կամ WebP՝ մինչև 10 ՄԲ, և փորձեք կրկին",
     signedOut: {
       title: "Դուք դեռ մուտք չեք գործել",
       description:
@@ -230,6 +230,7 @@ export const hy = {
       phoneLabel: "Հեռախոս",
       emailLabel: "Էլ. փոստ",
       emailError: "Մուտքագրեք վավեր էլ. փոստ",
+      emailPending: "Հաստատման հղումն ուղարկվեց նոր հասցեին",
       save: "Պահպանել փոփոխությունները",
       saved: "Փոփոխությունները պահպանված են",
       passwordTitle: "Փոխել գաղտնաբառը",

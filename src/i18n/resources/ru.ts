@@ -191,7 +191,7 @@ export const ru = {
     memberSince: "На сайте с {{date}}",
     signOut: "Выйти",
     changePhoto: "Изменить фото",
-    photoError: "Фото должно быть изображением до 2 МБ",
+    photoError: "Выберите JPEG, PNG или WebP до 10 МБ и попробуйте снова",
     signedOut: {
       title: "Вы ещё не вошли в систему",
       description:
@@ -220,6 +220,7 @@ export const ru = {
       phoneLabel: "Телефон",
       emailLabel: "Эл. почта",
       emailError: "Введите корректный адрес эл. почты",
+      emailPending: "Ссылка для подтверждения отправлена на новый адрес",
       save: "Сохранить изменения",
       saved: "Изменения сохранены",
       passwordTitle: "Сменить пароль",
