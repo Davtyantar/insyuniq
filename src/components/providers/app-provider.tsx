@@ -90,6 +90,10 @@ interface AppState {
   user: AuthUser | null;
   /** The API's seller profile for the signed-in user; null until it's loaded (or there is none yet). */
   profile: SellerProfile | null;
+  /** True while the seller profile is being fetched for a signed-in user — distinct from
+   * `hydrated`, which only waits on the Supabase session itself. Used to keep the settings form
+   * from mounting with stale, pre-profile data. */
+  profileLoading: boolean;
   /** The current Supabase access token, or null when signed out / unconfigured. */
   getToken: () => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
@@ -126,8 +130,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [activeHeaderMenu, setActiveHeaderMenu] = React.useState<HeaderMenu>(null);
   const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
   const auth = useSupabaseAuth();
-  const { user, profile, getToken, signIn, signUp, signOut, saveProfile, changeEmail, changePassword, setNewPassword, requestPasswordReset } =
-    auth;
+  const {
+    user,
+    profile,
+    profileLoading,
+    getToken,
+    signIn,
+    signUp,
+    signOut,
+    saveProfile,
+    changeEmail,
+    changePassword,
+    setNewPassword,
+    requestPasswordReset,
+  } = auth;
   const hydrated = storageHydrated && auth.ready;
 
   const searchOpen = activeHeaderMenu === "search";
@@ -359,6 +375,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearRecentSearches,
       user,
       profile,
+      profileLoading,
       getToken,
       signIn,
       signUp,
@@ -405,6 +422,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearRecentSearches,
       user,
       profile,
+      profileLoading,
       getToken,
       signIn,
       signUp,

@@ -76,17 +76,18 @@ function SettingsForm({ user }: { user: AuthUser }) {
     }
     if (email.trim() !== (user.email ?? "")) {
       const changed = await changeEmail(email);
-      if (!changed.ok) setErrors({ email: t(authErrorKey(changed.error)) });
+      if (!changed.ok) setErrors((prev) => ({ ...prev, email: t(authErrorKey(changed.error)) }));
       else setEmailPending(true);
     }
     if (changingPassword) {
       const changed = await changePassword(currentPassword, newPassword);
       if (!changed.ok) {
-        setErrors({
+        setErrors((prev) => ({
+          ...prev,
           currentPassword:
             changed.error === "invalid-credentials" ? t("profile.settings.currentPasswordError") : undefined,
           newPassword: changed.error === "invalid-credentials" ? undefined : t(authErrorKey(changed.error)),
-        });
+        }));
       } else {
         setCurrentPassword("");
         setNewPassword("");
@@ -242,7 +243,8 @@ export function ProfileLoading() {
 export function ProfileView() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, getToken, published, deleteListing, hydrated, localizeHref, createHref, saveProfile } = useApp();
+  const { user, profile, profileLoading, getToken, published, deleteListing, hydrated, localizeHref, createHref, saveProfile } =
+    useApp();
   const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [avatarError, setAvatarError] = React.useState(false);
   const [apiListings, setApiListings] = React.useState<{ card: CardModel; status: ListingStatus }[] | null>(null);
@@ -258,8 +260,9 @@ export function ProfileView() {
     if (hydrated && !user) router.replace(localizeHref("/sign-in"));
   }, [hydrated, user, router, localizeHref]);
 
+  const userEmail = user?.email;
   React.useEffect(() => {
-    if (!user) return;
+    if (!userEmail) return;
     let cancelled = false;
     (async () => {
       const token = await getToken();
@@ -282,7 +285,7 @@ export function ProfileView() {
     return () => {
       cancelled = true;
     };
-  }, [user?.email, getToken]);
+  }, [userEmail, getToken]);
 
   const localListings = published.filter((listing) => MOCK_DOORS.includes(listing.category));
 
@@ -381,72 +384,75 @@ export function ProfileView() {
             </div>
           ))}
 
-        {tab === "settings" && (
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <div className="order-2 min-w-0 flex-1 sm:order-1 sm:max-w-xl [&>form]:h-full">
-              <SettingsForm user={user} />
-            </div>
-
-            <div className="order-1 flex flex-col rounded-lg border border-border bg-card p-5 sm:order-2 sm:w-72 md:p-6">
-              <div className="flex items-center gap-2">
-                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                <h2 className="text-sm font-semibold">{t("profile.settings.photoTitle")}</h2>
+        {tab === "settings" &&
+          (profileLoading ? (
+            <ProfileLoading />
+          ) : (
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="order-2 min-w-0 flex-1 sm:order-1 sm:max-w-xl [&>form]:h-full">
+                <SettingsForm key={profile?.id ?? "no-profile"} user={user} />
               </div>
 
-              <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
-                <button
-                  type="button"
-                  onClick={() => avatarInputRef.current?.click()}
-                  aria-label={t("profile.changePhoto")}
-                  title={t("profile.changePhoto")}
-                  className="group relative rounded-full ring-2 ring-accent ring-offset-2 ring-offset-card focus:outline-none"
-                >
-                  <Avatar className="h-32 w-32">
-                    {user.avatar && <AvatarImage src={user.avatar} alt="" className="object-cover" />}
-                    <AvatarFallback className="text-4xl font-semibold">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  {/* Hover veil so the whole photo reads as the upload target, not just a corner badge. */}
-                  <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                    <Camera className="h-7 w-7" />
-                  </span>
-                </button>
-                <p className="mt-4 max-w-full truncate text-base font-semibold">{user.name}</p>
-                <p className="mt-0.5 text-[13px] text-muted-foreground">
-                  {t("profile.memberSince", { date: formatMonthYear(user.registeredAt) })}
-                </p>
-              </div>
+              <div className="order-1 flex flex-col rounded-lg border border-border bg-card p-5 sm:order-2 sm:w-72 md:p-6">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold">{t("profile.settings.photoTitle")}</h2>
+                </div>
 
-              <div className="space-y-2 border-t border-border pt-5">
-                <Button variant="outline" className="w-full gap-2" onClick={() => avatarInputRef.current?.click()}>
-                  <Camera className="h-4 w-4" />
-                  {t("profile.changePhoto")}
-                </Button>
-                {user.avatar && (
-                  <Button
-                    variant="ghost"
-                    className="w-full gap-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => {
-                      setAvatarError(false);
-                      void saveProfile({ avatarPath: null });
-                    }}
+                <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    aria-label={t("profile.changePhoto")}
+                    title={t("profile.changePhoto")}
+                    className="group relative rounded-full ring-2 ring-accent ring-offset-2 ring-offset-card focus:outline-none"
                   >
-                    <Trash2 className="h-4 w-4" />
-                    {t("profile.settings.removePhoto")}
+                    <Avatar className="h-32 w-32">
+                      {user.avatar && <AvatarImage src={user.avatar} alt="" className="object-cover" />}
+                      <AvatarFallback className="text-4xl font-semibold">{user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    {/* Hover veil so the whole photo reads as the upload target, not just a corner badge. */}
+                    <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                      <Camera className="h-7 w-7" />
+                    </span>
+                  </button>
+                  <p className="mt-4 max-w-full truncate text-base font-semibold">{user.name}</p>
+                  <p className="mt-0.5 text-[13px] text-muted-foreground">
+                    {t("profile.memberSince", { date: formatMonthYear(user.registeredAt) })}
+                  </p>
+                </div>
+
+                <div className="space-y-2 border-t border-border pt-5">
+                  <Button variant="outline" className="w-full gap-2" onClick={() => avatarInputRef.current?.click()}>
+                    <Camera className="h-4 w-4" />
+                    {t("profile.changePhoto")}
                   </Button>
-                )}
-                <p
-                  className={cn(
-                    "pt-1 text-center text-[12px] leading-snug",
-                    avatarError ? "text-destructive" : "text-muted-foreground",
+                  {user.avatar && (
+                    <Button
+                      variant="ghost"
+                      className="w-full gap-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => {
+                        setAvatarError(false);
+                        void saveProfile({ avatarPath: null });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {t("profile.settings.removePhoto")}
+                    </Button>
                   )}
-                >
-                  {avatarError ? t("profile.photoError") : t("profile.settings.photoHint")}
-                </p>
+                  <p
+                    className={cn(
+                      "pt-1 text-center text-[12px] leading-snug",
+                      avatarError ? "text-destructive" : "text-muted-foreground",
+                    )}
+                  >
+                    {avatarError ? t("profile.photoError") : t("profile.settings.photoHint")}
+                  </p>
+                </div>
+                <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
               </div>
-              <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
             </div>
-          </div>
-        )}
+          ))}
       </div>
     </div>
   );

@@ -228,7 +228,7 @@ export const ru = {
       currentPasswordError: "Неверный текущий пароль",
       newPasswordLabel: "Новый пароль",
       photoTitle: "Фото профиля",
-      photoHint: "JPG, PNG или WebP, до 2 МБ",
+      photoHint: "JPG, PNG или WebP, до 10 МБ",
       removePhoto: "Удалить фото",
     },
   },

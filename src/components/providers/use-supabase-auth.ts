@@ -40,6 +40,7 @@ export function useSupabaseAuth() {
   const [ready, setReady] = React.useState(supabase === null);
   const [session, setSession] = React.useState<Session | null>(null);
   const [profile, setProfile] = React.useState<SellerProfile | null>(null);
+  const [profileLoading, setProfileLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (!supabase) return;
@@ -67,9 +68,11 @@ export function useSupabaseAuth() {
     const current = sessionRef.current;
     if (!userId || !current) {
       setProfile(null);
+      setProfileLoading(false);
       return;
     }
     let cancelled = false;
+    setProfileLoading(true);
     const api = createApi({ token: current.access_token });
     (async () => {
       const existing = await getMyProfile(api);
@@ -90,6 +93,9 @@ export function useSupabaseAuth() {
       })
       .catch((error: unknown) => {
         if (!cancelled) console.warn("Could not load the seller profile", error);
+      })
+      .finally(() => {
+        if (!cancelled) setProfileLoading(false);
       });
     return () => {
       cancelled = true;
@@ -217,6 +223,7 @@ export function useSupabaseAuth() {
     ready,
     user,
     profile,
+    profileLoading,
     getToken,
     signIn,
     signUp,

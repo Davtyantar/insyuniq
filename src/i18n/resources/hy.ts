@@ -238,7 +238,7 @@ export const hy = {
       currentPasswordError: "Ընթացիկ գաղտնաբառը սխալ է",
       newPasswordLabel: "Նոր գաղտնաբառ",
       photoTitle: "Պրոֆիլի նկար",
-      photoHint: "JPG, PNG կամ WebP, մինչև 2 ՄԲ",
+      photoHint: "JPG, PNG կամ WebP, մինչև 10 ՄԲ",
       removePhoto: "Հեռացնել նկարը"
     }
   },

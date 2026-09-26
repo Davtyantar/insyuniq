@@ -227,7 +227,7 @@ export const en = {
       currentPasswordError: "Current password is incorrect",
       newPasswordLabel: "New password",
       photoTitle: "Profile photo",
-      photoHint: "JPG, PNG or WebP, up to 2 MB",
+      photoHint: "JPG, PNG or WebP, up to 10 MB",
       removePhoto: "Remove photo",
     },
   },
