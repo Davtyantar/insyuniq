@@ -10,7 +10,8 @@ interface AuthShellProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
-  footer: ReactNode;
+  /** Omitted on screens with no secondary link below the card (e.g. reset-password). */
+  footer?: ReactNode;
 }
 
 /**
@@ -60,7 +61,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
             <div className="p-6 sm:p-8">{children}</div>
           </div>
 
-          <p className="mt-5 text-center text-sm text-muted-foreground">{footer}</p>
+          {footer && <p className="mt-5 text-center text-sm text-muted-foreground">{footer}</p>}
         </div>
       </div>
     </div>

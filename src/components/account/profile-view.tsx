@@ -5,7 +5,7 @@ import { Link } from "@/components/i18n/locale-link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Camera, ChevronRight, ImageIcon, KeyRound, Package, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { AuthField, authErrorKey, errorInputClass } from "@/components/auth/auth-field";
 import { PasswordInput } from "@/components/auth/password-input";
 import { EmptyState } from "@/components/listings/empty-state";
 import { MyListingCard } from "@/components/listings/my-listing-card";
@@ -16,27 +16,17 @@ import { FloatingTabs } from "@/components/ui/floating-tabs";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getDemoPassword, setDemoPassword } from "@/lib/demo-password";
 import { formatMonthYear } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-/** Avatars are stored as data URLs in the user record (itself persisted to localStorage), unlike
- * listing photos — those live only for the session, so an object URL is fine for them, but an
- * avatar needs to still be there after a reload, which only a data URL (not a blob: URL) survives. */
+/** Selecting a new photo is validated here (type/size); Task 6 wires the actual upload through
+ * the API's signed Storage URL — this stopgap doesn't persist the pick yet. */
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
-
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
 
 function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partial<AuthUser>) => void }) {
   const { t } = useTranslation();
+  const { changePassword } = useApp();
   const [name, setName] = React.useState(user.name);
   const [phone, setPhone] = React.useState(user.phone);
   const [email, setEmail] = React.useState(user.email ?? "");
@@ -52,7 +42,7 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
   }>({});
   const [saved, setSaved] = React.useState(false);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const nextErrors: typeof errors = {};
     if (name.trim().length < 2) nextErrors.name = t("profile.settings.nameError");
@@ -60,7 +50,6 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
     // The password block is optional — only validated once any of its fields is touched.
     const changingPassword = !!(currentPassword || newPassword || confirmPassword);
     if (changingPassword) {
-      if (currentPassword !== getDemoPassword()) nextErrors.currentPassword = t("profile.settings.currentPasswordError");
       if (newPassword.length < 6) nextErrors.newPassword = t("auth.signUp.passwordTooShort");
       if (confirmPassword !== newPassword) nextErrors.confirmPassword = t("auth.signUp.passwordMismatch");
     }
@@ -69,7 +58,11 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
 
     onSave({ name: name.trim(), phone: phone.trim(), email: email.trim() || undefined });
     if (changingPassword) {
-      setDemoPassword(newPassword);
+      const result = await changePassword(currentPassword, newPassword);
+      if (!result.ok) {
+        setErrors((prev) => ({ ...prev, currentPassword: t(authErrorKey(result.error)) }));
+        return;
+      }
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -211,7 +204,7 @@ export function ProfileLoading() {
 export function ProfileView() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, updateUser, published, hydrated, localizeHref, createHref } = useApp();
+  const { user, saveProfile, published, hydrated, localizeHref, createHref } = useApp();
   const avatarInputRef = React.useRef<HTMLInputElement>(null);
   const [avatarError, setAvatarError] = React.useState(false);
   // The tab lives in the URL so the header's account menu can link straight to "Settings".
@@ -226,7 +219,7 @@ export function ProfileView() {
     if (hydrated && !user) router.replace(localizeHref("/sign-in"));
   }, [hydrated, user, router, localizeHref]);
 
-  async function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleAvatarChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -235,9 +228,7 @@ export function ProfileView() {
       return;
     }
     setAvatarError(false);
-    // Applied immediately on pick — a photo change doesn't need the settings tab's separate
-    // "Save" step the way name/phone/email do.
-    updateUser({ avatar: await readAsDataUrl(file) });
+    // Task 6 wires this pick through the API's signed Storage URL and saveProfile's avatarPath.
   }
 
   if (!hydrated || !user) return <ProfileLoading />;
@@ -304,7 +295,10 @@ export function ProfileView() {
         {tab === "settings" && (
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="order-2 min-w-0 flex-1 sm:order-1 sm:max-w-xl [&>form]:h-full">
-              <SettingsForm user={user} onSave={updateUser} />
+              <SettingsForm
+                user={user}
+                onSave={(patch) => void saveProfile({ name: patch.name, phone: patch.phone })}
+              />
             </div>
 
             <div className="order-1 flex flex-col rounded-lg border border-border bg-card p-5 sm:order-2 sm:w-72 md:p-6">
@@ -347,7 +341,7 @@ export function ProfileView() {
                     className="w-full gap-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => {
                       setAvatarError(false);
-                      updateUser({ avatar: undefined });
+                      void saveProfile({ avatarPath: null });
                     }}
                   >
                     <Trash2 className="h-4 w-4" />

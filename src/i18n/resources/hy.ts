@@ -124,9 +124,9 @@ export const hy = {
       title: "Մուտք գործել",
       subtitle:
         "Մուտք գործեք՝ ձեր հայտարարությունները և հավանածները կառավարելու համար",
-      loginLabel: "Հեռախոս կամ էլ. փոստ",
-      loginPlaceholder: "+374 __ __ __ __",
-      loginError: "Մուտքագրեք հեռախոսահամարը կամ էլ. փոստը",
+      loginLabel: "Էլ. փոստ",
+      loginPlaceholder: "you@example.com",
+      loginError: "Մուտքագրեք էլ. հասցեն",
       passwordLabel: "Գաղտնաբառ",
       passwordError: "Մուտքագրեք գաղտնաբառը",
       invalidCredentials: "Սխալ մուտքանուն կամ գաղտնաբառ",
@@ -148,7 +148,6 @@ export const hy = {
       phonePlaceholder: "+374 __ __ __ __",
       phoneError: "Մուտքագրեք վավեր հեռախոսահամար",
       emailLabel: "Էլ. փոստ",
-      emailOptional: "Ոչ պարտադիր",
       emailError: "Մուտքագրեք վավեր էլ. փոստ",
       passwordLabel: "Գաղտնաբառ",
       passwordTooShort: "Առնվազն 6 նիշ",
@@ -160,7 +159,9 @@ export const hy = {
       submit: "Գրանցվել",
       submitting: "Գրանցում...",
       haveAccount: "Արդեն ունե՞ք հաշիվ",
-      signInLink: "Մուտք գործել"
+      signInLink: "Մուտք գործել",
+      checkEmailTitle: "Ստուգեք ձեր փոստը",
+      checkEmailDescription: "Մենք հղում ուղարկեցինք {{email}} հասցեին։ Բացեք այն՝ հաշիվը հաստատելու համար։"
     },
     forgotPassword: {
       title: "Վերականգնել գաղտնաբառը",
@@ -176,6 +177,22 @@ export const hy = {
         "Եթե «{{email}}» հասցեով հաշիվ գոյություն ունի, կստանաք գաղտնաբառի վերականգնման հղում մի քանի րոպեի ընթացքում։",
       resend: "Ուղարկել կրկին",
       backToSignInLink: "Մուտք գործել"
+    },
+    resetPassword: {
+      title: "Նոր գաղտնաբառ",
+      subtitle: "Մուտքագրեք նոր գաղտնաբառը",
+      submit: "Պահպանել",
+      submitting: "Պահպանվում է...",
+      linkInvalid: "Հղումն անվավեր է կամ ժամկետանց։ Պահանջեք նորը։"
+    },
+    errors: {
+      notConfigured: "Մուտքը ժամանակավորապես անհասանելի է",
+      emailTaken: "Այս էլ. հասցեով հաշիվ արդեն կա",
+      weakPassword: "Գաղտնաբառը չափազանց թույլ է",
+      invalidPhone: "Մուտքագրեք հայկական համար՝ +374 XX XX XX XX",
+      rateLimited: "Չափազանց շատ փորձեր։ Փորձեք մեկ րոպեից",
+      network: "Կապ չկա։ Ստուգեք ինտերնետը և փորձեք կրկին",
+      unknown: "Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին"
     }
   },
   profile: {

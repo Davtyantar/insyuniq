@@ -2,18 +2,17 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CircleAlert, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { AuthField, authErrorKey, errorInputClass } from "@/components/auth/auth-field";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { PasswordInput } from "@/components/auth/password-input";
 import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PhoneOrEmailInput } from "@/components/ui/phone-or-email-input";
-import { getDemoPassword } from "@/lib/demo-password";
-import { CURRENT_USER, DEMO_CREDENTIALS } from "@/mock/sellers";
+import { Input } from "@/components/ui/input";
+import type { AuthErrorCode } from "@/lib/account";
+import { safeNextPath } from "@/lib/account";
 import { cn } from "@/lib/utils";
 
 interface FormErrors {
@@ -21,44 +20,38 @@ interface FormErrors {
   password?: string;
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function SignInView() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn, localizeHref } = useApp();
 
   const [login, setLogin] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [remember, setRemember] = React.useState(true);
   const [errors, setErrors] = React.useState<FormErrors>({});
-  const [authError, setAuthError] = React.useState(false);
+  const [authError, setAuthError] = React.useState<AuthErrorCode | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     const nextErrors: FormErrors = {};
-    if (!login.trim()) nextErrors.login = t("auth.signIn.loginError");
+    if (!EMAIL_PATTERN.test(login.trim())) nextErrors.login = t("auth.signIn.loginError");
     if (!password) nextErrors.password = t("auth.signIn.passwordError");
     setErrors(nextErrors);
-    setAuthError(false);
+    setAuthError(null);
     if (Object.keys(nextErrors).length > 0) return;
 
-    // No real backend behind this prototype — DEMO_CREDENTIALS stands in for an account
-    // database. Anything else is rejected instead of silently signing in as a stranger.
-    // The phone field hands back a grouped "+374 77 10 20 30", so compare without the spacing.
-    const matches =
-      login.replace(/[\s-]/g, "").toLowerCase() === DEMO_CREDENTIALS.login &&
-      password.trim() === getDemoPassword();
-    if (!matches) {
-      setAuthError(true);
+    setSubmitting(true);
+    const result = await signIn(login, password);
+    setSubmitting(false);
+    if (!result.ok) {
+      setAuthError(result.error);
       return;
     }
-
-    setSubmitting(true);
-    window.setTimeout(() => {
-      signIn(CURRENT_USER);
-      router.push(localizeHref("/profile"));
-    }, 450);
+    router.push(localizeHref(safeNextPath(searchParams.get("next"))));
   }
 
   return (
@@ -75,13 +68,16 @@ export function SignInView() {
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <AuthField label={t("auth.signIn.loginLabel")} htmlFor="signin-login" error={errors.login}>
-          <PhoneOrEmailInput
+          <Input
             id="signin-login"
+            type="email"
             value={login}
-            onChange={(value) => {
-              setLogin(value);
-              setAuthError(false);
+            onChange={(event) => {
+              setLogin(event.target.value);
+              setAuthError(null);
             }}
+            placeholder={t("auth.signIn.loginPlaceholder")}
+            autoComplete="email"
             aria-invalid={!!errors.login}
             className={cn(errors.login && errorInputClass)}
           />
@@ -93,7 +89,7 @@ export function SignInView() {
             value={password}
             onChange={(event) => {
               setPassword(event.target.value);
-              setAuthError(false);
+              setAuthError(null);
             }}
             placeholder="••••••••"
             autoComplete="current-password"
@@ -105,15 +101,11 @@ export function SignInView() {
         {authError && (
           <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
-            {t("auth.signIn.invalidCredentials")}
+            {t(authErrorKey(authError))}
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <label className="flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground">
-            <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} />
-            {t("auth.signIn.remember")}
-          </label>
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <Link href="/forgot-password" className="text-[13px] font-medium text-accent hover:underline">
             {t("auth.signIn.forgotPassword")}
           </Link>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
+import { useRouter } from "next/navigation";
 import { LogOut, Package, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useApp, type AuthUser } from "@/components/providers/app-provider";
@@ -29,7 +30,8 @@ export function UserMenu({
   children: React.ReactNode;
 }) {
   const { t } = useTranslation();
-  const { signOut } = useApp();
+  const router = useRouter();
+  const { signOut, localizeHref } = useApp();
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [open, setOpen] = React.useState(false);
   const [width, setWidth] = React.useState<number>();
@@ -91,7 +93,12 @@ export function UserMenu({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={signOut} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+        <DropdownMenuItem
+          onSelect={() => {
+            void signOut().then(() => router.push(localizeHref("/")));
+          }}
+          className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+        >
           <LogOut className="h-4 w-4" />
           {t("profile.signOut")}
         </DropdownMenuItem>
