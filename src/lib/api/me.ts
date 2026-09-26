@@ -2,10 +2,12 @@ import { type Api, unwrap } from "./client";
 import { toApiError } from "./errors";
 import type { CatalogCardPage, MyListingsQuery, PutMyProfileRequest, SellerProfile } from "./types";
 
-/** Null when the signed-in user has no seller profile yet; any other failure throws. */
+/** Null when the signed-in user has no seller profile yet; any other failure throws. Not-found
+ * codes aren't all "<module>.not-found" — this endpoint's is "sellers.profile-not-found" (see
+ * SellersErrors.ProfileNotFound in InSyunik-Api) — so match on the "not-found" suffix itself. */
 export async function getMyProfile(api: Api): Promise<SellerProfile | null> {
   const result = await api.GET("/v1/me/profile", {});
-  if (result.response.status === 404 && toApiError(404, result.error).code.endsWith(".not-found")) return null;
+  if (result.response.status === 404 && toApiError(404, result.error).code.endsWith("not-found")) return null;
   return unwrap(result);
 }
 

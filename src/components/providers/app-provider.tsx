@@ -3,17 +3,21 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { i18next } from "@/i18n/config";
+import type { SellerProfile } from "@/lib/api/types";
+import type { AuthUser } from "@/lib/account";
+import { API_DOORS } from "@/lib/categories";
 import type { Currency } from "@/lib/currency";
 import { LOCALE_HTML_LANG, localeFromPathname, stripLocalePrefix, withLocalePrefix, type Locale } from "@/lib/i18n";
 import type { Listing } from "@/lib/types";
-import { SEED_LISTING } from "@/mock/seed-listing";
+import { type AuthResult, useSupabaseAuth } from "./use-supabase-auth";
+
+export type { AuthUser };
 
 const FAVORITES_KEY = "syuniq:favorites";
 const CITY_KEY = "syuniq:city";
 const CURRENCY_KEY = "syuniq:currency";
 const THEME_KEY = "syuniq:theme";
 const RECENT_SEARCHES_KEY = "syuniq:recentSearches";
-const USER_KEY = "syuniq:user";
 // Bumped to "v2": anyone who deleted the seed listing under the old key has an empty array
 // saved there, which (correctly, by design) is never re-seeded — bumping the key itself is a
 // one-time reset that gets everyone back the example listing once, on this deploy only.
@@ -21,15 +25,6 @@ const PUBLISHED_KEY = "syuniq:published:v2";
 const MAX_RECENT_SEARCHES = 8;
 
 export type Theme = "light" | "dark";
-
-/** Prototype-only account — created and stored entirely client-side, no backend involved. */
-export interface AuthUser {
-  name: string;
-  phone: string;
-  email?: string;
-  avatar?: string;
-  registeredAt: string;
-}
 
 /** Only one header dropdown (search, categories menu, city, language/currency, mobile nav) can be open at a time. */
 type HeaderMenu = "search" | "categories" | "location" | "language" | "mobile" | null;
@@ -47,8 +42,7 @@ interface AppState {
   clearFavorites: () => void;
   /** Drops ids the API no longer knows (deleted or archived listings). */
   removeFavorites: (ids: string[]) => void;
-  /** Listings published through the wizard, persisted to localStorage (starts seeded with one
-   * example listing so the profile's "my listings" tab isn't empty on a first visit). */
+  /** Listings published through the wizard (non-API categories only), persisted to localStorage. */
   published: Listing[];
   publishListing: (listing: Listing) => void;
   /** Replaces an existing published listing in place — the wizard's edit mode. */
@@ -92,12 +86,20 @@ interface AppState {
   recentSearches: string[];
   addRecentSearch: (query: string) => void;
   clearRecentSearches: () => void;
-  /** Signed-in account for this prototype; null until sign-in/sign-up, persisted to localStorage only. */
+  /** Signed-in account, derived from the Supabase session and seller profile; null when signed out. */
   user: AuthUser | null;
-  signIn: (user: AuthUser) => void;
-  signUp: (user: AuthUser) => void;
-  updateUser: (patch: Partial<AuthUser>) => void;
-  signOut: () => void;
+  /** The API's seller profile for the signed-in user; null until it's loaded (or there is none yet). */
+  profile: SellerProfile | null;
+  /** The current Supabase access token, or null when signed out / unconfigured. */
+  getToken: () => Promise<string | null>;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (input: { name: string; phone: string; email: string; password: string }) => Promise<AuthResult>;
+  signOut: () => Promise<void>;
+  saveProfile: (patch: { name?: string; phone?: string; avatarPath?: string | null }) => Promise<AuthResult>;
+  changeEmail: (email: string) => Promise<AuthResult>;
+  changePassword: (current: string, next: string) => Promise<AuthResult>;
+  setNewPassword: (password: string) => Promise<AuthResult>;
+  requestPasswordReset: (email: string) => Promise<AuthResult>;
   /** "/create" when signed in, otherwise "/sign-in" — every "publish a listing" entry point
    * (header, bottom nav, footer, home banners, profile, empty states) links through this
    * instead of a bare "/create", so signed-out visitors land straight on the sign-in form
@@ -120,10 +122,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [city, setCityState] = React.useState<string | null>(null);
   const [currency, setCurrencyState] = React.useState<Currency>("USD");
   const [theme, setThemeState] = React.useState<Theme>("light");
-  const [hydrated, setHydrated] = React.useState(false);
+  const [storageHydrated, setStorageHydrated] = React.useState(false);
   const [activeHeaderMenu, setActiveHeaderMenu] = React.useState<HeaderMenu>(null);
   const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
-  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const auth = useSupabaseAuth();
+  const { user, profile, getToken, signIn, signUp, signOut, saveProfile, changeEmail, changePassword, setNewPassword, requestPasswordReset } =
+    auth;
+  const hydrated = storageHydrated && auth.ready;
 
   const searchOpen = activeHeaderMenu === "search";
   const categoriesMenuOpen = activeHeaderMenu === "categories";
@@ -178,22 +183,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // Ignore unavailable or corrupted storage — recent searches simply start empty.
     }
     try {
-      const savedUser = window.localStorage.getItem(USER_KEY);
-      if (savedUser) setUser(JSON.parse(savedUser) as AuthUser);
-    } catch {
-      // Ignore unavailable or corrupted storage — user simply starts signed out.
-    }
-    try {
       const savedPublished = window.localStorage.getItem(PUBLISHED_KEY);
-      // No key yet means this browser has never published anything — seed the one example
-      // listing so "my listings" has something to show and edit right away. Once anything is
-      // saved under this key (even an explicit empty array, after deleting the seed), that
-      // takes over for good.
-      setPublished(savedPublished ? (JSON.parse(savedPublished) as Listing[]) : [SEED_LISTING]);
+      // Property listings now live in the API, not localStorage — drop any leftover demo
+      // entries under the API's own categories (real-estate, …) and hydrate to [] otherwise.
+      const parsed = savedPublished ? (JSON.parse(savedPublished) as Listing[]) : [];
+      setPublished(parsed.filter((listing) => !API_DOORS.includes(listing.category)));
     } catch {
-      setPublished([SEED_LISTING]);
+      setPublished([]);
     }
-    setHydrated(true);
+    setStorageHydrated(true);
   }, []);
 
   // Keeps i18next and <html lang> in sync with the URL-derived locale. Runs
@@ -207,16 +205,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [locale]);
 
   React.useEffect(() => {
-    if (!hydrated) return;
+    if (!storageHydrated) return;
     try {
       window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
     } catch {
       // Storage can be full or blocked; favourites stay in memory for this session.
     }
-  }, [favorites, hydrated]);
+  }, [favorites, storageHydrated]);
 
   React.useEffect(() => {
-    if (!hydrated) return;
+    if (!storageHydrated) return;
     try {
       window.localStorage.setItem(PUBLISHED_KEY, JSON.stringify(published));
     } catch {
@@ -226,7 +224,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // only live for this tab's session — their listing metadata survives a reload just fine,
     // but the photos themselves will 404 until re-uploaded. A real backend would upload the
     // file instead; there isn't one here.
-  }, [published, hydrated]);
+  }, [published, storageHydrated]);
 
   const toggleFavorite = React.useCallback((id: string) => {
     setFavorites((prev) => (prev.includes(id) ? prev.filter((f) => f !== id) : [id, ...prev]));
@@ -310,35 +308,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const persistUser = React.useCallback((next: AuthUser | null) => {
-    setUser(next);
-    try {
-      if (next) window.localStorage.setItem(USER_KEY, JSON.stringify(next));
-      else window.localStorage.removeItem(USER_KEY);
-    } catch {
-      // Storage can be full or blocked; the session stays signed in only in memory.
-    }
-  }, []);
-
-  const signIn = React.useCallback((next: AuthUser) => persistUser(next), [persistUser]);
-  const signUp = React.useCallback((next: AuthUser) => persistUser(next), [persistUser]);
-  const signOut = React.useCallback(() => persistUser(null), [persistUser]);
-  const updateUser = React.useCallback(
-    (patch: Partial<AuthUser>) => {
-      setUser((prev) => {
-        if (!prev) return prev;
-        const next = { ...prev, ...patch };
-        try {
-          window.localStorage.setItem(USER_KEY, JSON.stringify(next));
-        } catch {
-          // Storage can be full or blocked; the update stays in memory for this session.
-        }
-        return next;
-      });
-    },
-    [],
-  );
-
   const toggleTheme = React.useCallback(() => {
     setThemeState((prev) => {
       const next: Theme = prev === "dark" ? "light" : "dark";
@@ -389,10 +358,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addRecentSearch,
       clearRecentSearches,
       user,
+      profile,
+      getToken,
       signIn,
       signUp,
-      updateUser,
       signOut,
+      saveProfile,
+      changeEmail,
+      changePassword,
+      setNewPassword,
+      requestPasswordReset,
       createHref,
     }),
     [
@@ -429,10 +404,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addRecentSearch,
       clearRecentSearches,
       user,
+      profile,
+      getToken,
       signIn,
       signUp,
-      updateUser,
       signOut,
+      saveProfile,
+      changeEmail,
+      changePassword,
+      setNewPassword,
+      requestPasswordReset,
       createHref,
     ],
   );
