@@ -30,11 +30,19 @@ const profile = PROPERTY_FIXTURE.seller!;
 
 describe("me", () => {
   it("returns null only when the profile does not exist yet", async () => {
-    const missing = { type: "urn:insyunik:error:sellers.not-found", title: "Not found", status: 404 };
+    // The real code (SellersErrors.ProfileNotFound in InSyunik-Api) is hyphenated —
+    // "sellers.profile-not-found", not "sellers.not-found" — so the not-found check must match
+    // on the "not-found" suffix itself, not a literal ".not-found".
+    const missing = { type: "urn:insyunik:error:sellers.profile-not-found", title: "Not found", status: 404 };
     const api = createApi({ token: "t", fetch: routeFetch(() => ({ status: 404, body: missing }), []) });
     expect(await getMyProfile(api)).toBeNull();
+
     const broken = createApi({ token: "t", fetch: routeFetch(() => ({ status: 404, body: "Not Found" }), []) });
     await expect(getMyProfile(broken)).rejects.toBeInstanceOf(ApiError);
+
+    const otherError = { type: "urn:insyunik:error:sellers.something-else", title: "Something else", status: 404 };
+    const api2 = createApi({ token: "t", fetch: routeFetch(() => ({ status: 404, body: otherError }), []) });
+    await expect(getMyProfile(api2)).rejects.toBeInstanceOf(ApiError);
   });
 
   it("PUTs the whole profile and reads my listings with a status filter", async () => {

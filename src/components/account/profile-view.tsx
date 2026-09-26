@@ -60,7 +60,13 @@ function SettingsForm({ user, onSave }: { user: AuthUser; onSave: (patch: Partia
     if (changingPassword) {
       const result = await changePassword(currentPassword, newPassword);
       if (!result.ok) {
-        setErrors((prev) => ({ ...prev, currentPassword: t(authErrorKey(result.error)) }));
+        // Only a wrong current password belongs on that field; every other failure (a weak new
+        // password, rate-limiting, …) is about the new password or the request itself.
+        if (result.error === "invalid-credentials") {
+          setErrors((prev) => ({ ...prev, currentPassword: t("profile.settings.currentPasswordError") }));
+        } else {
+          setErrors((prev) => ({ ...prev, newPassword: t(authErrorKey(result.error)) }));
+        }
         return;
       }
       setCurrentPassword("");
