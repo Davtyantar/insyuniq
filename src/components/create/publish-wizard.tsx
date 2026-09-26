@@ -12,6 +12,10 @@ import { StepPreview } from "@/components/create/steps/step-preview";
 import { StepSpecs } from "@/components/create/steps/step-specs";
 import { StepType } from "@/components/create/steps/step-type";
 import { useApp } from "@/components/providers/app-provider";
+import { ApiError } from "@/lib/api/errors";
+import { createApi } from "@/lib/api/client";
+import { uploadImage } from "@/lib/api/media";
+import { createPropertyListing } from "@/lib/api/property";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listingHref } from "@/lib/categories";
@@ -23,8 +27,17 @@ import {
   wizardSteps,
   type ListingDraft,
   type WizardStepDef,
+  type WizardStepKey,
 } from "@/lib/draft";
-import type { Listing } from "@/lib/types";
+import { uploadDraftPhotos } from "@/lib/photo-upload";
+import {
+  draftToCreateRequest,
+  firstStepWithErrors,
+  publishesToApi,
+  serverErrorsByStep,
+  type ServerStepErrors,
+} from "@/lib/property-draft";
+import { propertyHref } from "@/lib/property-doors";
 import { cn } from "@/lib/utils";
 
 /** Compact connected-dots progress track for phones — the full labeled list below is a lot of
@@ -131,11 +144,13 @@ function Stepper({
 }
 
 function SuccessState({
-  listing,
+  title,
+  href,
   isEdit,
   onReset,
 }: {
-  listing: Listing;
+  title: string;
+  href: string;
   isEdit: boolean;
   onReset: () => void;
 }) {
@@ -149,8 +164,8 @@ function SuccessState({
       </h2>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
         {isEdit
-          ? `«${listing.title}»-ի փոփոխությունները պահպանված են։`
-          : `«${listing.title}»-ն արդեն հասանելի է կատալոգում։ Առաջին արձագանքները սովորաբար գալիս են մեկ օրվա ընթացքում։`}
+          ? `«${title}»-ի փոփոխությունները պահպանված են։`
+          : `«${title}»-ն արդեն հասանելի է կատալոգում։ Առաջին արձագանքները սովորաբար գալիս են մեկ օրվա ընթացքում։`}
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
         <Button asChild variant="accent">
@@ -159,7 +174,7 @@ function SuccessState({
         {!isEdit && (
           <>
             <Button asChild variant="outline">
-              <Link href={listingHref(listing)}>Բացել հայտարարությունը</Link>
+              <Link href={href}>Բացել հայտարարությունը</Link>
             </Button>
             <Button variant="ghost" onClick={onReset}>
               Հրապարակել ևս մեկը
@@ -175,7 +190,8 @@ export function PublishWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
-  const { publishListing, updateListing, published, user, hydrated, localizeHref } = useApp();
+  const { publishListing, updateListing, published: publishedListings, user, hydrated, localizeHref, getToken } =
+    useApp();
 
   // Publishing requires an account. Every "Add a listing" link in the app already points
   // signed-out visitors straight to /sign-in (see useApp().createHref) — this only catches
@@ -190,7 +206,10 @@ export function PublishWizard() {
   const [highestStep, setHighestStep] = React.useState(1);
   const [draft, setDraft] = React.useState<ListingDraft>(EMPTY_DRAFT);
   const [showErrors, setShowErrors] = React.useState(false);
-  const [publishedListing, setPublishedListing] = React.useState<Listing | null>(null);
+  const [published, setPublished] = React.useState<{ title: string; href: string } | null>(null);
+  const [publishing, setPublishing] = React.useState(false);
+  const [publishError, setPublishError] = React.useState<React.ReactNode>(null);
+  const [serverErrors, setServerErrors] = React.useState<ServerStepErrors>({});
   // Whichever listing id ?edit= actually resolved to, once resolved — the id publish() should
   // overwrite instead of creating a new one, and what drives every "edit mode" bit of copy below.
   const [editingId, setEditingId] = React.useState<string | null>(null);
@@ -202,7 +221,7 @@ export function PublishWizard() {
 
   React.useEffect(() => {
     if (!editId || !hydrated || editResolved) return;
-    const existing = published.find((listing) => listing.id === editId);
+    const existing = publishedListings.find((listing) => listing.id === editId);
     if (existing) {
       setDraft(listingToDraft(existing, { name: user?.name, phone: user?.phone }));
       setEditingId(editId);
@@ -234,11 +253,13 @@ export function PublishWizard() {
     setStep((prev) => Math.min(prev, steps.length));
   }, [steps.length]);
 
+  // Any edit invalidates the last server verdict.
   const patch = React.useCallback((update: Partial<ListingDraft>) => {
+    setServerErrors({});
     setDraft((prev) => ({ ...prev, ...update }));
   }, []);
 
-  const errors = stepErrors(currentStep.key, draft);
+  const errors = [...stepErrors(currentStep.key, draft), ...(serverErrors[currentStep.key] ?? [])];
   const preview = React.useMemo(
     () => (draft.category ? draftToListing(draft, "draft-preview") : null),
     [draft],
@@ -260,22 +281,89 @@ export function PublishWizard() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function goToStep(key: WizardStepKey) {
+    const index = steps.findIndex((s) => s.key === key);
+    if (index >= 0) setStep(index + 1);
+    setShowErrors(true);
+  }
+
+  async function publishToApi() {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const token = await getToken();
+      if (!token) {
+        router.push(localizeHref(`/sign-in?next=${encodeURIComponent("/create")}`));
+        return;
+      }
+      const api = createApi({ token });
+      const outcome = await uploadDraftPhotos(
+        draft.photos,
+        (file) => uploadImage(api, file),
+        (photos) => setDraft((prev) => ({ ...prev, photos })),
+      );
+      if (outcome.failed > 0) {
+        setPublishError("Որոշ լուսանկարներ չվերբեռնվեցին։ Ստուգեք կապը և սեղմեք «Հրապարակել» կրկին։");
+        goToStep("photos");
+        return;
+      }
+      const paths = outcome.photos.flatMap((p) => (p.objectPath ? [p.objectPath] : []));
+      const listing = await createPropertyListing(api, draftToCreateRequest(draft, paths));
+      setPublished({ title: listing.title, href: propertyHref(listing) });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      if (!(error instanceof ApiError)) {
+        console.error("Publishing failed", error);
+        setPublishError("Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին։");
+      } else if (error.status === 401) {
+        router.push(localizeHref(`/sign-in?next=${encodeURIComponent("/create")}`));
+      } else if (error.code === "property.profile-required") {
+        setPublishError(
+          <>
+            Նախ լրացրեք պրոֆիլը՝ անուն և հեռախոս։{" "}
+            <Link href="/profile?tab=settings" className="font-medium underline">
+              Բացել կարգավորումները
+            </Link>
+          </>,
+        );
+      } else if (error.status === 429) {
+        setPublishError("Չափազանց շատ հայտարարություններ կարճ ժամանակում։ Փորձեք մեկ րոպեից։");
+      } else if (error.status === 400) {
+        const byStep = serverErrorsByStep(error.errors);
+        setServerErrors(byStep);
+        const first = firstStepWithErrors(
+          steps.map((s) => s.key),
+          byStep,
+        );
+        if (first) goToStep(first);
+      } else {
+        setPublishError("Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին։");
+      }
+    } finally {
+      setPublishing(false);
+    }
+  }
+
   function publish() {
+    if (publishesToApi(draft.category) && !editingId) {
+      void publishToApi();
+      return;
+    }
     if (editingId) {
       const listing = draftToListing(draft, editingId);
       updateListing(editingId, listing);
-      setPublishedListing(listing);
+      setPublished({ title: listing.title, href: listingHref(listing) });
     } else {
       const listing = draftToListing(draft);
       publishListing(listing);
-      setPublishedListing(listing);
+      setPublished({ title: listing.title, href: listingHref(listing) });
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function reset() {
     setDraft(EMPTY_DRAFT);
-    setPublishedListing(null);
+    setPublished(null);
     setStep(1);
     setHighestStep(1);
   }
@@ -292,10 +380,10 @@ export function PublishWizard() {
     );
   }
 
-  if (publishedListing) {
+  if (published) {
     return (
       <div className="container py-10">
-        <SuccessState listing={publishedListing} isEdit={!!editingId} onReset={reset} />
+        <SuccessState title={published.title} href={published.href} isEdit={!!editingId} onReset={reset} />
       </div>
     );
   }
@@ -347,6 +435,13 @@ export function PublishWizard() {
             )}
           </div>
 
+          {publishError && (
+            <div className="mt-4 flex items-start gap-2.5 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
+              <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>{publishError}</div>
+            </div>
+          )}
+
           <div className="mt-4 flex items-center justify-between gap-3">
             <Button variant="outline" onClick={back} disabled={step === 1} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
@@ -359,9 +454,9 @@ export function PublishWizard() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button variant="accent" size="lg" onClick={publish} className="gap-2">
+              <Button variant="accent" size="lg" onClick={publish} disabled={publishing} className="gap-2">
                 <Check className="h-4 w-4" />
-                {editingId ? "Պահպանել" : "Հրապարակել"}
+                {publishing ? "Հրապարակվում է..." : editingId ? "Պահպանել" : "Հրապարակել"}
               </Button>
             )}
           </div>

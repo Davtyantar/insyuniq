@@ -1,11 +1,14 @@
 "use client";
 
 import { Field, StepHeader } from "@/components/create/field";
+import { Link } from "@/components/i18n/locale-link";
 import { ToggleRow } from "@/components/filters/filter-fields";
+import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { CURRENCY_OPTIONS, type Currency } from "@/lib/currency";
 import type { ListingDraft } from "@/lib/draft";
+import { publishesToApi } from "@/lib/property-draft";
 
 interface StepProps {
   draft: ListingDraft;
@@ -26,6 +29,8 @@ const PRICE_FIELDS: {
 ];
 
 export function StepPrice({ draft, patch }: StepProps) {
+  const { user } = useApp();
+  const apiCategory = publishesToApi(draft.category);
   const isRent = draft.category === "real-estate" && draft.deal === "rent";
   const isStay = draft.category === "rentals" || draft.category === "hotels";
   const isDaily = isStay && draft.term === "daily";
@@ -38,6 +43,13 @@ export function StepPrice({ draft, patch }: StepProps) {
       ? "Գին ամսավարձով"
       : "Գին";
 
+  const priceFields = apiCategory
+    ? PRICE_FIELDS.filter(({ currency }) => currency === "USD" || currency === "AMD").map((field) => ({
+        ...field,
+        required: false,
+      }))
+    : PRICE_FIELDS;
+
   return (
     <div className='space-y-6'>
       <StepHeader
@@ -47,7 +59,7 @@ export function StepPrice({ draft, patch }: StepProps) {
 
       <Field label={priceHeading}>
         <div className='flex flex-wrap gap-3'>
-          {PRICE_FIELDS.map(({ key, currency, required }) => {
+          {priceFields.map(({ key, currency, required }) => {
             const option = CURRENCY_OPTIONS.find((c) => c.value === currency)!;
             return (
               <div
@@ -87,23 +99,36 @@ export function StepPrice({ draft, patch }: StepProps) {
         />
       </div>
 
-      <div className='grid gap-4 sm:grid-cols-2'>
-        <Field label='Անուն' required>
-          <Input
-            value={draft.contactName}
-            onChange={(event) => patch({ contactName: event.target.value })}
-            placeholder='Ինչպես դիմենք ձեզ'
-            className='placeholder:text-[12px] sm:placeholder:text-sm'
-          />
-        </Field>
-        <Field label='Հեռախոս' required>
-          <PhoneInput
-            value={draft.phone}
-            onChange={(phone) => patch({ phone })}
-            className='placeholder:text-[12px] sm:placeholder:text-sm'
-          />
-        </Field>
-      </div>
+      {apiCategory ? (
+        <div className="rounded-lg border border-border bg-secondary/40 p-4 text-[13px]">
+          <p className="font-medium text-foreground">{user?.name}</p>
+          <p className="mt-0.5 text-muted-foreground">{user?.phone}</p>
+          <p className="mt-2 text-muted-foreground">
+            Գնորդները կտեսնեն ձեր պրոֆիլի անունն ու հեռախոսը։{" "}
+            <Link href="/profile?tab=settings" className="font-medium text-accent hover:underline">
+              Փոխել
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <Field label='Անուն' required>
+            <Input
+              value={draft.contactName}
+              onChange={(event) => patch({ contactName: event.target.value })}
+              placeholder='Ինչպես դիմենք ձեզ'
+              className='placeholder:text-[12px] sm:placeholder:text-sm'
+            />
+          </Field>
+          <Field label='Հեռախոս' required>
+            <PhoneInput
+              value={draft.phone}
+              onChange={(phone) => patch({ phone })}
+              className='placeholder:text-[12px] sm:placeholder:text-sm'
+            />
+          </Field>
+        </div>
+      )}
     </div>
   );
 }
