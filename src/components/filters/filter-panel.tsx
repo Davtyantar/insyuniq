@@ -1,5 +1,6 @@
 "use client";
 
+import type * as React from "react";
 import { RotateCcw } from "lucide-react";
 import { CarFilterFields } from "@/components/filters/car-filters";
 import { SingleOpenAccordion } from "@/components/filters/filter-fields";
@@ -21,10 +22,24 @@ import type {
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export interface FilterPanelProps {
-  category: CategorySlug;
-  filters: AnyFilters;
-  onChange: (patch: Partial<AnyFilters>) => void;
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+type FieldSource =
+  | {
+      category: CategorySlug;
+      filters: AnyFilters;
+      onChange: (patch: Partial<AnyFilters>) => void;
+      renderFields?: never;
+    }
+  | {
+      /** Doors on the API render their own fields; `mobile` is true inside the drawer. */
+      renderFields: (mobile: boolean) => React.ReactNode;
+      category?: never;
+      filters?: never;
+      onChange?: never;
+    };
+
+export type FilterPanelProps = FieldSource & {
   onApply: () => void;
   onReset: () => void;
   activeCount: number;
@@ -32,14 +47,19 @@ export interface FilterPanelProps {
   className?: string;
   /** Drawer mode gets a sticky action bar pinned to the bottom of the sheet. */
   variant?: "sidebar" | "drawer";
-}
+};
 
 export function FilterFields({
   category,
   filters,
   onChange,
   mobile = false,
-}: Pick<FilterPanelProps, "category" | "filters" | "onChange"> & { mobile?: boolean }) {
+}: {
+  category: CategorySlug;
+  filters: AnyFilters;
+  onChange: (patch: Partial<AnyFilters>) => void;
+  mobile?: boolean;
+}) {
   const fields = (() => {
     if (category === "cars") {
       return (
@@ -99,17 +119,8 @@ export function FilterFields({
   return mobile ? <SingleOpenAccordion>{fields}</SingleOpenAccordion> : fields;
 }
 
-export function FilterPanel({
-  category,
-  filters,
-  onChange,
-  onApply,
-  onReset,
-  activeCount,
-  resultCount,
-  className,
-  variant = "sidebar",
-}: FilterPanelProps) {
+export function FilterPanel(props: FilterPanelProps) {
+  const { onApply, onReset, activeCount, resultCount, className, variant = "sidebar" } = props;
   const isDrawer = variant === "drawer";
 
   return (
@@ -136,7 +147,11 @@ export function FilterPanel({
           isDrawer && "thin-scrollbar overflow-y-auto px-4 pb-4 pt-4",
         )}
       >
-        <FilterFields category={category} filters={filters} onChange={onChange} mobile={isDrawer} />
+        {props.renderFields ? (
+          isDrawer ? <SingleOpenAccordion>{props.renderFields(true)}</SingleOpenAccordion> : props.renderFields(false)
+        ) : (
+          <FilterFields category={props.category} filters={props.filters} onChange={props.onChange} mobile={isDrawer} />
+        )}
       </div>
 
       <div

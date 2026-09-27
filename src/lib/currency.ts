@@ -16,6 +16,10 @@ export const CURRENCY_OPTIONS: CurrencyOption[] = [
   { value: "RUB", symbol: "₽", rate: 90 },
 ];
 
+/** What a viewer can pick for display and price filters. EUR and RUB stay in `CURRENCY_OPTIONS`
+ * only for the legacy wizard's optional price fields; the contract carries USD and AMD. */
+export const DISPLAY_CURRENCIES = CURRENCY_OPTIONS.filter((option) => option.value === "USD" || option.value === "AMD");
+
 export function currencyOption(value: Currency): CurrencyOption {
   return CURRENCY_OPTIONS.find((option) => option.value === value) ?? CURRENCY_OPTIONS[0];
 }

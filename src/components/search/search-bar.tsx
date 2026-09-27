@@ -8,9 +8,11 @@ import { Clock, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "@/components/providers/app-provider";
 import { Input } from "@/components/ui/input";
-import { CATEGORY_LIST, listingHref } from "@/lib/categories";
-import { formatPrice } from "@/lib/format";
-import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
+import { searchCatalog } from "@/lib/api/catalog";
+import { createApi } from "@/lib/api/client";
+import { type CardModel, catalogCard, isCard, legacyCard } from "@/lib/card";
+import { CATEGORY_LIST, MOCK_DOORS } from "@/lib/categories";
+import { formatAmount, toDisplayCurrency } from "@/lib/money";
 import type { Listing } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ALL_LISTINGS } from "@/mock/listings";
@@ -29,6 +31,7 @@ function matchListings(query: string): Listing[] {
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   if (!terms.length) return [];
   const scored = ALL_LISTINGS.map((listing) => {
+    if (!MOCK_DOORS.includes(listing.category)) return null;
     const haystack = [
       listing.title,
       listing.city,
@@ -64,7 +67,32 @@ export function SearchBar({ className, defaultQuery = "", mobile = false }: Sear
   const containerRef = React.useRef<HTMLDivElement>(null);
   const isFirstRender = React.useRef(true);
 
-  const suggestions = React.useMemo(() => matchListings(query), [query]);
+  const [apiSuggestions, setApiSuggestions] = React.useState<CardModel[]>([]);
+
+  React.useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setApiSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      searchCatalog(createApi(), { q: trimmed, pageSize: MAX_SUGGESTIONS }, controller.signal)
+        .then((page) => setApiSuggestions(page.items.map(catalogCard).filter(isCard)))
+        .catch(() => {
+          if (!controller.signal.aborted) setApiSuggestions([]);
+        });
+    }, 250);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  const suggestions = React.useMemo(
+    () => [...apiSuggestions, ...matchListings(query).map(legacyCard)].slice(0, MAX_SUGGESTIONS),
+    [apiSuggestions, query],
+  );
   const showDropdown = open && query.trim().length > 0;
   const showEmptyPanel = open && query.trim().length === 0;
 
@@ -133,7 +161,7 @@ export function SearchBar({ className, defaultQuery = "", mobile = false }: Sear
     event.preventDefault();
     if (activeIndex >= 0 && suggestions[activeIndex]) {
       setOpen(false);
-      router.push(localizeHref(listingHref(suggestions[activeIndex])));
+      router.push(localizeHref(suggestions[activeIndex].href));
       return;
     }
     goToResults(query);
@@ -247,10 +275,10 @@ export function SearchBar({ className, defaultQuery = "", mobile = false }: Sear
             </p>
           ) : (
             <>
-              {suggestions.map((listing, index) => (
+              {suggestions.map((card, index) => (
                 <Link
-                  key={listing.id}
-                  href={listingHref(listing)}
+                  key={card.id}
+                  href={card.href}
                   role="option"
                   aria-selected={index === activeIndex}
                   onClick={() => setOpen(false)}
@@ -261,29 +289,31 @@ export function SearchBar({ className, defaultQuery = "", mobile = false }: Sear
                   )}
                 >
                   <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md bg-secondary">
-                    <Image
-                      src={listing.images[0]}
-                      alt=""
-                      fill
-                      sizes="44px"
-                      unoptimized={listing.images[0]?.startsWith("blob:")}
-                      className="object-cover"
-                    />
+                    {card.images[0] && (
+                      <Image
+                        src={card.images[0]}
+                        alt=""
+                        fill
+                        sizes="44px"
+                        unoptimized={card.images[0].startsWith("blob:")}
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13.5px] font-medium text-foreground">
-                      {listing.title}
+                      {card.title}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {listingSummary(listing)} · {locationLine(listing)}
+                      {card.headline} · {card.location}
                     </p>
                   </div>
                   <span className="shrink-0 text-[13px] font-semibold text-foreground">
-                    {formatPrice(listing.price, { currency, prices: listing.prices })}
-                    {isDaily(listing) && (
+                    {card.price ? formatAmount(card.price, toDisplayCurrency(currency)) : null}
+                    {card.price?.period === "night" && (
                       <span className="ml-0.5 text-[11px] font-normal text-accent">օր</span>
                     )}
-                    {isMonthly(listing) && (
+                    {card.price?.period === "month" && (
                       <span className="ml-0.5 text-[11px] font-normal text-accent">ամիս</span>
                     )}
                   </span>

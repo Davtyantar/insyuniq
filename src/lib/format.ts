@@ -1,5 +1,4 @@
 import { currencyOption, type Currency } from "./currency";
-import { MOCK_NOW } from "./constants";
 
 /**
  * Not every browser ships full hy-AM ICU data — some silently fall back to
@@ -107,7 +106,7 @@ export function formatEngine(liters: number) {
 }
 
 /** "2 ժամ առաջ", "երեկ", "12 մարտի" — deterministic against a fixed "now". */
-export function formatRelativeDate(iso: string, now: number = MOCK_NOW) {
+export function formatRelativeDate(iso: string, now: number = Date.now()) {
   const date = new Date(iso);
   const diffMin = Math.round((now - date.getTime()) / 60000);
   if (diffMin < 1) return "հենց նոր";

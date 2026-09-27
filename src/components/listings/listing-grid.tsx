@@ -1,10 +1,11 @@
 import { ListingCard } from "@/components/listings/listing-card";
 import { ListingCardSkeleton } from "@/components/listings/listing-skeleton";
-import type { Listing, ViewMode } from "@/lib/types";
+import type { CardModel } from "@/lib/card";
+import type { ViewMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface ListingGridProps {
-  listings: Listing[];
+  cards: CardModel[];
   view?: ViewMode;
   loading?: boolean;
   skeletonCount?: number;
@@ -18,7 +19,7 @@ interface ListingGridProps {
 }
 
 export function ListingGrid({
-  listings,
+  cards,
   view = "grid",
   loading,
   skeletonCount = 6,
@@ -49,10 +50,10 @@ export function ListingGrid({
 
   return (
     <div className={cn(layout, className)}>
-      {listings.map((listing, index) => (
+      {cards.map((card, index) => (
         <ListingCard
-          key={listing.id}
-          listing={listing}
+          key={card.id}
+          card={card}
           view={view}
           priority={index < 3}
           dense={dense}

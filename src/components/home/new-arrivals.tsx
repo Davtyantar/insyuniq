@@ -7,13 +7,13 @@ import { ArrowRight, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { CityAccent } from "@/components/city-accent";
 import { FavoriteButton } from "@/components/listings/favorite-button";
 import { useApp } from "@/components/providers/app-provider";
-import { categoryOf, listingHref } from "@/lib/categories";
-import { formatPrice, formatRelativeDate } from "@/lib/format";
-import { isDaily, isMonthly, listingSummary, locationLine } from "@/lib/specs";
-import type { Listing } from "@/lib/types";
+import type { CardModel } from "@/lib/card";
+import { CATEGORIES } from "@/lib/categories";
+import { formatRelativeDate } from "@/lib/format";
+import { formatAmount, periodLabel, toDisplayCurrency } from "@/lib/money";
 
 interface NewArrivalsProps {
-  listings: Listing[];
+  cards: CardModel[];
 }
 
 /** How fast the row drifts on its own, in pixels per second — a normal walking pace, not a crawl. */
@@ -39,7 +39,7 @@ const GAP_PX = 16;
  * for reduced motion, and stays off on mobile, where the prev/next buttons drive it instead —
  * auto-drift fights a thumb mid-swipe, so phones keep the manual controls.
  */
-export function NewArrivals({ listings }: NewArrivalsProps) {
+export function NewArrivals({ cards }: NewArrivalsProps) {
   const { currency } = useApp();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const trackRef = React.useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
 
   React.useEffect(() => {
     const track = trackRef.current;
-    if (!track || listings.length === 0) return;
+    if (!track || cards.length === 0) return;
 
     const desktop = window.matchMedia(DESKTOP_QUERY);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -71,10 +71,10 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
       if (track && !pausedRef.current) {
         offset += (AUTO_SCROLL_PX_PER_SEC * elapsed) / 1000;
         // One loop = distance from the first card to its duplicate, so the jump back is invisible.
-        const cards = track.children;
+        const children = track.children;
         const loop =
-          (cards[listings.length] as HTMLElement).offsetLeft -
-          (cards[0] as HTMLElement).offsetLeft;
+          (children[cards.length] as HTMLElement).offsetLeft -
+          (children[0] as HTMLElement).offsetLeft;
         if (loop > 0 && offset >= loop) offset -= loop;
         track.style.transform = `translate3d(${-offset}px, 0, 0)`;
       }
@@ -103,7 +103,7 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
       desktop.removeEventListener("change", sync);
       reduceMotion.removeEventListener("change", sync);
     };
-  }, [listings.length]);
+  }, [cards.length]);
 
   return (
     <section className="bg-gradient-to-b from-brand-50/60 via-transparent to-transparent dark:from-brand-500/[0.06]">
@@ -168,34 +168,36 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
             ref={trackRef}
             className="flex gap-4 sm:will-change-transform sm:[&:has(>article:hover)>article:not(:hover)]:grayscale"
           >
-            {[...listings, ...listings].map((listing, index) => {
-              const category = categoryOf(listing);
-              const isDuplicate = index >= listings.length;
+            {[...cards, ...cards].map((card, index) => {
+              const category = CATEGORIES[card.door];
+              const isDuplicate = index >= cards.length;
               return (
                 <article
-                  key={`${listing.id}-${isDuplicate ? "dup" : "orig"}`}
+                  key={`${card.id}-${isDuplicate ? "dup" : "orig"}`}
                   aria-hidden={isDuplicate || undefined}
                   className="group relative w-[74%] shrink-0 snap-start transition-[filter] duration-300 sm:w-[min(45%,288px)] sm:snap-align-none md:w-[min(31%,238px)] lg:w-[min(22.5%,306px)]"
                 >
                   <Link
-                    href={listingHref(listing)}
+                    href={card.href}
                     className="absolute inset-0 z-10"
-                    aria-label={listing.title}
+                    aria-label={card.title}
                     tabIndex={isDuplicate ? -1 : undefined}
                   >
-                    <span className="sr-only">{listing.title}</span>
+                    <span className="sr-only">{card.title}</span>
                   </Link>
 
                   <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary shadow-sm">
-                    <Image
-                      src={listing.images[0]}
-                      alt={listing.title}
-                      fill
-                      sizes="(max-width: 640px) 75vw, (max-width: 1024px) 35vw, 22vw"
-                      priority={!isDuplicate && index < 3}
-                      unoptimized={listing.images[0].startsWith("blob:")}
-                      className="object-cover"
-                    />
+                    {card.images[0] && (
+                      <Image
+                        src={card.images[0]}
+                        alt={card.title}
+                        fill
+                        sizes="(max-width: 640px) 75vw, (max-width: 1024px) 35vw, 22vw"
+                        priority={!isDuplicate && index < 3}
+                        unoptimized={card.images[0].startsWith("blob:")}
+                        className="object-cover"
+                      />
+                    )}
 
                     {/* Occasional light sweep, staggered per card so the row doesn't flash in
                       unison — a quiet "alive" cue instead of a hover-zoom on the photo. */}
@@ -214,38 +216,32 @@ export function NewArrivals({ listings }: NewArrivalsProps) {
                       </span>
                       <span inert={isDuplicate ? true : undefined}>
                         <FavoriteButton
-                          listingId={listing.id}
+                          listingId={card.id}
                           className="h-8 w-8 shrink-0"
                         />
                       </span>
                     </div>
 
                     <div className="absolute inset-x-0 bottom-0 z-20 p-3.5 text-white sm:p-4">
-                      <div className="flex items-center gap-1 text-[11px] font-medium text-white/80">
+                      <div className="flex items-center gap-1 text-[11px] font-medium text-white/80" suppressHydrationWarning>
                         <Clock className="h-3 w-3" />
-                        {formatRelativeDate(listing.publishedAt)}
+                        {formatRelativeDate(card.publishedAt)}
                       </div>
                       <p className="mt-1 line-clamp-1 text-[14px] font-medium leading-snug sm:text-[15px]">
-                        {listingSummary(listing)}
+                        {card.headline}
                       </p>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="truncate text-[12px] text-white/75">
-                          {locationLine(listing)}
+                          {card.location}
                         </span>
                         <span className="shrink-0 text-[15px] font-semibold">
-                          {formatPrice(listing.price, {
-                            currency,
-                            prices: listing.prices,
-                          })}
-                          {isDaily(listing) && (
-                            <span className="ml-0.5 text-[11px] font-normal text-white/80">
-                              /օր
-                            </span>
-                          )}
-                          {isMonthly(listing) && (
-                            <span className="ml-0.5 text-[11px] font-normal text-white/80">
-                              /ամիս
-                            </span>
+                          {card.price && (
+                            <>
+                              {formatAmount(card.price, toDisplayCurrency(currency))}
+                              {card.price.amount !== null && periodLabel(card.price.period) && (
+                                <span className="ml-0.5 text-[11px] font-normal text-white/80">{periodLabel(card.price.period)}</span>
+                              )}
+                            </>
                           )}
                         </span>
                       </div>

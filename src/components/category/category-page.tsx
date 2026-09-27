@@ -13,6 +13,7 @@ import { Pagination } from "@/components/listings/pagination";
 import { ResultsToolbar } from "@/components/listings/results-toolbar";
 import { useApp } from "@/components/providers/app-provider";
 import { FloatingTabs } from "@/components/ui/floating-tabs";
+import { legacyCard } from "@/lib/card";
 import { CATEGORIES } from "@/lib/categories";
 import { PAGE_SIZE } from "@/lib/constants";
 import {
@@ -227,7 +228,7 @@ export function CategoryPage({ category }: { category: CategorySlug }) {
             />
           ) : (
             <ListingGrid
-              listings={pageItems}
+              cards={pageItems.map(legacyCard)}
               view={view}
               loading={isPending}
               skeletonCount={Math.min(PAGE_SIZE, Math.max(pageItems.length, 6))}

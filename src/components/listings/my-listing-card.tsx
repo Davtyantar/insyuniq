@@ -108,7 +108,9 @@ export function MyListingCard({ listing, priority }: MyListingCardProps) {
           <span className="min-w-0 flex-1 truncate">{locationLine(listing)}</span>
         </div>
 
-        <span className="mt-1 text-[10px] text-muted-foreground">{formatRelativeDate(listing.publishedAt)}</span>
+        <span className="mt-1 text-[10px] text-muted-foreground" suppressHydrationWarning>
+          {formatRelativeDate(listing.publishedAt)}
+        </span>
       </div>
     </article>
   );

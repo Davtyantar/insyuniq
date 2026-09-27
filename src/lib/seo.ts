@@ -22,6 +22,16 @@ export function truncateAtWord(text: string, max: number): string {
   return `${cut}…`;
 }
 
+/** Meta description: price and place first (they drive clicks), then the description cut at a
+ * word boundary so the whole thing stays near 155 characters. */
+export function buildDescription(parts: { title: string; price?: string; location: string; description: string }): string {
+  const lead = parts.price
+    ? `${parts.title} — ${parts.price}, ${parts.location}. `
+    : `${parts.title}, ${parts.location}. `;
+  const room = Math.max(40, 155 - lead.length);
+  return `${lead}${truncateAtWord(parts.description, room)}`.trimEnd();
+}
+
 /**
  * Meta description for a listing detail page: leads with the fields that
  * actually drive click-through in classifieds results — price and city —
@@ -29,13 +39,8 @@ export function truncateAtWord(text: string, max: number): string {
  * at a word boundary instead of a blind character slice.
  */
 export function buildListingDescription(listing: Listing): string {
-  const price = formatPrice(listing.price, {
-    perMonth: isMonthly(listing),
-    perDay: isDaily(listing),
-  });
-  const lead = `${listing.title} — ${price}, ${locationLine(listing)}. `;
-  const room = Math.max(40, 155 - lead.length);
-  return `${lead}${truncateAtWord(listing.description, room)}`;
+  const price = formatPrice(listing.price, { perMonth: isMonthly(listing), perDay: isDaily(listing) });
+  return buildDescription({ title: listing.title, price, location: locationLine(listing), description: listing.description });
 }
 
 export interface Crumb {

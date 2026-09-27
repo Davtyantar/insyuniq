@@ -1,20 +1,16 @@
 "use client";
 
-import { FilterPanel, type FilterPanelProps } from "@/components/filters/filter-panel";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { FilterPanel, type DistributiveOmit, type FilterPanelProps } from "@/components/filters/filter-panel";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-interface FilterDrawerProps extends Omit<FilterPanelProps, "variant"> {
+type FilterDrawerProps = DistributiveOmit<FilterPanelProps, "variant"> & {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 /** Bottom sheet on phones, centred dialog on tablets and up. */
-export function FilterDrawer({ open, onOpenChange, ...panelProps }: FilterDrawerProps) {
+export function FilterDrawer(props: FilterDrawerProps) {
+  const { open, onOpenChange, onApply } = props;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent variant="sheet" className="flex max-h-[92vh] flex-col overflow-hidden p-0">
@@ -22,10 +18,10 @@ export function FilterDrawer({ open, onOpenChange, ...panelProps }: FilterDrawer
           <DialogTitle>Ֆիլտրեր</DialogTitle>
         </DialogHeader>
         <FilterPanel
-          {...panelProps}
+          {...props}
           variant="drawer"
           onApply={() => {
-            panelProps.onApply();
+            onApply();
             onOpenChange(false);
           }}
         />
