@@ -12,7 +12,10 @@ function fakeFetch(status: number, body: unknown, seen: Request[] = []) {
   }) as unknown as typeof fetch;
 }
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});
 
 describe("apiBaseUrl", () => {
   it("defaults to the local API", () => {
@@ -46,6 +49,15 @@ describe("createApi", () => {
     });
     expect(seen[0].headers.get("authorization")).toBe("Bearer t0k");
     expect(seen[1].headers.get("authorization")).toBeNull();
+  });
+
+  it("keeps API reads out of Next's data cache", async () => {
+    // Next's patched fetch takes the cache mode from init first, then from the Request.
+    const global = vi.fn(async () => new Response(JSON.stringify({ items: [], page: 1, pageSize: 12, total: 0 })));
+    vi.stubGlobal("fetch", global);
+    await createApi().GET("/v1/property/listings", {});
+    const [input, init] = global.mock.calls[0] as unknown as [Request, RequestInit | undefined];
+    expect(init?.cache ?? input.cache).toBe("no-store");
   });
 
   it("serialises the query, dropping undefined values", async () => {

@@ -17,10 +17,14 @@ export function apiBaseUrl(): string {
   return configured.replace(/\/$/, "");
 }
 
+/** API data is live: Next 14 would otherwise keep every GET in its data cache (openapi-fetch passes
+ * a Request with cache "default", which `dynamic = "force-dynamic"` does not override). */
+const uncachedFetch: typeof fetch = (input, init) => fetch(input, { ...init, cache: "no-store" });
+
 export interface ApiOptions {
   /** A Supabase access token; sent as `Authorization: Bearer`. */
   token?: string;
-  /** Injected in tests; defaults to the global fetch (Next's patched fetch on the server). */
+  /** Injected in tests; defaults to the global fetch (Next's patched fetch on the server), uncached. */
   fetch?: typeof fetch;
 }
 
@@ -28,7 +32,7 @@ export interface ApiOptions {
 export function createApi(options: ApiOptions = {}) {
   const client = createClient<paths>({
     baseUrl: apiBaseUrl(),
-    fetch: options.fetch,
+    fetch: options.fetch ?? uncachedFetch,
     headers: { Accept: "application/json" },
   });
   const { token } = options;

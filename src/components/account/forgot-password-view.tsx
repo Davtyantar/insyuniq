@@ -4,8 +4,9 @@ import * as React from "react";
 import { Link } from "@/components/i18n/locale-link";
 import { CheckCircle2, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AuthField, errorInputClass } from "@/components/auth/auth-field";
+import { AuthField, authErrorKey, errorInputClass } from "@/components/auth/auth-field";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { useApp } from "@/components/providers/app-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -14,12 +15,13 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function ForgotPasswordView() {
   const { t } = useTranslation();
+  const { requestPasswordReset } = useApp();
   const [email, setEmail] = React.useState("");
   const [error, setError] = React.useState<string | undefined>();
   const [submitting, setSubmitting] = React.useState(false);
   const [sent, setSent] = React.useState(false);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (!EMAIL_PATTERN.test(email.trim())) {
       setError(t("auth.forgotPassword.emailError"));
@@ -27,11 +29,10 @@ export function ForgotPasswordView() {
     }
     setError(undefined);
     setSubmitting(true);
-    // No backend behind this form — mimic a short round trip, then show the confirmation.
-    window.setTimeout(() => {
-      setSubmitting(false);
-      setSent(true);
-    }, 450);
+    const result = await requestPasswordReset(email);
+    setSubmitting(false);
+    if (result.ok) setSent(true);
+    else setError(t(authErrorKey(result.error)));
   }
 
   return (

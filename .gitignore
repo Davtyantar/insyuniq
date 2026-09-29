@@ -5,3 +5,8 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# Local Supabase: private signing key and CLI state
+supabase/signing_keys.json
+supabase/.temp
+supabase/.branches

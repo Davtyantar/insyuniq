@@ -31,6 +31,34 @@ node scripts/smoke-api.mjs   # smoke-тест API-страниц на запущ
 затем `npm run api:types` и новое значение `contractVersion`. `npm run typecheck` падает, если версии
 или сгенерированные типы расходятся.
 
+## Вход и публикация локально
+
+Аккаунты и токены выдаёт Supabase Auth; InSyunik-Api принимает только ES256/RS256-токены,
+поэтому локальный стек Supabase подписывает их ES256-ключом из `supabase/signing_keys.json`
+(гитигнорится, генерируется на каждой машине заново).
+
+```bash
+npm run supabase:keys    # один раз создаёт supabase/signing_keys.json с ES256-ключом
+supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,supavisor,postgres-meta
+```
+
+Стек поднимается на `http://127.0.0.1:55521` (auth, REST, storage). Значения для `.env.local`
+берутся командой `supabase status -o env` — в `NEXT_PUBLIC_SUPABASE_URL` идёт `API_URL`, в
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — `PUBLISHABLE_KEY`. `SECRET_KEY` в `.env.local` не
+попадает — он нужен только API и никогда не должен быть виден браузеру.
+
+Письма подтверждения регистрации и сброса пароля в проде уходят на реальную почту, а локально
+перехватываются Mailpit: `http://127.0.0.1:55524`.
+
+Чтобы InSyunik-Api принимал токены этого стека, поднимите его так же локально:
+
+```bash
+cd ../InSyunik-Api && Supabase__Url=http://127.0.0.1:55521 Supabase__SecretKey=<SECRET_KEY из supabase status -o env> Cors__AllowedOrigins=http://localhost:3000,http://localhost:3200 dotnet run --project src/InSyunik.Api
+```
+
+(предварительно поднимите Postgres API командой `docker compose up -d` и выполните
+`-- migrate` и `-- seed`, как описано в README InSyunik-Api).
+
 ## Возможности
 
 - Поиск по объявлениям, фильтры недвижимости и автомобилей с состоянием в URL

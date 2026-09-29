@@ -1,3 +1,5 @@
+import { isUploadableImage } from "@/lib/api/media";
+import { draftDealError, publishesToApi, requiredSpecErrors } from "@/lib/property-draft";
 import { MOCK_NOW } from "./constants";
 import type { Currency } from "./currency";
 import {
@@ -36,6 +38,11 @@ export interface DraftPhoto {
   id: string;
   url: string;
   name: string;
+  /** The picked file; kept until it is uploaded (API categories only). */
+  file?: File;
+  /** Storage path once uploaded; sent in the create request. */
+  objectPath?: string;
+  status?: "uploading" | "done" | "error";
 }
 
 /** Everything the publish wizard collects. Numbers stay strings until publishing. */
@@ -222,9 +229,12 @@ export function stepErrors(stepKey: WizardStepKey, draft: ListingDraft): string[
     case "category":
       if (!draft.category) errors.push("Ընտրեք կատեգորիան");
       break;
-    case "type":
+    case "type": {
       if (!draft.subcategory) errors.push("Ընտրեք հայտարարության տեսակը");
+      const dealError = draftDealError(draft);
+      if (dealError) errors.push(dealError);
       break;
+    }
     case "specs":
       if (!draft.city) errors.push("Նշեք քաղաքը");
       if (draft.category === "rentals" || draft.category === "hotels") {
@@ -236,15 +246,31 @@ export function stepErrors(stepKey: WizardStepKey, draft: ListingDraft): string[
         if (!draft.model) errors.push("Ընտրեք մոդելը");
         if (!draft.year) errors.push("Նշեք թողարկման տարին");
       }
+      errors.push(...requiredSpecErrors(draft));
+      break;
+    case "photos":
+      if (publishesToApi(draft.category)) {
+        if (draft.photos.length === 0) errors.push("Ավելացրեք առնվազն մեկ լուսանկար");
+        else if (draft.photos.some((p) => p.file && !isUploadableImage(p.file))) {
+          errors.push("Լուսանկարները՝ JPEG, PNG կամ WebP, մինչև 10 ՄԲ");
+        }
+      }
       break;
     case "description":
       if (draft.title.trim().length < 10) errors.push("Վերնագիրը՝ նվազագույնը 10 նիշ");
       if (draft.description.trim().length < 40) errors.push("Նկարագրությունը՝ նվազագույնը 40 նիշ");
+      if (draft.description.trim().length > 4000) errors.push("Նկարագրությունը՝ առավելագույնը 4000 նիշ");
       break;
     case "price":
-      if (!draft.price) errors.push("Նշեք գինը");
-      if (draft.phone.trim().length < 6) errors.push("Նշեք հեռախոսահամարը");
-      if (!draft.contactName.trim()) errors.push("Նշեք անունը");
+      if (publishesToApi(draft.category)) {
+        if (!draft.price && !draft.priceAmd && !draft.negotiable) errors.push("Նշեք գինը");
+      } else {
+        if (!draft.price) errors.push("Նշեք գինը");
+      }
+      if (!publishesToApi(draft.category)) {
+        if (draft.phone.trim().length < 6) errors.push("Նշեք հեռախոսահամարը");
+        if (!draft.contactName.trim()) errors.push("Նշեք անունը");
+      }
       break;
     default:
       break;

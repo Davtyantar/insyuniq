@@ -1,6 +1,7 @@
 import { type Api, isUuid, unwrap } from "./client";
 import { toApiError } from "./errors";
 import type {
+  CreatePropertyListingRequest,
   Facets,
   PropertyFacetQuery,
   PropertyListing,
@@ -42,4 +43,8 @@ export async function getSimilarProperty(api: Api, id: string, limit = 8): Promi
   });
   if (isNotFoundProblem(result.response.status, result.error)) return [];
   return unwrap(result);
+}
+
+export async function createPropertyListing(api: Api, body: CreatePropertyListingRequest): Promise<PropertyListing> {
+  return unwrap(await api.POST("/v1/property/listings", { body }));
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Star, Trash2, UploadCloud } from "lucide-react";
+import { CircleAlert, Loader2, Star, Trash2, UploadCloud } from "lucide-react";
 import { StepHeader } from "@/components/create/field";
 import type { DraftPhoto, ListingDraft } from "@/lib/draft";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ export function StepPhotos({ draft, patch }: StepProps) {
           id: `${file.name}-${file.size}-${Math.random().toString(36).slice(2, 8)}`,
           url: URL.createObjectURL(file),
           name: file.name,
+          file,
         }));
       if (accepted.length) patch({ photos: [...draft.photos, ...accepted] });
     },
@@ -104,6 +105,17 @@ export function StepPhotos({ draft, patch }: StepProps) {
             {/* Object URLs cannot be optimised by next/image, so a plain img is correct here. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photo.url} alt={photo.name} className="h-full w-full object-cover" />
+            {photo.status === "uploading" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <Loader2 className="h-6 w-6 animate-spin text-white" />
+              </div>
+            )}
+            {photo.status === "error" && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-destructive/60 text-white">
+                <CircleAlert className="h-6 w-6" />
+                <span className="text-[12px] font-medium">Չհաջողվեց</span>
+              </div>
+            )}
             {index === 0 && (
               <span className="absolute left-2 top-2 rounded-md bg-slate-950/70 px-2 py-0.5 text-[11px] font-medium text-white">
                 Շապիկ

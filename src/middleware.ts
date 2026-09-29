@@ -1,19 +1,34 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { localeFromPathname, stripLocalePrefix } from "@/lib/i18n";
+import { type NextRequest, NextResponse } from "next/server";
+import { isProtectedPath } from "@/lib/auth-routes";
+import { localeFromPathname, stripLocalePrefix, withLocalePrefix } from "@/lib/i18n";
+import { refreshSession } from "@/lib/supabase/middleware";
 
 /**
- * Serves /ru/* and /en/* by rewriting internally to the unprefixed route —
- * every page keeps living at its one real path (e.g. app/cars/page.tsx); the
- * locale prefix is purely a URL-level concern. Armenian stays unprefixed.
+ * 1. Serves /ru/* and /en/* by rewriting to the unprefixed route; Armenian stays unprefixed.
+ * 2. Refreshes the Supabase session cookies on every page request.
+ * 3. Sends signed-out visitors of /create and /profile to sign-in, remembering where they were.
  */
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export async function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
   const locale = localeFromPathname(pathname);
-  if (locale === "am") return NextResponse.next();
+  const path = stripLocalePrefix(pathname);
 
-  const url = request.nextUrl.clone();
-  url.pathname = stripLocalePrefix(pathname);
-  return NextResponse.rewrite(url);
+  const makeResponse = () => {
+    if (locale === "am") return NextResponse.next({ request });
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    return NextResponse.rewrite(url, { request });
+  };
+
+  const { response, signedIn } = await refreshSession(request, makeResponse);
+  if (signedIn || !isProtectedPath(pathname)) return response;
+
+  const target = request.nextUrl.clone();
+  target.pathname = withLocalePrefix("/sign-in", locale);
+  target.search = `?next=${encodeURIComponent(path + search)}`;
+  const redirect = NextResponse.redirect(target);
+  for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie);
+  return redirect;
 }
 
 export const config = {
